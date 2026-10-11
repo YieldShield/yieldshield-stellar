@@ -24,6 +24,7 @@ import {
   Activity,
 } from "./ManagementPages";
 import { Learn, Legal } from "./LearningPages";
+import { Navigation } from "./Navigation";
 import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import type { Data, Market, Wallet, State } from "./v3";
@@ -70,15 +71,6 @@ function useRoute() {
   }, []);
   return url;
 }
-const nav = [
-  ["/markets", "Markets"],
-  ["/trade", "Trade"],
-  ["/protect", "Protect"],
-  ["/provide", "Provide"],
-  ["/positions", "Portfolio"],
-  ["/create-pool", "Create pool"],
-  ["/activity", "Activity"],
-];
 export function App() {
   const url = useRoute();
   const [api, setApi] = useState<Api>();
@@ -311,24 +303,12 @@ export function App() {
           Valueless demo assets · Unaudited contracts · XLM pays network fees
           only
         </span>
-        <a href="/legacy">Legacy market ↗</a>
       </div>
       <header className="app-header">
         <a className="brand" href="/">
           yieldshield<span>STELLAR / 03</span>
         </a>
-        <nav aria-label="Main navigation">
-          {nav.map(([p, label]) => (
-            <a
-              key={p}
-              className={path === p || path.startsWith(`${p}/`) ? "active" : ""}
-              aria-current={path === p || path.startsWith(`${p}/`) ? "page" : undefined}
-              href={href(p)}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
+        <Navigation path={path} routeKey={routeKey} href={href} />
         <button
           className="wallet-button"
           disabled={!api || !!busy}
