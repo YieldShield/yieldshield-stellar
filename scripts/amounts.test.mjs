@@ -15,7 +15,12 @@ test("manifest is testnet only and TESTUSD SAC matches explicit issuer", () => {
   assert.ok(m.horizonUrl.includes("testnet"));
 });
 
-import { parseAmount, format, minimumOutput } from "../apps/web/src/amounts.ts";
+import {
+  parseAmount,
+  format,
+  minimumOutput,
+  maximumPayment,
+} from "../apps/web/src/amounts.ts";
 test("wallet amount parser preserves stroops and rejects lossy input", () => {
   assert.equal(parseAmount("1000.0000001"), 10000000001n);
   for (const value of [
@@ -38,4 +43,13 @@ test("signed output minimum never allows more than 0.5 percent loss including du
   assert.equal(minimumOutput(0n), 0n);
   assert.equal(minimumOutput(2n), 2n);
   assert.equal(minimumOutput(199n), 199n);
+});
+
+test("maximum payment never permits more than0.5 percent excess including dust", () => {
+  for (let q = 1n; q <= 10000n; q++) {
+    const max = maximumPayment(q);
+    assert.ok(max * 1000n <= q * 1005n);
+    assert.ok(max >= q);
+  }
+  assert.equal(maximumPayment(1n), 1n);
 });

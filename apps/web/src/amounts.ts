@@ -20,3 +20,7 @@ export function minimumOutput(quote: bigint) {
   if (quote < 0n) throw new Error("Negative quote");
   return (quote * 995n + 999n) / 1000n;
 }
+export function maximumPayment(quote: bigint) {
+  if (quote < 0n) throw new Error("Negative quote");
+  return (quote * 1005n) / 1000n;
+}

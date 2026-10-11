@@ -100,9 +100,22 @@ async function checkNetwork() {
       "Switch Freighter to Stellar Testnet. Real-fund networks are disabled.",
     );
 }
+let readSource:
+  Promise<Awaited<ReturnType<typeof server.getAccount>>> | undefined;
+let readSourceAt = 0;
+function simulationSource() {
+  if (!readSource || Date.now() - readSourceAt > 15000) {
+    readSourceAt = Date.now();
+    readSource = server.getAccount(config.sponsor).catch((e) => {
+      readSource = undefined;
+      throw e;
+    });
+  }
+  return readSource;
+}
 export async function view(id: string, method: string, args: xdr.ScVal[] = []) {
   if (!id) throw new Error("Deployment is not configured.");
-  const source = await server.getAccount(config.sponsor);
+  const source = await simulationSource();
   const tx = new TransactionBuilder(source, {
     fee: "100",
     networkPassphrase: Networks.TESTNET,
@@ -132,10 +145,9 @@ export async function readPool() {
     readAt: Date.now(),
   };
 }
-export async function readWallet(address: string) {
-  const account = await horizon.loadAccount(address);
-  const [shares, claimed] = await Promise.all([
-    view(config.vault, "balance", [addressSc(address)]),
+export async function readFunding(address: string) {
+  const [account, claimed] = await Promise.all([
+    horizon.loadAccount(address),
     view(config.faucet, "claimed", [addressSc(address)]),
   ]);
   const backing = account.balances.find(
@@ -145,11 +157,17 @@ export async function readWallet(address: string) {
       b.asset_issuer === config.issuer,
   );
   return {
-    shares: shares as bigint,
     claimed: claimed as boolean,
     trusted: !!backing,
     backing: backing ? BigInt(backing.balance.replace(".", "")) : 0n,
   };
+}
+export async function readWallet(address: string) {
+  const [base, shares] = await Promise.all([
+    readFunding(address),
+    view(config.vault, "balance", [addressSc(address)]),
+  ]);
+  return { ...base, shares: shares as bigint };
 }
 function savedIds(address: string): string[] {
   try {
