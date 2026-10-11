@@ -429,7 +429,7 @@ export function App() {
             been selected.
           </p>
         )}
-        {!address && (["/trade", "/protect", "/provide", "/positions", "/faucet", "/assets", "/create-pool"].includes(path) || path.startsWith("/positions/")) && (
+        {!address && (["/trade", "/protect", "/positions", "/faucet", "/assets", "/create-pool"].includes(path) || path.startsWith("/positions/")) && (
           <p className="wallet-prompt">
             Connect Freighter to review a transaction.
           </p>

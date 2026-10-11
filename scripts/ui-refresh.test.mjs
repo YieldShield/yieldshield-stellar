@@ -8,11 +8,12 @@ import React from "react";
 import { act, create } from "react-test-renderer";
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+globalThis.location = { href: "http://localhost/provide" };
 const temp = mkdtempSync(resolve("node_modules/.ui-refresh-test-"));
 const output = await build({
   stdin: {
     contents:
-      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx";',
+      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx"; export {Provide} from "./apps/web/src/ProtectionPages.tsx";',
     resolveDir: resolve("."),
   },
   bundle: true,
@@ -23,12 +24,13 @@ const output = await build({
 });
 const modulePath = join(temp, "components.mjs");
 writeFileSync(modulePath, output.outputFiles[0].text);
-const { PositionPage, Portfolio, Activity } = await import(
+const { PositionPage, Portfolio, Activity, Provide } = await import(
   pathToFileURL(modulePath).href
 );
 after(() => {
   rmSync(temp, { recursive: true, force: true });
   delete globalThis.IS_REACT_ACT_ENVIRONMENT;
+  delete globalThis.location;
 });
 const U = 10_000_000n;
 const deferred = () => {
@@ -127,6 +129,40 @@ async function mount(component, props) {
 async function unmount(renderer) {
   await act(async () => renderer.unmount());
 }
+
+test("Provide keeps public terms visible and shows personal balances and separate claims only after connection", async () => {
+  let reviewed;
+  const api = { ...context().api, deployment: { markets: [market] } };
+  const props = context({
+    api,
+    wallet: { ...wallet, provider: { ...wallet.provider, shares: 100n * U, rewards: 3n * U, inventory: 5n * U } },
+    review: async (make) => { reviewed = await make(api); },
+  });
+  const r = await mount(Provide, { ...props, address: "", wallet: undefined });
+  assert.match(text(r), /Connect your wallet to view provider balances and claims/);
+  assert.match(text(r), /Deposits and withdrawals pause while holders are protected/);
+  assert.match(text(r), /lower-value receipts/);
+  assert.match(text(r), /Pool terms/);
+  assert.match(text(r), /Settlement queue/);
+  assert.equal(r.root.findAllByProps({ "aria-label": "Backing to provide" }).length, 1);
+  assert.equal(button(r, "Review fee claim"), undefined);
+  assert.equal(button(r, "Review inventory claim"), undefined);
+  assert.doesNotMatch(text(r), /Your LP shares/);
+  await act(async () => r.update(React.createElement(Provide, props)));
+  assert.match(text(r), /Your LP shares/);
+  assert.match(text(r), /separate from principal/);
+  assert.match(text(r), /recovered principal, not yield/);
+  assert.equal(button(r, "Review fee claim").props.disabled, false);
+  assert.equal(button(r, "Review inventory claim").props.disabled, false);
+  await act(async () => button(r, "Review fee claim").props.onClick());
+  assert.equal(reviewed.method, "claim_rewards");
+  assert.deepEqual(reviewed.lines, [["Amount", "3.0000000 ysALPHA"]]);
+  await act(async () => button(r, "Review inventory claim").props.onClick());
+  assert.equal(reviewed.method, "claim_inventory");
+  assert.deepEqual(reviewed.lines, [["Amount", "5.0000000 ysALPHA"]]);
+  assert.deepEqual(reviewed.args, ["wallet-A", "wallet-A"]);
+  await unmount(r);
+});
 
 test("background position refresh retains the mounted input and dirty partial-exit draft", async () => {
   let next;

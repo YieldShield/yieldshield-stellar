@@ -202,14 +202,14 @@ export function Provide(c: Ctx) {
     }));
   return (
     <>
-      <Stats
+      {c.address ? <Stats
         items={[
           ["Your LP shares", f(p?.shares)],
           ["Gain-fee receipts", f(p?.rewards)],
           ["Acquired receipts", f(p?.inventory)],
           ["Pending notice", f(p?.notice_shares)],
         ]}
-      />
+      /> : <p className="wallet-prompt">Connect your wallet to view provider balances and claims.</p>}
       <div className="two-column">
         <section className="panel">
           <p className="eyebrow">PROVIDER</p>
@@ -311,7 +311,7 @@ export function Provide(c: Ctx) {
         </section>
         <Context {...c} />
       </div>
-      <div className="two-column">
+      {c.address && <div className="two-column">
         <section className="panel">
           <h2>Gain-fee receipts</h2>
           <p>
@@ -347,7 +347,7 @@ export function Provide(c: Ctx) {
             Review inventory claim
           </button>
         </section>
-      </div>
+      </div>}
       <SettlementQueue {...c} />
     </>
   );
