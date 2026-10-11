@@ -33,6 +33,7 @@
   background: var(--paper);
 }
 .v3 .brand {
+  display: block;
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -1px;
@@ -51,6 +52,9 @@
   align-items: center;
 }
 .v3 nav a {
+  align-items: center;
+  min-height: 44px;
+  box-sizing: border-box;
   font-size: 13px;
   text-decoration: none;
   white-space: nowrap;
@@ -265,6 +269,7 @@
   padding: 0 15px;
 }
 .v3 .amount-field input {
+  font-variant-numeric: tabular-nums;
   border: 0;
   background: none;
   font:
@@ -307,6 +312,7 @@
 }
 .v3 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0;
   margin-bottom: 22px;
   border-bottom: 1px solid #adb79e;
@@ -477,6 +483,11 @@
   width: 100%;
   opacity: 0.6;
 }
+.v3 footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 .v3 ol {
   padding-left: 20px;
   line-height: 1.7;
@@ -547,8 +558,22 @@
     font-size: 9px;
   }
   .v3 .app-header {
-    padding: 20px 5%;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 16px 5% 8px;
+    gap: 12px;
+  }
+  .v3 .brand {
+    font-size: 24px;
+  }
+  .v3 .wallet-button {
+    padding: 12px;
+    font-size: 11px;
+  }
+  .v3 nav {
+    grid-column: 1 / -1;
+    padding-bottom: 4px;
+    scroll-padding: 4px;
   }
   .v3 main {
     padding: 0 5%;
