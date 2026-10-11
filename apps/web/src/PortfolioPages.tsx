@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Data, Market, Wallet, State } from "./v3";
 import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
 import {
@@ -16,12 +16,13 @@ import {
   ContractLink,
 } from "./shared";
 export function Portfolio(c: Ctx & { markets: Market[] }) {
+  return <PortfolioAccount key={c.address} {...c} />;
+}
+function PortfolioAccount(c: Ctx & { markets: Market[] }) {
   const [rows, setRows] = useState<{ market: Market; wallet: Wallet }[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [warning, setWarning] = useState("");
   useEffect(() => {
-    setRows([]);
-    setWarning("");
     if (!c.api || !c.address) return;
     let alive = true;
     setLoading(true);
@@ -38,11 +39,20 @@ export function Portfolio(c: Ctx & { markets: Market[] }) {
       }),
     ).then((found) => {
       if (!alive) return;
-      setRows(
-        found.filter((r): r is { market: Market; wallet: Wallet } => !!r),
+      setRows((previous) =>
+        found.flatMap((row, index) =>
+          row
+            ? [row]
+            : previous.filter(
+                (old) => old.market.pool === c.markets[index].pool,
+              ),
+        ),
       );
-      if (found.some((r) => !r))
-        setWarning("Some pools could not be read. They are not assumed empty.");
+      setWarning(
+        found.some((row) => !row)
+          ? "Some pools could not be refreshed. Previous values may be out of date; unavailable pools are not assumed empty."
+          : "",
+      );
       setLoading(false);
     });
     return () => {
@@ -56,12 +66,17 @@ export function Portfolio(c: Ctx & { markets: Market[] }) {
           Connect Freighter to discover your holder positions and provider
           shares directly from the onchain registry.
         </p>
-      ) : loading ? (
-        <p>Reading all registered pools…</p>
       ) : (
         <>
-          <p>{warning}</p>
-          <div className="portfolio-list">
+          {loading && (
+            <p role="status">
+              {rows.length
+                ? "Refreshing your portfolio…"
+                : "Reading all registered pools…"}
+            </p>
+          )}
+          {warning && <p role="status">{warning}</p>}
+          <div className="portfolio-list" aria-busy={loading}>
             {rows.flatMap(({ market, wallet }) =>
               wallet.positions.map((p) => (
                 <article
@@ -143,17 +158,21 @@ export function Portfolio(c: Ctx & { markets: Market[] }) {
                 </article>
               ))}
           </div>
-          {rows.every(
-            (r) =>
-              !r.wallet.positions.length &&
-              !r.wallet.provider.shares &&
-              !r.wallet.credit,
-          ) && (
-            <p className="empty">
-              No positions found in the readable current pools.{" "}
-              <a href={c.href("/protect")}>Open protection →</a>
-            </p>
-          )}
+          {!loading &&
+            !warning &&
+            rows.every(
+              (r) =>
+                !r.wallet.positions.length &&
+                !r.wallet.provider.shares &&
+                !r.wallet.provider.rewards &&
+                !r.wallet.provider.inventory &&
+                !r.wallet.credit,
+            ) && (
+              <p className="empty">
+                No positions found in the readable current pools.{" "}
+                <a href={c.href("/protect")}>Open protection →</a>
+              </p>
+            )}
         </>
       )}
       <p className="fine">
