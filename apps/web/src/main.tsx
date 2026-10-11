@@ -83,6 +83,9 @@ function App() {
   const url = useRoute();
   const [api, setApi] = useState<Api>();
   const [markets, setMarkets] = useState<Market[]>([]);
+  const [registryLoading, setRegistryLoading] = useState(true);
+  const [registryError, setRegistryError] = useState(false);
+  const [registryAttempt, setRegistryAttempt] = useState(0);
   const [address, setAddress] = useState("");
   const [data, setData] = useState<Data>();
   const [wallet, setWallet] = useState<Wallet>();
@@ -120,27 +123,29 @@ function App() {
   const routeKey = url.pathname + url.search;
   active.current = { address, pool: market?.pool || "" };
   const href = (p: string, m = market) =>
-    `${p}${p.includes("?") ? "&" : "?"}pool=${m?.pool || ""}`;
+    m ? `${p}${p.includes("?") ? "&" : "?"}pool=${m.pool}` : p;
   function clear() {
     version.current++;
     setQuote(undefined);
   }
   useEffect(() => {
-    import("./v3").then(setApi).catch((e) => setError(String(e)));
-  }, []);
-  useEffect(() => {
-    if (!api) return;
     let live = true;
-    api
-      .markets()
+    setRegistryLoading(true);
+    setRegistryError(false);
+    import("./v3")
+      .then((module) => {
+        if (live) setApi(module);
+        return module.markets();
+      })
       .then((m) => {
         if (live) setMarkets(m);
       })
-      .catch((e) => setError(String(e)));
+      .catch(() => { if (live) setRegistryError(true); })
+      .finally(() => { if (live) setRegistryLoading(false); });
     return () => {
       live = false;
     };
-  }, [api]);
+  }, [registryAttempt]);
   useEffect(() => {
     clear();
     setError("");
@@ -435,17 +440,27 @@ function App() {
             been selected.
           </p>
         )}
-        {!address && path !== "/" && (
+        {!address && (["/trade", "/protect", "/provide", "/positions", "/faucet", "/assets", "/create-pool"].includes(path) || path.startsWith("/positions/")) && (
           <p className="wallet-prompt">
             Connect Freighter to review transactions. Market terms remain
             available without a wallet.
           </p>
         )}
-        {!markets.length && api && (
-          <p className="empty">
-            Loading the verified onchain registry. No market data is invented
-            while the network is unavailable.
-          </p>
+        {!["/", "/legal", "/how-it-works", "/account"].includes(path) && !markets.length && (
+          <div className="feedback" role="status">
+            {registryLoading ? (
+              <p>Loading verified markets from Stellar Testnet…</p>
+            ) : (
+              <>
+                <p>{registryError
+                  ? "We couldn’t load the market registry. Check your connection and try again."
+                  : "No markets are currently registered on Stellar Testnet."}</p>
+                <button className="quiet" onClick={() => setRegistryAttempt((attempt) => attempt + 1)}>
+                  Retry market loading
+                </button>
+              </>
+            )}
+          </div>
         )}
         {path === "/markets" && (
           <Markets markets={markets} api={api} href={href} />
