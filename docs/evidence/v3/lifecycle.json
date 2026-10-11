@@ -1,0 +1,194 @@
+{
+  "startedAt": "2026-10-11T18:34:14.720Z",
+  "transactions": [
+    {
+      "label": "create-five-minute-community-pool",
+      "hash": "5f761c451c2f7513e827f9a1fabaf896807e6fec4a78200cffbf668d8f222eac",
+      "ledger": 5144014,
+      "returnValue": "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF"
+    },
+    {
+      "label": "first-provider",
+      "hash": "7c887ee9b78b6d7477a84a3f32120cfbaba92eb1409d2714feca0ee8d128bbef",
+      "ledger": 5144015,
+      "returnValue": "5000000000"
+    },
+    {
+      "label": "second-provider",
+      "hash": "e26e3190467827d3999be80a233b217379b22b7ff4b9213690b6bf35c3bad4d1",
+      "ledger": 5144016,
+      "returnValue": "5000000000"
+    },
+    {
+      "label": "buy-receipts",
+      "hash": "d0dd8dd72ab51aa3713be43096dc0acda81ea196fad42dcd11aa7535b70880f0",
+      "ledger": 5144017,
+      "returnValue": "1203600000"
+    },
+    {
+      "label": "sell-receipts",
+      "hash": "218fb53743a30b680396eb20163952b562a97190a9e490dcd400a75b6ec37969",
+      "ledger": 5144018,
+      "returnValue": "99700000"
+    },
+    {
+      "label": "protect-transfer-partial",
+      "hash": "78805436ec0f436e030d4ad10b9ffeb62ebfe3e00f9bb152ec531a6e41b3458f",
+      "ledger": 5144019,
+      "returnValue": "1"
+    },
+    {
+      "label": "transfer-native-position",
+      "hash": "8186580c4d394492155ca802085380b87c6cf0e101aae90c8535e4cb4c58ec96",
+      "ledger": 5144020,
+      "returnValue": null
+    },
+    {
+      "label": "protect-maturity-credit",
+      "hash": "8deae327e0ee19c7207a4eb01ff9471b31d823799b6a400ba7549163a7694568",
+      "ledger": 5144021,
+      "returnValue": "2"
+    },
+    {
+      "label": "funded-gain",
+      "hash": "a029bd27d8658b17d6301f66a31ec554bc390480802d917e2bb1bf69a7b2f753",
+      "ledger": 5144022,
+      "returnValue": null
+    },
+    {
+      "label": "partial-fixed-backing-exit",
+      "hash": "01a4c6daa88a07a861e99ccecb3387c701aa3060bc39d1f8f26d8778eb3ef710",
+      "ledger": 5144032,
+      "returnValue": "400000000"
+    },
+    {
+      "label": "remaining-receipt-exit",
+      "hash": "89d6af5059da9ed831d15dded0a913c9d5964d5e83e5bc6f340c9ac6795dec05",
+      "ledger": 5144033,
+      "returnValue": "593454547"
+    },
+    {
+      "label": "provider-withdrawal-notice",
+      "hash": "c7af753d03801af53384ef021ea0f5300eb30e202fb272dbeb0b3983fd8976e8",
+      "ledger": 5144034,
+      "returnValue": null
+    },
+    {
+      "label": "cancel-provider-notice",
+      "hash": "1759fa9454aa205b6f9e3847cab25e8c8f5d0d656ba55a8ad19fbd6f6f0876e8",
+      "ledger": 5144035,
+      "returnValue": null
+    },
+    {
+      "label": "new-provider-notice",
+      "hash": "d913165da8265c552fa2e80995ec2b363c82ac88f10ebddfa2bbe744354f1336",
+      "ledger": 5144036,
+      "returnValue": null
+    },
+    {
+      "label": "claim-provider-fees",
+      "hash": "4557f9c933eb2ab08b67f6be70a721f0e70d4fa4eb78145158c5e742d9cea608",
+      "ledger": 5144037,
+      "returnValue": "2727272"
+    },
+    {
+      "label": "claim-acquired-principal",
+      "hash": "1147abe60b11a4c8851a2f84253858ba355d30f0c445bae6efeed42d336bc485",
+      "ledger": 5144038,
+      "returnValue": "200000000"
+    },
+    {
+      "label": "claim-creator-fees",
+      "hash": "484a6ec16ec2020f5b7e88f000725ae66b6b0f50eb51ecfa4742bc3b93efbd26",
+      "ledger": 5144039,
+      "returnValue": "545454"
+    },
+    {
+      "label": "claim-protocol-fees",
+      "hash": "7d52f0f6f2892787f19ace0f5793291a6fbad1498a123b2747029dde5e321170",
+      "ledger": 5144040,
+      "returnValue": "545454"
+    },
+    {
+      "label": "permissionless-maturity-settlement",
+      "hash": "ecf9fb6c4989df70e5751cad9a13c4bd0532ca7528cb9da10b16ca3dab8076a4",
+      "ledger": 5144075,
+      "returnValue": "100000000"
+    },
+    {
+      "label": "partial-provider-withdrawal",
+      "hash": "09f2fa9fe3f50e361fbcd410f3fc12b8636288f9c5913532e37c9f73bc738383",
+      "ledger": 5144076,
+      "returnValue": "2375000000"
+    },
+    {
+      "label": "claim-segregated-backing",
+      "hash": "923386f3375486e11da0f57bbcca8dc869d58364c9bab9c4d8d5bf7d1a243ce5",
+      "ledger": 5144077,
+      "returnValue": "100000000"
+    },
+    {
+      "label": "refund-creation-bond",
+      "hash": "cc88c178387420fa8088f9a87bf6f442c82c6507e6fa0a57d4c6c986d6c85c4a",
+      "ledger": 5144078,
+      "returnValue": "100000000"
+    }
+  ],
+  "assertions": [
+    "Maturity did not push tokens to holder",
+    "Expired claim credited separately at its fixed backing amount",
+    "Transferred holder completed proportional partial backing and remaining receipt exits",
+    "Provider withdrew partial cash after notice and all holder liabilities settled",
+    "Factory bond refunded once after fixed term",
+    "Fee inventories remain separate from acquired receipt inventory",
+    "Every featured pool remains open to new capital providers"
+  ],
+  "pool": "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF",
+  "completedAt": "2026-10-11T18:39:39.458Z",
+  "finalState": {
+    "active": 0,
+    "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "creator": "GAZWSI7RF3DFFCATYXZPYLMW7CNIGIYS5C34ZJS7JRVYOM5COMYPAQFB",
+    "creator_rewards": "0",
+    "credit_total": "0",
+    "end": "1791743957",
+    "inventory_balance": "300000000",
+    "inventory_index": "50000000000",
+    "liquidity": "7125000000",
+    "next_id": "3",
+    "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "protocol_rewards": "0",
+    "reserved": "0",
+    "reward_balance": "2727273",
+    "reward_index": "545454500",
+    "terms": {
+      "collateral_bps": 15000,
+      "creator_fee_bps": 100,
+      "duration": "300",
+      "junior_fee_bps": 1000,
+      "notice_delay": "30"
+    },
+    "total_lp": "7500000000",
+    "vault": "CBRXUTB7LJBF4FUMRVJK3MFHGTKEHNSKEWGD2JTQ6KW36RNHM5XQP6Z5"
+  },
+  "providers": [
+    {
+      "debt": "1363636",
+      "inventory": "50000000",
+      "inventory_debt": "125000000",
+      "notice_at": "1791743797",
+      "notice_shares": "0",
+      "rewards": "0",
+      "shares": "2500000000"
+    },
+    {
+      "debt": "2727272",
+      "inventory": "250000000",
+      "inventory_debt": "250000000",
+      "notice_at": "0",
+      "notice_shares": "0",
+      "rewards": "2727272",
+      "shares": "5000000000"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "args": [
+    "contract",
+    "extend",
+    "--id",
+    "CDYTSORYJ2SR66KFSP3GMLSHCF74YJDG2SLQTCMTHWTVCO2WS4B7KCIP",
+    "--ledgers-to-extend",
+    "1000000",
+    "--network",
+    "testnet",
+    "--source-account",
+    "ys-stellar-sponsor"
+  ],
+  "stdout": "New ttl ledger: 6144087\n",
+  "stderr": "ℹ️  Simulating transaction…\nℹ️  Signing transaction: ddba2b151d737f671a78879ef7d2305dc52a258d7c5785318a2868a14a744aa6\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/ddba2b151d737f671a78879ef7d2305dc52a258d7c5785318a2868a14a744aa6\n",
+  "status": 0
+}

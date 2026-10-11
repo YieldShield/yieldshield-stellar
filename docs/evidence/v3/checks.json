@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-11T18:40:39.982690+00:00",
+  "nativeTests": 52,
+  "nativeCommand": "cargo test --workspace --locked --offline",
+  "wasmCommand": "stellar contract build",
+  "wasmPrerequisite": "Factory tests require current pool Wasm; run scripts/check-native.sh for a fresh checkout.",
+  "frontendTests": 4,
+  "frontendCommand": "npm test",
+  "buildCommand": "npm run build",
+  "sdk": "soroban-sdk28.0.0",
+  "stellarCli": "28.1.0",
+  "humanWalletSigning": "Not verified with Freighter in the browser; scripted two-wallet testnet transactions are confirmed.",
+  "codeAssistance": "AI-assisted implementation, independent agent review, native tests and browser review.",
+  "verifiedContracts": 11,
+  "verifiedWasmHashes": 4,
+  "registeredPools": 4,
+  "minimumInstanceLedgersRemaining": 999984,
+  "minimumCodeLedgersRemaining": 999997,
+  "testnetLifecycleTransactions": 22,
+  "testnetLifecycleAssertions": 7
+}
