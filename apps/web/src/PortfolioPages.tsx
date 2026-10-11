@@ -268,6 +268,17 @@ function PositionDetails(c: Ctx & { id: string }) {
         deadline: end,
       };
     });
+  if (!validId && !creditOnly)
+    return (
+      <section className="panel">
+        <h2>Invalid position link</h2>
+        <p role="alert">
+          Use a positive position number from your portfolio. This link does not
+          identify a protected position.
+        </p>
+        <a href={c.href("/positions")}>Return to portfolio →</a>
+      </section>
+    );
   return (
     <>
       <a href={c.href("/positions")}>← All positions</a>
