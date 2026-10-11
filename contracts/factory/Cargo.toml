@@ -1,0 +1,13 @@
+[package]
+name = "yieldshield-factory"
+version = "0.1.0"
+edition = "2021"
+publish = false
+[lib]
+crate-type = ["cdylib", "rlib"]
+[dependencies]
+soroban-sdk = { workspace = true }
+yieldshield-pool-v3 = { path = "../pool-v3" }
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }
+yieldshield-vault = { path = "../vault" }
