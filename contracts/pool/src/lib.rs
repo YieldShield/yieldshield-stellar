@@ -1,0 +1,206 @@
+#![no_std]
+use soroban_sdk::{contract, contractclient, contractimpl, contracttype, token, Address, Env};
+const UNIT: i128 = 10_000_000;
+#[contractclient(name = "VaultClient")]
+pub trait Vault {
+    fn nav(e: Env) -> i128;
+    fn asset(e: Env) -> Address;
+}
+#[contracttype]
+#[derive(Clone)]
+enum Key {
+    State,
+    Position(u64),
+}
+#[contracttype]
+#[derive(Clone, Debug)]
+pub struct State {
+    pub backing: Address,
+    pub vault: Address,
+    pub backer: Address,
+    pub liquidity: i128,
+    pub reserved: i128,
+    pub earned: i128,
+    pub next_id: u64,
+    pub active: u32,
+}
+#[contracttype]
+#[derive(Clone, Debug)]
+pub struct Position {
+    pub owner: Address,
+    pub shares: i128,
+    pub claim: i128,
+    pub reserved: i128,
+    pub opened: u64,
+    pub closed: bool,
+}
+#[contract]
+pub struct Pool;
+fn state(e: &Env) -> State {
+    e.storage().instance().get(&Key::State).unwrap()
+}
+fn save(e: &Env, s: &State) {
+    e.storage().instance().set(&Key::State, s);
+    e.storage().instance().extend_ttl(10_000, 50_000);
+}
+fn position(e: &Env, id: u64) -> Position {
+    let k = Key::Position(id);
+    let p = e.storage().persistent().get(&k).expect("unknown position");
+    e.storage().persistent().extend_ttl(&k, 10_000, 50_000);
+    p
+}
+fn save_position(e: &Env, id: u64, p: &Position) {
+    let k = Key::Position(id);
+    e.storage().persistent().set(&k, p);
+    e.storage().persistent().extend_ttl(&k, 10_000, 50_000);
+}
+fn positive(amount: i128) {
+    assert!(
+        amount > 0 && amount <= 1_000_000_000_000_000_000,
+        "amount out of bounds"
+    );
+}
+#[contractimpl]
+impl Pool {
+    pub fn __constructor(e: Env, backer: Address, backing: Address, vault: Address) {
+        assert!(
+            VaultClient::new(&e, &vault).asset() == backing,
+            "different asset"
+        );
+        save(
+            &e,
+            &State {
+                backer,
+                backing,
+                vault,
+                liquidity: 0,
+                reserved: 0,
+                earned: 0,
+                next_id: 1,
+                active: 0,
+            },
+        );
+    }
+    pub fn state(e: Env) -> State {
+        state(&e)
+    }
+    pub fn position(e: Env, id: u64) -> Position {
+        position(&e, id)
+    }
+    pub fn fund(e: Env, amount: i128) {
+        let mut s = state(&e);
+        s.backer.require_auth();
+        positive(amount);
+        token::Client::new(&e, &s.backing).transfer(
+            &s.backer,
+            &e.current_contract_address(),
+            &amount,
+        );
+        s.liquidity += amount;
+        save(&e, &s);
+    }
+    pub fn protect(e: Env, owner: Address, shares: i128) -> u64 {
+        owner.require_auth();
+        positive(shares);
+        let mut s = state(&e);
+        let nav = VaultClient::new(&e, &s.vault).nav();
+        assert!(nav > 0, "zero vault NAV");
+        let claim = shares.checked_mul(nav).unwrap() / UNIT;
+        assert!(claim > 0, "dust claim");
+        let reserve = (claim.checked_mul(3).unwrap() + 1) / 2;
+        assert!(
+            s.liquidity - s.reserved >= reserve,
+            "insufficient free reserve"
+        );
+        let id = s.next_id;
+        s.next_id += 1;
+        s.active += 1;
+        s.reserved += reserve;
+        save(&e, &s);
+        save_position(
+            &e,
+            id,
+            &Position {
+                owner: owner.clone(),
+                shares,
+                claim,
+                reserved: reserve,
+                opened: e.ledger().timestamp(),
+                closed: false,
+            },
+        );
+        token::Client::new(&e, &s.vault).transfer(&owner, &e.current_contract_address(), &shares);
+        id
+    }
+    // backing_exit=true surrenders all receipts for the fixed test backing payout.
+    pub fn exit(e: Env, id: u64, backing_exit: bool) -> i128 {
+        let mut p = position(&e, id);
+        p.owner.require_auth();
+        assert!(!p.closed, "position closed");
+        assert!(e.ledger().timestamp() >= p.opened + 60, "exit delay");
+        let mut s = state(&e);
+        p.closed = true;
+        s.reserved -= p.reserved;
+        s.active -= 1;
+        let payout;
+        if backing_exit {
+            payout = p.claim;
+            s.liquidity -= payout;
+            s.earned += p.shares;
+            save(&e, &s);
+            save_position(&e, id, &p);
+            token::Client::new(&e, &s.backing).transfer(
+                &e.current_contract_address(),
+                &p.owner,
+                &payout,
+            );
+        } else {
+            let nav = VaultClient::new(&e, &s.vault).nav();
+            let value = p.shares.checked_mul(nav).unwrap() / UNIT;
+            let gain = if value > p.claim { value - p.claim } else { 0 };
+            let fee = if nav > 0 {
+                gain.checked_mul(UNIT).unwrap() / nav / 10
+            } else {
+                0
+            };
+            payout = p.shares - fee;
+            s.earned += fee;
+            save(&e, &s);
+            save_position(&e, id, &p);
+            token::Client::new(&e, &s.vault).transfer(
+                &e.current_contract_address(),
+                &p.owner,
+                &payout,
+            );
+        }
+        payout
+    }
+    pub fn withdraw_reserve(e: Env, amount: i128) {
+        let mut s = state(&e);
+        s.backer.require_auth();
+        positive(amount);
+        assert!(amount <= s.liquidity - s.reserved, "backing is reserved");
+        s.liquidity -= amount;
+        save(&e, &s);
+        token::Client::new(&e, &s.backing).transfer(
+            &e.current_contract_address(),
+            &s.backer,
+            &amount,
+        );
+    }
+    pub fn withdraw_earned(e: Env, shares: i128) {
+        let mut s = state(&e);
+        s.backer.require_auth();
+        positive(shares);
+        assert!(shares <= s.earned, "shares belong to protected users");
+        s.earned -= shares;
+        save(&e, &s);
+        token::Client::new(&e, &s.vault).transfer(
+            &e.current_contract_address(),
+            &s.backer,
+            &shares,
+        );
+    }
+}
+#[cfg(test)]
+mod test;
