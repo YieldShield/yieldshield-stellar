@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-11T19:27:25.048Z",
+  "pool": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+  "owner": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+  "credit": "20000000",
+  "balance": "8683250000",
+  "assertion": "Settlement created credit without pushing TESTUSD; prior exact browser balance remains unchanged"
+}

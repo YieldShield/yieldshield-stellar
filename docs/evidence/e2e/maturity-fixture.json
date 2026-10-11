@@ -1,0 +1,25 @@
+{
+  "setup": "Native script only; subsequent maturity settlement and credit claim tested in browser",
+  "pool": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+  "createdAt": "2026-10-11T19:19:28.563Z",
+  "transactions": [
+    {
+      "method": "create",
+      "hash": "22301669618fdc001b3f5015e1b1261ace9a3e00f0d35c86c5582c44351c8b1d",
+      "ledger": 5144556,
+      "returnValue": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX"
+    },
+    {
+      "method": "provide",
+      "hash": "b7b75aa31db95a3184aa2ef69df43721b164c129f8719b0e8a5cbaffea898b27",
+      "ledger": 5144557,
+      "returnValue": "500000000"
+    },
+    {
+      "method": "protect",
+      "hash": "265b19f794d9c1eb72331f6a5d671159e64c9afade280454222771139aa7f372",
+      "ledger": 5144558,
+      "returnValue": "1"
+    }
+  ]
+}

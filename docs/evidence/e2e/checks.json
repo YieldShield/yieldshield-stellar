@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-11T19:30:47.685Z",
+  "frontend": {
+    "command": "npm test",
+    "passed": 17
+  },
+  "build": {
+    "command": "npm run build",
+    "passed": true,
+    "productionAdapterAbsent": true
+  },
+  "native": {
+    "command": "CARGO_HOME=/tmp/yieldshield-stellar-tools/cargo RUSTUP_HOME=/tmp/yieldshield-stellar-tools/rustup PATH=/tmp/yieldshield-stellar-tools:/tmp/yieldshield-stellar-tools/cargo/bin:$PATH DYLD_LIBRARY_PATH=/private/tmp/yieldshield-stellar-tools/rustup/toolchains/stable-aarch64-apple-darwin/lib CARGO_NET_OFFLINE=true bash scripts/check-native.sh",
+    "passed": 52,
+    "wasmHashesUnchanged": true
+  },
+  "staticFileDenial": {
+    "command": "node scripts/verify-dev-deny.mjs",
+    "passed": 4,
+    "fixture": "Harmless temporary .secrets access probe only; never a real identity"
+  },
+  "browser": {
+    "surface": "CUA-controlled Chrome, isolated localhost Vite server",
+    "signingBoundary": "Real production Freighter API and transaction/RPC code; localhost message adapter signs only disposable Testnet keys",
+    "actualExtensionUI": "Not tested; selected Chrome profile has no Freighter extension",
+    "confirmedTransactions": 23,
+    "errorsChecked": [
+      "Wallet signature rejection recovered with no broadcast",
+      "Wrong wallet network rejected before signing",
+      "Provider cash actions disabled while holder liability is open",
+      "Old owner exit controls disabled after position transfer",
+      "Repeated faucet claim disabled after successful claim"
+    ],
+    "regressions": [
+      "Unknown confirmation consumes the broadcast review",
+      "Post-confirmation read outage clears stale actionable balances",
+      "Wallet change invalidates review",
+      "Expired review cannot reach signing",
+      "Fresh wallet onboarding before trustline",
+      "Nested receipt backing read independent of TESTUSD",
+      "Dirty exit drafts and account-scoped rows survive refresh safely"
+    ],
+    "stoppedLocalSigner": true
+  },
+  "nativeSetup": {
+    "transactions": 3,
+    "scope": "Separate five-minute maturity fixture create/provide/protect; browser performed settle, bond refund, and holder credit claim",
+    "friendbot": "Fresh disposable wallet funded through official CLI Friendbot before browser trustline; not counted among browser transactions"
+  },
+  "historicalCoverage": {
+    "file": "docs/evidence/v3/lifecycle.json",
+    "confirmedTransactions": 22,
+    "scope": "Earlier native lifecycle includes two-provider accounting and creator/protocol fee claims; not counted as current browser actions"
+  },
+  "limitations": [
+    "Testnet only and valueless demo tokens",
+    "Actual Freighter extension consent UI not exercised",
+    "No mainnet funds or grant records touched"
+  ]
+}

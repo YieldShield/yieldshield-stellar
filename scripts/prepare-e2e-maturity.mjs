@@ -1,0 +1,18 @@
+import { randomBytes } from "node:crypto";
+import { nativeToScVal, xdr } from "@stellar/stellar-sdk";
+import { invoke, readJson, save, address, scAddress, scAmount } from "./testnet.mjs";
+if (!process.argv.includes("--broadcast")) throw Error("Explicit disposable-Testnet broadcast flag required");
+const path = "docs/evidence/e2e/maturity-fixture.json";
+if (readJson(path).pool) throw Error("Fixture already exists; preserve its proof");
+const catalog = readJson("config/markets.json"), market = catalog.markets[0];
+const terms = { collateral_bps: 15000, creator_fee_bps: 100, duration: 300n, junior_fee_bps: 1000, notice_delay: 30n };
+const encoded = xdr.ScVal.scvMap(Object.entries(terms).sort(([a], [b]) => a.localeCompare(b)).map(([key, val]) => new xdr.ScMapEntry({ key: nativeToScVal(key, {type:"symbol"}), val: nativeToScVal(val, {type:typeof val === "bigint" ? "u64" : "u32"}) })));
+const creation = await invoke("sponsor", catalog.factory, "create", [scAddress(address("sponsor")), scAddress(market.vault), encoded, nativeToScVal(randomBytes(32), {type:"bytes"})]);
+const evidence = { setup: "Native script only; subsequent maturity settlement and credit claim tested in browser", pool: creation.returnValue, createdAt: new Date().toISOString(), transactions: [{method:"create", ...creation}] };
+save(path, evidence);
+const deadline = () => nativeToScVal(BigInt(Math.floor(Date.now()/1000)+120), {type:"u64"});
+evidence.transactions.push({ method:"provide", ...await invoke("sponsor", evidence.pool, "provide", [scAddress(address("sponsor")),scAmount(50_0000000n),scAmount(1n),deadline()]) });
+save(path, evidence);
+evidence.transactions.push({ method:"protect", ...await invoke("e2e", evidence.pool, "protect", [scAddress(address("e2e")),scAmount(2_0000000n),scAmount(1n),deadline()]) });
+save(path, evidence);
+console.log(`Maturity fixture ready: ${evidence.pool}`);

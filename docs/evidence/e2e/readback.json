@@ -1,0 +1,326 @@
+{
+  "checkedAt": "2026-10-11T19:30:17.402Z",
+  "browserSignedTransactions": 23,
+  "receipts": [
+    {
+      "at": "2026-10-11T19:14:23.013Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "",
+      "method": "changeTrust",
+      "hash": "759f576f21c4e07c2c87140416e5a5e02c1986e209f6a5e6576dcaa7f8ba0604",
+      "status": "SUCCESS",
+      "ledger": 5144496,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-11T19:15:29.526Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CDC4SYVLZS2TD5NC27YMMG2C4ZCQRRL3SUODPUCCT2MOSHDUI7EAJCYY",
+      "method": "claim",
+      "hash": "87df2bedbf8c50194794452aaf5aadd9a4433083a2c447684927414aeb643eed",
+      "status": "SUCCESS",
+      "ledger": 5144509,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-11T19:15:53.446Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
+      "method": "deposit",
+      "hash": "53b1068a47a59506783c1b1f99f700fda64dbfaea66febdf3ad4396915cd3644",
+      "status": "SUCCESS",
+      "ledger": 5144514,
+      "returnValue": "300000001"
+    },
+    {
+      "at": "2026-10-11T19:16:25.217Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
+      "method": "redeem",
+      "hash": "e4c45791fa1185befdfb1571076a1fad79d98789b5f64b355d49bccf27a96c08",
+      "status": "SUCCESS",
+      "ledger": 5144520,
+      "returnValue": "50000001"
+    },
+    {
+      "at": "2026-10-11T19:17:11.573Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CDY76RFSHFECPPA3RX3C7UMSPED5DMUMKIV7NWAO3DKGYHTNDLHXSTGJ",
+      "method": "buy",
+      "hash": "ab41e4d3ff72023d1a45a8c6e7bb0cce7c0b6b2ce58144845ff24c2703164c2e",
+      "status": "SUCCESS",
+      "ledger": 5144530,
+      "returnValue": "200600000"
+    },
+    {
+      "at": "2026-10-11T19:17:41.466Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CDY76RFSHFECPPA3RX3C7UMSPED5DMUMKIV7NWAO3DKGYHTNDLHXSTGJ",
+      "method": "sell",
+      "hash": "0a9fd508f07d5a3e18151db613b6a71c4bcb6494eec1417556dacf4a1f936a1a",
+      "status": "SUCCESS",
+      "ledger": 5144536,
+      "returnValue": "49850000"
+    },
+    {
+      "at": "2026-10-11T19:18:21.097Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CA7DG5I2NN7DCDVEBBL4HXRYI32ATWGO6KU6UZT6YHKC4NNMC3R3NTJR",
+      "method": "create",
+      "hash": "fcc754157bc711048cc959526b36ca55543a4f934fbde15992d11706a0e021ad",
+      "status": "SUCCESS",
+      "ledger": 5144543,
+      "returnValue": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5"
+    },
+    {
+      "at": "2026-10-11T19:19:43.048Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "provide",
+      "hash": "f60b1a7c5b6d5e92c2a3762fe1497f4396490af647d8e32f25a69fb86d383766",
+      "status": "SUCCESS",
+      "ledger": 5144560,
+      "returnValue": "1000000000"
+    },
+    {
+      "at": "2026-10-11T19:20:14.397Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "notice",
+      "hash": "d478fafb2d077610e46509146396b8f5234c59104d0531daa04a9b88cb643ce9",
+      "status": "SUCCESS",
+      "ledger": 5144566,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-11T19:20:44.266Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "cancel_notice",
+      "hash": "99059549a7af547687080165c30adc375b8ecfbef178b61c2f8563764a38153e",
+      "status": "SUCCESS",
+      "ledger": 5144572,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-11T19:21:12.629Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "notice",
+      "hash": "bc7d57986ba4514515cdd53c1d786d2aebb472bbe0968a0baba57496148980ea",
+      "status": "SUCCESS",
+      "ledger": 5144578,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-11T19:21:57.068Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "protect",
+      "hash": "a0aee1c3fd9396e36b0d6db43d89426e604eebd6dcafdf68eee4193553703a0e",
+      "status": "SUCCESS",
+      "ledger": 5144587,
+      "returnValue": "1"
+    },
+    {
+      "at": "2026-10-11T19:23:09.660Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "transfer_position",
+      "hash": "923e249d8757d1089e05c68e40cc91248d57367bba9b4c6c661f4d5bdabf615f",
+      "status": "SUCCESS",
+      "ledger": 5144601,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-11T19:24:00.291Z",
+      "source": "GAZWSI7RF3DFFCATYXZPYLMW7CNIGIYS5C34ZJS7JRVYOM5COMYPAQFB",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "exit",
+      "hash": "dd7ba74be5cdfb9c35f5d53c19e239b01e14ee99caec9ba98ec3a48771707a35",
+      "status": "SUCCESS",
+      "ledger": 5144611,
+      "returnValue": "80000000"
+    },
+    {
+      "at": "2026-10-11T19:24:28.331Z",
+      "source": "GAZWSI7RF3DFFCATYXZPYLMW7CNIGIYS5C34ZJS7JRVYOM5COMYPAQFB",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "exit",
+      "hash": "36655ac02b114babced603ccaea4d9a76197dec700dfc251424913df40204628",
+      "status": "SUCCESS",
+      "ledger": 5144617,
+      "returnValue": "120000000"
+    },
+    {
+      "at": "2026-10-11T19:25:18.675Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "withdraw",
+      "hash": "7a313c8ff2cabbb0ff1dd03f7ab6c60df3ee11c2474ed41cc51962bda5552a26",
+      "status": "SUCCESS",
+      "ledger": 5144627,
+      "returnValue": "184000000"
+    },
+    {
+      "at": "2026-10-11T19:25:40.492Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "method": "claim_inventory",
+      "hash": "e6924efc21b3da0085ae06b31618c1ae20b8112604cdccbb17c72e6e10a01463",
+      "status": "SUCCESS",
+      "ledger": 5144631,
+      "returnValue": "80000000"
+    },
+    {
+      "at": "2026-10-11T19:26:28.589Z",
+      "source": "GAZWSI7RF3DFFCATYXZPYLMW7CNIGIYS5C34ZJS7JRVYOM5COMYPAQFB",
+      "contract": "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF",
+      "method": "claim_rewards",
+      "hash": "130b848a9c252b522a7299177944d4c6644ad783c215a5a6047cb1f8964ff01f",
+      "status": "SUCCESS",
+      "ledger": 5144641,
+      "returnValue": "2727272"
+    },
+    {
+      "at": "2026-10-11T19:27:09.402Z",
+      "source": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+      "contract": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+      "method": "settle",
+      "hash": "fc7bf916a0a11d6fb490f6e0df249eec684ae3345664f19c1041d8fba0cbaf6e",
+      "status": "SUCCESS",
+      "ledger": 5144649,
+      "returnValue": "20000000"
+    },
+    {
+      "at": "2026-10-11T19:27:38.277Z",
+      "source": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+      "contract": "CA7DG5I2NN7DCDVEBBL4HXRYI32ATWGO6KU6UZT6YHKC4NNMC3R3NTJR",
+      "method": "claim_bond",
+      "hash": "23220830438cd0782291da9b0715eff3d831e2ce5c5c1cfc4426bc63bf1045e3",
+      "status": "SUCCESS",
+      "ledger": 5144655,
+      "returnValue": "100000000"
+    },
+    {
+      "at": "2026-10-11T19:28:14.597Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+      "method": "claim_backing",
+      "hash": "0c5daf30fe3b65ff7d6afbcdce87714a2307805bed37141cc43006f713a10c80",
+      "status": "SUCCESS",
+      "ledger": 5144662,
+      "returnValue": "20000000"
+    },
+    {
+      "at": "2026-10-11T19:29:14.512Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CDDO6OR23FF6RHY3DCJGMROXB54MZZTBNKKEBUXX4NF4QTEBS5TVLEVX",
+      "method": "buy",
+      "hash": "0a9ef4acefd94e4bbbdc18c7dd9969328ca45ae0beeaf4d1dfef0cbbed4fdd8b",
+      "status": "SUCCESS",
+      "ledger": 5144674,
+      "returnValue": "10030000"
+    },
+    {
+      "at": "2026-10-11T19:29:49.079Z",
+      "source": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+      "contract": "CDDO6OR23FF6RHY3DCJGMROXB54MZZTBNKKEBUXX4NF4QTEBS5TVLEVX",
+      "method": "sell",
+      "hash": "13b9ac9265a9bfc21548c7b32be3afa9cd6678d13c204063aaf9626cafa2d5a0",
+      "status": "SUCCESS",
+      "ledger": 5144681,
+      "returnValue": "9970000"
+    }
+  ],
+  "createdPool": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+  "provider": {
+    "debt": "0",
+    "inventory": "0",
+    "inventory_debt": "64000000",
+    "notice_at": "1791746537",
+    "notice_shares": "0",
+    "rewards": "0",
+    "shares": "800000000"
+  },
+  "position": {
+    "claim": "0",
+    "closed": true,
+    "opened": "1791746522",
+    "owner": "GAZWSI7RF3DFFCATYXZPYLMW7CNIGIYS5C34ZJS7JRVYOM5COMYPAQFB",
+    "reserved": "0",
+    "shares": "0"
+  },
+  "state": {
+    "active": 0,
+    "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "creator": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+    "creator_rewards": "0",
+    "credit_total": "0",
+    "end": "1791832702",
+    "inventory_balance": "0",
+    "inventory_index": "80000000000",
+    "liquidity": "736000000",
+    "next_id": "2",
+    "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "protocol_rewards": "0",
+    "reserved": "0",
+    "reward_balance": "0",
+    "reward_index": "0",
+    "terms": {
+      "collateral_bps": 15000,
+      "creator_fee_bps": 100,
+      "duration": "86400",
+      "junior_fee_bps": 1000,
+      "notice_delay": "60"
+    },
+    "total_lp": "800000000",
+    "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+  },
+  "maturityPool": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+  "maturedState": {
+    "active": 0,
+    "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "creator": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "creator_rewards": "0",
+    "credit_total": "0",
+    "end": "1791746667",
+    "inventory_balance": "20000000",
+    "inventory_index": "40000000000",
+    "liquidity": "480000000",
+    "next_id": "2",
+    "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "protocol_rewards": "0",
+    "reserved": "0",
+    "reward_balance": "0",
+    "reward_index": "0",
+    "terms": {
+      "collateral_bps": 15000,
+      "creator_fee_bps": 100,
+      "duration": "300",
+      "junior_fee_bps": 1000,
+      "notice_delay": "30"
+    },
+    "total_lp": "500000000",
+    "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+  },
+  "credit": "0",
+  "fixtureRecord": {
+    "bond": "100000000",
+    "claimed": true,
+    "creator": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "end": "1791746667",
+    "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+  },
+  "freshTestusd": "8703250000",
+  "nestedBalance": "0",
+  "innerBalance": "259940000",
+  "assertions": [
+    "All browser signatures independently confirmed SUCCESS on public Testnet RPC",
+    "Transferred holder fully closed after proportional backing and receipt exits",
+    "Provider partial withdrawal burned 20 of 100 shares for 18.4 TESTUSD; separate acquired receipt claim cleared 8 receipts",
+    "Maturity claim credit paid independently and creation bond refunded",
+    "Nested buy and sell settled in ysALPHA backing; its 0.006 receipt spread did not change TESTUSD",
+    "All three featured pools have no active liabilities and remain provider-admissible"
+  ]
+}
