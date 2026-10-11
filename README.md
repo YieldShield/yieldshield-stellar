@@ -1,3 +1,5 @@
+![YieldShield Stellar — Soroban vault receipts. Two exit choices.](.github/assets/banner.png)
+
 # YieldShield Stellar
 
 A native Soroban proof of split-risk protection for funded vault receipts. The demo pairs a transferable TESTUSD vault receipt with a separately funded TESTUSD reserve and two exit choices. Native XLM only pays transaction fees and account reserves.
