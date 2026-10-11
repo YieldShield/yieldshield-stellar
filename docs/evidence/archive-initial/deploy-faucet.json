@@ -1,0 +1,19 @@
+{
+  "args": [
+    "contract",
+    "deploy",
+    "--wasm",
+    "target/wasm32v1-none/release/yieldshield_faucet.wasm",
+    "--optimize=false",
+    "--network",
+    "testnet",
+    "--source-account",
+    "ys-stellar-sponsor",
+    "--",
+    "--asset",
+    "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D"
+  ],
+  "stdout": "CAGPXQ3KU3WCK33LLG5BUODVMXKSYMAGR224TIN2BSKXYC4LG7RZD7WX\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: db63790e709831574fe8418d069ec0ceb3e3151bb23650fb17be98c94f41e6ff\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/db63790e709831574fe8418d069ec0ceb3e3151bb23650fb17be98c94f41e6ff\nℹ️  Deploying contract using wasm hash 8da8920e9987b468bd51fd89bfa897f980e60f67d6bd622cc41110be2a25946e\nℹ️  Simulating transaction…\nℹ️  Signing transaction: c38483739e05059b26668f069be5de111f895ada902273d8a66891dcc8508c3e\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/c38483739e05059b26668f069be5de111f895ada902273d8a66891dcc8508c3e\n🔗 https://lab.stellar.org/r/testnet/contract/CAGPXQ3KU3WCK33LLG5BUODVMXKSYMAGR224TIN2BSKXYC4LG7RZD7WX\n✅ Deployed!\n",
+  "status": 0
+}

@@ -1,0 +1,35 @@
+{
+  "researchedAt": "2026-10-11T17:49:17.100Z",
+  "source": "https://developers.circle.com/stablecoins/usdc-contract-addresses",
+  "status": "Research only. No USDC strategy or backing activated.",
+  "assets": [
+    {
+      "code": "USDC",
+      "network": "testnet",
+      "issuer": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+      "derivedSac": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      "issuerFlags": {
+        "auth_required": false,
+        "auth_revocable": true,
+        "auth_immutable": false,
+        "auth_clawback_enabled": false
+      },
+      "homeDomain": "centre.io",
+      "sacVerified": true
+    },
+    {
+      "code": "USDC",
+      "network": "mainnet",
+      "issuer": "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
+      "derivedSac": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+      "issuerFlags": {
+        "auth_required": false,
+        "auth_revocable": true,
+        "auth_immutable": false,
+        "auth_clawback_enabled": false
+      },
+      "homeDomain": "circle.com",
+      "sacVerified": false
+    }
+  ]
+}

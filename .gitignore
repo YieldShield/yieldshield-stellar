@@ -8,3 +8,4 @@ dist/
 .vercel/
 .DS_Store
 **/test_snapshots/
+.vercel

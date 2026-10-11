@@ -14,18 +14,18 @@ The vault accepts actual test assets and issues/redeems receipts against its cur
 
 ## Native differences
 
-Stellar classic assets are identified by code AND issuer. Wallets need an appropriate trustline before receiving issued backing. SAC interaction directly uses classic balances; no bridge is involved. XLM also pays account reserves and transaction fees, so the frontend reserves a wallet balance buffer. Authorizations use Soroban `Address.require_auth` and Freighter transaction signing on the Test SDF Network only. Stored positions are persistent Soroban entries with explicit TTL renewal. State archival and permissionless restoration are operational concerns, not solved by pretending state never expires.
+Stellar classic assets are identified by code AND issuer. Wallets need an appropriate trustline before receiving issued backing. SAC interaction directly uses classic balances; no bridge is involved. XLM also pays account reserves and transaction fees, and the frontend explains that wallets need test XLM for these costs. Authorizations use Soroban `Address.require_auth` and Freighter transaction signing on the Test SDF Network only. Stored positions are persistent Soroban entries with explicit TTL renewal. State archival and permissionless restoration are operational concerns, not solved by pretending state never expires.
 
 ## Integration decision
 
-| Candidate | Decision |
-| --- | --- |
-| Native XLM | Transaction fees and account reserves only. No directional payoff or XLM-yield product. |
-| YieldShield TESTUSD SAC | Active demonstrator backing with named issuer and no redemption claim. |
-| Circle-issued USDC SAC | Next integration candidate after independent issuer/network verification, trustline/authorization review, liquidity analysis and testing. Do not create a fake USDC issuer. |
-| Blend lending positions | Research milestone only. bTokens are nontransferable internal accounting, not SEP-41 depositable assets. Any future wrapper must own a pool-specific lending position and validate withdrawal liquidity; bRate is not proof of realizable NAV. |
-| Tokenized Treasury/RWA assets | Deferred: issuer permissions, transfer restrictions and redemption timelines must be supported; a USD label is not a redeemability proof. |
-| YieldShield governance/reward token | Not needed for this grant or proof. No token launch. |
+| Candidate                           | Decision                                                                                                                                                                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Native XLM                          | Transaction fees and account reserves only. No directional payoff or XLM-yield product.                                                                                                                                                        |
+| YieldShield TESTUSD SAC             | Active demonstrator backing with named issuer and no redemption claim.                                                                                                                                                                         |
+| Circle-issued USDC SAC              | Next integration candidate after verified-issuer research is followed by trustline/authorization tests and strategy/liquidity analysis. Do not create a fake USDC issuer.                                                                      |
+| Blend lending positions             | Research milestone only. bTokens are nontransferable internal accounting, not SEP-41 depositable assets. Any future wrapper must own a pool-specific lending position and validate withdrawal liquidity; bRate is not proof of realizable NAV. |
+| Tokenized Treasury/RWA assets       | Deferred: issuer permissions, transfer restrictions and redemption timelines must be supported; a USD label is not a redeemability proof.                                                                                                      |
+| YieldShield governance/reward token | Not needed for this grant or proof. No token launch.                                                                                                                                                                                           |
 
 ## SCF proposal boundary
 
@@ -48,3 +48,5 @@ New native implementation, informed by the product behavior documented in YieldS
 
 - [SCF official rules §3](https://stellar.gitbook.io/scf-handbook/scf-awards/official-rules-for-submissions).
 - [Blend protocol tokens](https://docs.blend.capital/tech-docs/core-contracts/lending-pool/protocol-tokens): nontransferable bTokens.
+
+See [token integration decisions](TOKEN_INTEGRATION.md) for exact Circle issuers, SAC derivation evidence and the future nontransferable-Blend-position wrapper design.

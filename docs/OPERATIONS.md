@@ -14,6 +14,8 @@ cargo test --workspace
 stellar contract build
 ```
 
+On the isolated macOS toolchain used here, set `DYLD_LIBRARY_PATH=/private/tmp/yieldshield-stellar-tools/rustup/toolchains/stable-aarch64-apple-darwin/lib` if the Wasm linker cannot find `libLLVM.dylib`. This is a local toolchain issue, not a web runtime dependency.
+
 The SDK requires CLI build metadata/spec processing, so a bare `cargo build --target wasm32v1-none` is not equivalent. Web output is `dist`; preview with `npm run dev`. The Vite development server is loopback-only.
 
 ## Public wallet flow
@@ -36,6 +38,8 @@ Create dedicated disposable aliases `ys-stellar-issuer`, `ys-stellar-sponsor`, a
 `node scripts/deploy-testnet.mjs --broadcast` checks the remote passphrase, deploys the named TESTUSD SAC and three contracts, seeds valueless tokens, and records confirmed IDs and transaction evidence. It records each step before moving on; after ambiguous interruption inspect network state before retrying. The deployment is not a generic idempotent production orchestrator. `STELLAR_CLI` may point to another installed CLI binary. Only public arguments and receipts appear in evidence; key aliases resolve secrets inside the signing process.
 
 `node scripts/verify-testnet.mjs --broadcast` runs funded gain and loss scenarios against the active deployment, checks actual balance deltas, and leaves one small demonstration position open. The script refuses to silently overwrite completed lifecycle evidence. It intentionally calls the administrator-only loss simulator using only valueless TESTUSD.
+
+Contract writes request a 1,000,000-ledger storage lifetime (roughly 58 days at five seconds per ledger), capped at the actual host maximum, and refresh entries when below the threshold. `node scripts/extend-testnet.mjs --broadcast` separately extends active deployed code and instances. These measures do not protect against testnet resets or guarantee permanent data availability.
 
 The initial experimental addresses are preserved under `docs/evidence/archive-initial` for provenance. The current deployment manifest is authoritative; initial addresses are not the supported public application.
 
