@@ -1,5 +1,5 @@
 {
-  "status": "filled_not_submitted",
+  "status": "held_for_user_review_not_submitted",
   "recordedAt": "2026-10-11",
   "url": "https://communityfund.stellar.org/",
   "inputs": [
@@ -85,5 +85,11 @@
       ]
     }
   ],
-  "validation": []
+  "validation": [],
+  "submissionHold": {
+    "requestedBy": "David",
+    "date": "2026-10-11",
+    "instruction": "Hold both for my review",
+    "releaseRequires": "Explicit user approval before submission"
+  }
 }

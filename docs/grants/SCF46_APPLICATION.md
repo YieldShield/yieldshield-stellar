@@ -1,5 +1,7 @@
 # YieldShield Stellar SCF 46 application draft
 
+**Submission on hold for user review — 11 October 2026.** David instructed: “Hold both for my review.” Do not submit this application or accept submission terms until David explicitly approves. The filled answers below remain drafts.
+
 Prepared 11 October 2026 for Hawig Ventures UG (haftungsbeschränkt). No application has been submitted. The initial interest form precedes screening and an invitation to the full proposal; the published SCF 46 full-proposal deadline is 8 November 2026. This document separates the initial form answers from the proposed future development budget.
 
 ## Initial interest form
