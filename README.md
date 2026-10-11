@@ -36,6 +36,7 @@ The web build emits `dist` and requires no server or private environment variabl
 - [Architecture and policy decisions](docs/ARCHITECTURE.md)
 - [Token integration: verified USDC issuers and future Blend wrapper](docs/TOKEN_INTEGRATION.md)
 - [Native contract math and safety boundaries](contracts/README.md)
+- [Release evidence and validation boundaries](docs/RELEASE.md)
 - [Build ledger](docs/BUILD_LEDGER.md)
 - [Testnet lifecycle evidence](docs/evidence/lifecycle.json)
 

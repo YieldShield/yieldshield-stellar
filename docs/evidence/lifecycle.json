@@ -1,0 +1,90 @@
+{
+  "network": "Stellar Testnet",
+  "startedAt": "2026-10-11T17:54:34.232Z",
+  "pool": "CBTKPRFTGLW6TGTX2MU2QMOJKXX6DZQMVMEEVZTND2NJPQE7NIGZC7GT",
+  "vault": "CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ",
+  "steps": [
+    {
+      "label": "Claim funded test tokens",
+      "hash": "e62b4b20eb19f79b479503b3232b2c4e2fac41716f78f7a0d239f0d73a371adf",
+      "ledger": 5143538,
+      "returnValue": null
+    },
+    {
+      "label": "Deposit TESTUSD into native receipt vault",
+      "hash": "f3b962ab6e4ecfa095400a2d2242b927a435b5bd0f4d1efdae21ed2ef1dc598e",
+      "ledger": 5143539,
+      "returnValue": "5000000000"
+    },
+    {
+      "label": "Open gain scenario position",
+      "hash": "4bed74464c34b9491b871e9927c5fc0d4dc946c9895fdec0c0b633a1cf8405ad",
+      "ledger": 5143540,
+      "returnValue": "1"
+    },
+    {
+      "label": "Add funded donation to simulate gain",
+      "hash": "353dff75da9ee41bd4951a0141e53a6935c1e7d05dbc4a0b4dacca7933cbde79",
+      "ledger": 5143541,
+      "returnValue": null
+    },
+    {
+      "label": "Open second position at higher funded NAV",
+      "hash": "6d85e96dd5f17f2bca08fb4b1ab2bb7699d29ca19ee22cfb619854c27cef7864",
+      "ledger": 5143542,
+      "returnValue": "2"
+    },
+    {
+      "label": "Exit with receipts and share positive gains",
+      "hash": "2d4511614b23b83e2743a5302ab413acc7c23fb1dec8018f880cf2af536860dd",
+      "ledger": 5143554,
+      "returnValue": "980000001"
+    },
+    {
+      "label": "Redeem returned receipts to actual TESTUSD",
+      "hash": "9ea97def005f81bbc9c33f36a06456acad6ae370d2ec4d3298b05cda128bc1fb",
+      "ledger": 5143555,
+      "returnValue": "1225000001"
+    },
+    {
+      "label": "Explicit test administrator simulates vault loss",
+      "hash": "d0c48dc9f3c2004959ea54ed320372de54a1e311dcb95583e46af81e64d05107",
+      "ledger": 5143556,
+      "returnValue": null
+    },
+    {
+      "label": "Surrender receipts and claim reserved backing",
+      "hash": "21b35b35197e10c7330ee3b3d7978e01e87d8d9289e2d16063c933e6f3850d1a",
+      "ledger": 5143557,
+      "returnValue": "1249999999"
+    },
+    {
+      "label": "Leave a small visible test position open",
+      "hash": "7eddfcd3c00824be4b006929ed90162b494e5a42da08573d72983a994aafc002",
+      "ledger": 5143559,
+      "returnValue": "3"
+    }
+  ],
+  "finalState": {
+    "active": 1,
+    "backer": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "earned": "1019999999",
+    "liquidity": "498750000001",
+    "next_id": "4",
+    "reserved": "562500000",
+    "vault": "CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ"
+  },
+  "finalNav": "7500000",
+  "finalVaultAssets": "78015000000",
+  "finalVaultSupply": "104019999999",
+  "assertions": [
+    "Gain receipt delta equals exact calculated payout",
+    "Gain fee positive and reserved backing released",
+    "Returned receipts redeemed into actual TESTUSD balance delta",
+    "Loss backing exit equals fixed entry claim",
+    "Both exited positions closed and sponsor earned inventory tracked",
+    "One final demonstration position remains active"
+  ],
+  "completedAt": "2026-10-11T17:56:25.051Z"
+}
