@@ -1,5 +1,10 @@
 #![no_std]
 use soroban_sdk::{contract, contractimpl, contracttype, token, Address, Env};
+// Keep the public demo available through the grant review period without
+// exceeding the network-configured maximum lifetime.
+fn ttl(e: &Env) -> u32 {
+    e.storage().max_ttl().min(1_000_000)
+}
 #[contracttype]
 #[derive(Clone)]
 enum Key {
@@ -12,6 +17,9 @@ pub struct Faucet;
 impl Faucet {
     pub fn __constructor(e: Env, asset: Address) {
         e.storage().instance().set(&Key::Asset, &asset);
+        e.storage()
+            .instance()
+            .extend_ttl(ttl(&e).min(250_000), ttl(&e));
     }
     pub fn claimed(e: Env, to: Address) -> bool {
         e.storage()
@@ -24,8 +32,12 @@ impl Faucet {
         let key = Key::Claimed(to.clone());
         assert!(!Self::claimed(e.clone(), to.clone()), "already claimed");
         e.storage().persistent().set(&key, &true);
-        e.storage().persistent().extend_ttl(&key, 10_000, 50_000);
-        e.storage().instance().extend_ttl(10_000, 50_000);
+        e.storage()
+            .persistent()
+            .extend_ttl(&key, ttl(&e).min(250_000), ttl(&e));
+        e.storage()
+            .instance()
+            .extend_ttl(ttl(&e).min(250_000), ttl(&e));
         let asset: Address = e.storage().instance().get(&Key::Asset).unwrap();
         token::Client::new(&e, &asset).transfer(
             &e.current_contract_address(),

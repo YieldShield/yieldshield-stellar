@@ -1,6 +1,57 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, token, Address, Env, String};
+use soroban_sdk::{
+    contract, contractevent, contractimpl, contracttype, token, Address, Env, String,
+};
 const UNIT: i128 = 10_000_000;
+// One indivisible virtual asset/share captures part of unsolicited donations.
+// Caller minimum outputs remain mandatory: virtual liquidity is not a price oracle.
+const VIRTUAL: i128 = 1;
+#[contractevent(topics = ["transfer"], data_format = "single-value")]
+pub struct Transfer {
+    #[topic]
+    pub from: Address,
+    #[topic]
+    pub to: Address,
+    pub amount: i128,
+}
+#[contractevent(topics = ["approve"], data_format = "vec")]
+pub struct Approval {
+    #[topic]
+    pub from: Address,
+    #[topic]
+    pub spender: Address,
+    pub amount: i128,
+    pub live_until_ledger: u32,
+}
+#[contractevent(topics = ["mint"], data_format = "single-value")]
+pub struct Mint {
+    #[topic]
+    pub to: Address,
+    pub amount: i128,
+}
+#[contractevent(topics = ["burn"], data_format = "single-value")]
+pub struct Burn {
+    #[topic]
+    pub from: Address,
+    pub amount: i128,
+}
+#[contractevent(topics = ["donate"], data_format = "single-value")]
+pub struct Donation {
+    #[topic]
+    pub from: Address,
+    pub amount: i128,
+}
+#[contractevent(topics = ["sim_loss"], data_format = "single-value")]
+pub struct SimulatedLoss {
+    #[topic]
+    pub admin: Address,
+    pub amount: i128,
+}
+// Keep the public demo available through the grant review period without
+// exceeding the network-configured maximum lifetime.
+fn ttl(e: &Env) -> u32 {
+    e.storage().max_ttl().min(1_000_000)
+}
 #[contracttype]
 #[derive(Clone)]
 enum Key {
@@ -19,7 +70,9 @@ struct Allowance {
 #[contract]
 pub struct DemoVault;
 fn touch(e: &Env) {
-    e.storage().instance().extend_ttl(10_000, 50_000);
+    e.storage()
+        .instance()
+        .extend_ttl(ttl(e).min(250_000), ttl(e));
 }
 fn balance(e: &Env, a: &Address) -> i128 {
     e.storage()
@@ -30,7 +83,9 @@ fn balance(e: &Env, a: &Address) -> i128 {
 fn put_balance(e: &Env, a: &Address, v: i128) {
     let k = Key::Balance(a.clone());
     e.storage().persistent().set(&k, &v);
-    e.storage().persistent().extend_ttl(&k, 10_000, 50_000);
+    e.storage()
+        .persistent()
+        .extend_ttl(&k, ttl(e).min(250_000), ttl(e));
 }
 fn supply(e: &Env) -> i128 {
     e.storage().instance().get(&Key::Supply).unwrap_or(0)
@@ -41,11 +96,20 @@ fn positive(v: i128) {
         "amount out of bounds"
     );
 }
+fn deadline(e: &Env, expires: u64) {
+    assert!(e.ledger().timestamp() <= expires, "deadline expired");
+}
 fn move_shares(e: &Env, from: &Address, to: &Address, amount: i128) {
     assert!(amount >= 0, "negative amount");
     assert!(balance(e, from) >= amount, "insufficient shares");
     put_balance(e, from, balance(e, from) - amount);
     put_balance(e, to, balance(e, to) + amount);
+    Transfer {
+        from: from.clone(),
+        to: to.clone(),
+        amount,
+    }
+    .publish(e);
 }
 fn spend_allowance(e: &Env, from: &Address, spender: &Address, amount: i128) {
     assert!(amount >= 0);
@@ -75,26 +139,37 @@ impl DemoVault {
         token::Client::new(&e, &Self::asset(e.clone())).balance(&e.current_contract_address())
     }
     pub fn nav(e: Env) -> i128 {
-        let s = supply(&e);
-        if s == 0 {
-            UNIT
-        } else {
-            Self::total_assets(e).checked_mul(UNIT).unwrap() / s
+        let assets = Self::total_assets(e.clone());
+        let total = supply(&e);
+        if assets == 0 && total > 0 {
+            return 0;
         }
+        (assets + VIRTUAL).checked_mul(UNIT).unwrap() / (total + VIRTUAL)
     }
-    pub fn deposit(e: Env, from: Address, amount: i128) -> i128 {
-        from.require_auth();
+    pub fn preview_deposit(e: Env, amount: i128) -> i128 {
         positive(amount);
-        touch(&e);
         let total = supply(&e);
         let assets = Self::total_assets(e.clone());
-        let shares = if total == 0 {
-            amount
-        } else {
-            assert!(assets > 0, "insolvent demo vault");
-            amount.checked_mul(total).unwrap() / assets
-        };
-        assert!(shares > 0, "dust deposit");
+        assert!(total == 0 || assets > 0, "insolvent demo vault");
+        amount.checked_mul(total + VIRTUAL).unwrap() / (assets + VIRTUAL)
+    }
+    pub fn preview_redeem(e: Env, shares: i128) -> i128 {
+        positive(shares);
+        let total = supply(&e);
+        assert!(shares <= total, "shares exceed supply");
+        shares
+            .checked_mul(Self::total_assets(e.clone()) + VIRTUAL)
+            .unwrap()
+            / (total + VIRTUAL)
+    }
+    pub fn deposit(e: Env, from: Address, amount: i128, min_shares: i128, deadline: u64) -> i128 {
+        from.require_auth();
+        crate::deadline(&e, deadline);
+        assert!(min_shares > 0, "minimum shares required");
+        let shares = Self::preview_deposit(e.clone(), amount);
+        assert!(shares > 0 && shares >= min_shares, "share slippage");
+        touch(&e);
+        let total = supply(&e);
         token::Client::new(&e, &Self::asset(e.clone())).transfer(
             &from,
             &e.current_contract_address(),
@@ -102,15 +177,23 @@ impl DemoVault {
         );
         put_balance(&e, &from, balance(&e, &from) + shares);
         e.storage().instance().set(&Key::Supply, &(total + shares));
+        Mint {
+            to: from,
+            amount: shares,
+        }
+        .publish(&e);
         shares
     }
-    pub fn redeem(e: Env, from: Address, shares: i128) -> i128 {
+    pub fn redeem(e: Env, from: Address, shares: i128, min_assets: i128, deadline: u64) -> i128 {
         from.require_auth();
+        crate::deadline(&e, deadline);
+        assert!(min_assets >= 0, "negative minimum");
         positive(shares);
         touch(&e);
         assert!(balance(&e, &from) >= shares, "insufficient shares");
         let total = supply(&e);
-        let amount = shares.checked_mul(Self::total_assets(e.clone())).unwrap() / total;
+        let amount = Self::preview_redeem(e.clone(), shares);
+        assert!(amount >= min_assets, "asset slippage");
         put_balance(&e, &from, balance(&e, &from) - shares);
         e.storage().instance().set(&Key::Supply, &(total - shares));
         token::Client::new(&e, &Self::asset(e.clone())).transfer(
@@ -118,6 +201,11 @@ impl DemoVault {
             &from,
             &amount,
         );
+        Burn {
+            from,
+            amount: shares,
+        }
+        .publish(&e);
         amount
     }
     pub fn donate(e: Env, from: Address, amount: i128) {
@@ -130,6 +218,7 @@ impl DemoVault {
             &e.current_contract_address(),
             &amount,
         );
+        Donation { from, amount }.publish(&e);
     }
     // Test fixture only: grants use no real funds and the admin can remove TESTUSD.
     pub fn simulate_loss(e: Env, amount: i128) {
@@ -142,6 +231,7 @@ impl DemoVault {
             &admin,
             &amount,
         );
+        SimulatedLoss { admin, amount }.publish(&e);
     }
     pub fn balance(e: Env, id: Address) -> i128 {
         balance(&e, &id)
@@ -160,7 +250,7 @@ impl DemoVault {
     pub fn approve(e: Env, from: Address, spender: Address, amount: i128, expiration_ledger: u32) {
         from.require_auth();
         assert!(amount >= 0 && (amount == 0 || expiration_ledger >= e.ledger().sequence()));
-        let k = Key::Allowance(from, spender);
+        let k = Key::Allowance(from.clone(), spender.clone());
         e.storage().persistent().set(
             &k,
             &Allowance {
@@ -168,8 +258,17 @@ impl DemoVault {
                 expires: expiration_ledger,
             },
         );
-        e.storage().persistent().extend_ttl(&k, 10_000, 50_000);
+        e.storage()
+            .persistent()
+            .extend_ttl(&k, ttl(&e).min(250_000), ttl(&e));
         touch(&e);
+        Approval {
+            from,
+            spender,
+            amount,
+            live_until_ledger: expiration_ledger,
+        }
+        .publish(&e);
     }
     pub fn transfer_from(e: Env, spender: Address, from: Address, to: Address, amount: i128) {
         spender.require_auth();
@@ -185,6 +284,7 @@ impl DemoVault {
             .instance()
             .set(&Key::Supply, &(supply(&e) - amount));
         touch(&e);
+        Burn { from, amount }.publish(&e);
     }
     pub fn burn_from(e: Env, spender: Address, from: Address, amount: i128) {
         spender.require_auth();
@@ -195,6 +295,7 @@ impl DemoVault {
             .instance()
             .set(&Key::Supply, &(supply(&e) - amount));
         touch(&e);
+        Burn { from, amount }.publish(&e);
     }
     pub fn decimals(_e: Env) -> u32 {
         7
