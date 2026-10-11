@@ -126,7 +126,7 @@ export function CreatePool(c: Ctx & { markets: Market[] }) {
                 terms.creator_fee_bps > 500
               )
                 throw new Error(
-                  "Collateral must be100–300%, provider fee0–30%, creator fee0–5%.",
+                  "Collateral must be 100–300%, provider fee 0–30%, creator fee 0–5%.",
                 );
               return {
                 title: "Create native protection pool",
@@ -236,9 +236,9 @@ export function Status(c: Ctx & { markets: Market[] }) {
             interrupt access.
           </p>
           <p>
-            Pool terms are capped at30 days; withdrawal notices at7 days. There
-            is no promised service continuity, audited production release or
-            real-money insurance.
+            Pool terms are capped at 30 days; withdrawal notices at 7 days.
+            There is no promised service continuity, audited production release
+            or real-money insurance.
           </p>
           <a href="/legacy">Access previous deployment →</a>
           <p>
@@ -406,8 +406,8 @@ function ActivityFeed(c: Ctx) {
     <section className="panel">
       <h2>Recent selected-pool events</h2>
       <p>
-        Up to50 events from the most recent17,280 ledgers. This bounded RPC feed
-        is not a full historical index.
+        Up to 50 events from the most recent 17,280 ledgers. This bounded RPC
+        feed is not a full historical index.
       </p>
       {loading && (
         <p role="status">
@@ -420,7 +420,7 @@ function ActivityFeed(c: Ctx) {
           <div>
             <strong>{r.topic}</strong>
             <p>
-              Ledger{r.ledger} · {r.time}
+              Ledger {r.ledger} · {r.time}
             </p>
           </div>
           <a href={`${explorer}/tx/${r.hash}`} target="_blank" rel="noreferrer">

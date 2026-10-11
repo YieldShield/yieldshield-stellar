@@ -564,15 +564,15 @@ export function SettlementQueue(c: Ctx) {
           disabled={!page}
           onClick={() => setPage((v) => v - 1)}
         >
-          Previous20
+          Previous 20
         </button>
-        <span>Page{page + 1}</span>
+        <span>Page {page + 1}</span>
         <button
           className="quiet"
           disabled={BigInt((page + 1) * 20 + 1) >= c.data!.state.next_id}
           onClick={() => setPage((v) => v + 1)}
         >
-          Next20
+          Next 20
         </button>
       </div>
     </section>
