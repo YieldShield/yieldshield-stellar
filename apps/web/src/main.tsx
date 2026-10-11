@@ -1,722 +1,537 @@
-import React, { useEffect, useRef, useState } from "react";
+import {
+  type Api,
+  type Quote,
+  type Ctx,
+  explorer,
+  small,
+  date,
+  now,
+  f,
+  Amount,
+  Stats,
+  Context,
+  ContractLink,
+} from "./shared";
+import { Home, Markets, PoolDetail } from "./MarketPages";
+import { Trade, Assets } from "./TradingPages";
+import { Protect, Provide } from "./ProtectionPages";
+import { Portfolio, PositionPage, SettlementQueue } from "./PortfolioPages";
+import {
+  percent,
+  CreatePool,
+  Status,
+  AdminClaims,
+  Activity,
+} from "./ManagementPages";
+import { Learn, Legal } from "./LearningPages";
+import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
+import type { Data, Market, Wallet, State } from "./v3";
+import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
 import "./style.css";
-import type { PoolState, Position } from "./stellar";
-import manifest from "../../../config/testnet.json";
-const explorer = "https://stellar.expert/explorer/testnet";
-const small = (s: string) => `${s.slice(0, 6)}…${s.slice(-5)}`;
-type Api = typeof import("./stellar");
-function App() {
-  const [api, setApi] = useState<Api>();
-  const [address, setAddress] = useState("");
-  const activeAddress = useRef("");
-  const refreshSequence = useRef(0);
-  const [data, setData] = useState<{
-    state: PoolState;
-    nav: bigint;
-    assets: bigint;
-    supply: bigint;
-    readAt: number;
-  }>();
-  const [wallet, setWallet] = useState<{
-    shares: bigint;
-    backing: bigint;
-    trusted: boolean;
-    claimed: boolean;
-  }>();
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [busy, setBusy] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [hash, setHash] = useState("");
-  const [amount, setAmount] = useState("100");
-  const [mode, setMode] = useState<"deposit" | "protect" | "redeem">("deposit");
-  const [lookup, setLookup] = useState("");
-  const [clock, setClock] = useState(Date.now());
-  const fmt = (v: bigint | undefined, d = 2) => api?.format(v, d) ?? "—";
-  async function refresh(a = api, who = address) {
-    if (!a) return;
-    const sequence = ++refreshSequence.current;
-    const result = await a.readPool();
-    if (sequence !== refreshSequence.current) return;
-    setData(result);
-    if (who) {
-      const [w, p] = await Promise.all([
-        a.readWallet(who),
-        a.readPositions(who, result.state.next_id),
-      ]);
-      if (who !== activeAddress.current || sequence !== refreshSequence.current)
+import "./routes.css";
+const Legacy = lazy(() => import("./Legacy"));
+function useRoute() {
+  const [url, set] = useState(() => new URL(location.href));
+  useEffect(() => {
+    const pop = () => set(new URL(location.href));
+    const click = (event: MouseEvent) => {
+      const a = (event.target as Element).closest("a");
+      if (
+        !a ||
+        a.target ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        event.button !== 0
+      )
         return;
-      setWallet(w);
-      setPositions(p);
-    }
+      const next = new URL(a.href);
+      if (
+        next.origin !== location.origin ||
+        a.hasAttribute("download") ||
+        (next.pathname === location.pathname &&
+          next.search === location.search &&
+          next.hash)
+      )
+        return;
+      event.preventDefault();
+      history.pushState({}, "", next);
+      set(next);
+      window.scrollTo({ top: 0 });
+    };
+    window.addEventListener("popstate", pop);
+    document.addEventListener("click", click);
+    return () => {
+      window.removeEventListener("popstate", pop);
+      document.removeEventListener("click", click);
+    };
+  }, []);
+  return url;
+}
+const nav = [
+  ["/markets", "Markets"],
+  ["/trade", "Trade"],
+  ["/protect", "Protect"],
+  ["/provide", "Provide"],
+  ["/positions", "Portfolio"],
+  ["/create-pool", "Create pool"],
+  ["/activity", "Activity"],
+];
+function App() {
+  const url = useRoute();
+  const [api, setApi] = useState<Api>();
+  const [markets, setMarkets] = useState<Market[]>([]);
+  const [address, setAddress] = useState("");
+  const [data, setData] = useState<Data>();
+  const [wallet, setWallet] = useState<Wallet>();
+  const [busy, setBusy] = useState("");
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [hash, setHash] = useState("");
+  const [quote, setQuote] = useState<Quote>();
+  const [follow, setFollow] = useState("");
+  const version = useRef(0);
+  const active = useRef({ address: "", pool: "" });
+  const path = url.pathname;
+  const selected = path.startsWith("/markets/")
+    ? path.split("/")[2]
+    : url.searchParams.get("pool");
+  const market = selected
+    ? markets.find((m) => m.pool === selected)
+    : markets[0];
+  const routeKey = url.pathname + url.search;
+  active.current = { address, pool: market?.pool || "" };
+  const href = (p: string, m = market) =>
+    `${p}${p.includes("?") ? "&" : "?"}pool=${m?.pool || ""}`;
+  function clear() {
+    version.current++;
+    setQuote(undefined);
   }
   useEffect(() => {
-    let alive = true;
-    import("./stellar").then(async (a) => {
-      if (!alive) return;
-      setApi(a);
-      try {
-        await refresh(a, "");
-      } catch (e) {
-        setError((e as Error).message);
-      }
-    });
-    return () => {
-      alive = false;
-    };
+    import("./v3").then(setApi).catch((e) => setError(String(e)));
   }, []);
   useEffect(() => {
     if (!api) return;
-    const timer = setInterval(() => {
-      refresh().catch((e) => setError((e as Error).message));
-    }, 30000);
-    return () => clearInterval(timer);
-  }, [api, address]);
+    let live = true;
+    api
+      .markets()
+      .then((m) => {
+        if (live) setMarkets(m);
+      })
+      .catch((e) => setError(String(e)));
+    return () => {
+      live = false;
+    };
+  }, [api]);
   useEffect(() => {
-    const timer = setInterval(() => setClock(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-  async function run(label: string, action: () => Promise<unknown>) {
-    setBusy(label);
+    clear();
     setError("");
-    setMessage("");
-    setHash("");
+  }, [routeKey, address]);
+  async function refresh() {
+    if (!api || !market) return;
+    const requested = { address, pool: market.pool };
+    const d = await api.readMarket(market);
+    if (active.current.pool !== requested.pool) return;
+    setData(d);
+    if (address) {
+      const w = await api.readAccount(market, address);
+      if (
+        active.current.address === requested.address &&
+        active.current.pool === requested.pool
+      )
+        setWallet(w);
+    }
+  }
+  useEffect(() => {
+    setData(undefined);
+    setWallet(undefined);
+    if (!api || !market) return;
+    let live = true;
+    const run = () =>
+      refresh().catch((e) => {
+        if (live) {
+          setData(undefined);
+          setWallet(undefined);
+          clear();
+          setError(String(e));
+        }
+      });
+    void run();
+    const timer = setInterval(run, 20000);
+    return () => {
+      live = false;
+      clearInterval(timer);
+    };
+  }, [api, market?.pool, address]);
+  async function connect() {
+    if (!api) return;
+    setBusy("Connecting to Freighter…");
+    setError("");
+    clear();
     try {
-      await action();
-      setMessage(`${label} complete.`);
+      const a = await api.connect();
+      setWallet(undefined);
+      active.current.address = a;
+      setAddress(a);
     } catch (e) {
-      setError(
-        (e as Error).message ||
-          "Action failed. Please retry after checking the transaction.",
-      );
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy("");
     }
   }
-  async function connect() {
-    if (!api) return;
-    await run("Connect wallet", async () => {
-      const who = await api.connect();
-      activeAddress.current = who;
-      setWallet(undefined);
-      setPositions([]);
-      setAddress(who);
-      await refresh(api, who);
-    });
-  }
-  async function tx(
-    label: string,
-    operation: () => Promise<{ hash: string; value: unknown }>,
-  ) {
-    setBusy(label);
+  async function review(make: (a: Api) => Promise<Quote> | Quote) {
+    if (!api || !address) {
+      setError("Connect Freighter to review this action.");
+      return;
+    }
+    clear();
+    const key = version.current;
+    const owner = address;
+    const pool = market?.pool;
+    setBusy("Reviewing current onchain values…");
     setError("");
-    setMessage("");
-    setHash("");
+    setNotice("");
     try {
-      const result = await operation();
-      setHash(result.hash);
-      setMessage(`${label} confirmed on chain.`);
+      const q = await make(api);
+      if (
+        key === version.current &&
+        active.current.address === owner &&
+        active.current.pool === pool
+      )
+        setQuote(q);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy("");
+    }
+  }
+  async function confirm() {
+    if (!api || !quote) return;
+    const q = quote;
+    setBusy("Confirm this transaction in Freighter…");
+    setError("");
+    setHash("");
+    setFollow("");
+    try {
+      if (q.deadline < now())
+        throw new Error("This review expired. Review the action again.");
+      const r =
+        q.special === "trust"
+          ? await api.trust(address, setHash)
+          : await api.transact(address, q.contract, q.method, q.args, setHash);
+      setHash(r.hash);
+      setNotice(`${q.title} confirmed on Stellar Testnet.`);
+      setFollow(q.follow || "");
+      setQuote(undefined);
       try {
         await refresh();
+        if (q.method === "create") {
+          setMarkets(await api.markets());
+          setFollow(`/provide?pool=${r.value}`);
+        }
       } catch {
-        setError(
-          "Transaction confirmed on chain. Balance refresh is unavailable; use Refresh later. Do not repeat the transaction.",
+        setNotice(
+          `${q.title} confirmed. Balances are temporarily unavailable; do not repeat the transaction.`,
         );
       }
     } catch (e) {
-      setError((e as Error).message);
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy("");
     }
   }
-  function transaction(
-    id: string,
-    method: string,
-    args: Parameters<Api["transact"]>[3],
-  ) {
-    return api!.transact(address, id, method, args, setHash);
-  }
-  function deadline() {
-    return api!.idSc(BigInt(Math.floor(Date.now() / 1000) + 120));
-  }
-  const min = (v: bigint) => api!.minimumOutput(v);
-  async function submit() {
-    if (!api || !address) return;
-    await tx(
-      mode === "deposit"
-        ? "Deposit TESTUSD"
-        : mode === "protect"
-          ? "Protect receipts"
-          : "Redeem receipts",
-      async () => {
-        const units = api.parseAmount(amount);
-        if (mode === "deposit") {
-          const preview = (await api.view(api.config.vault, "preview_deposit", [
-            api.amountSc(units),
-          ])) as bigint;
-          return transaction(api.config.vault, "deposit", [
-            api.addressSc(address),
-            api.amountSc(units),
-            api.amountSc(min(preview)),
-            deadline(),
-          ]);
-        }
-        if (mode === "redeem") {
-          const preview = (await api.view(api.config.vault, "preview_redeem", [
-            api.amountSc(units),
-          ])) as bigint;
-          return transaction(api.config.vault, "redeem", [
-            api.addressSc(address),
-            api.amountSc(units),
-            api.amountSc(min(preview)),
-            deadline(),
-          ]);
-        }
-        const preview = (await api.view(api.config.vault, "preview_redeem", [
-          api.amountSc(units),
-        ])) as bigint;
-        const result = await transaction(api.config.pool, "protect", [
-          api.addressSc(address),
-          api.amountSc(units),
-          api.amountSc(min(preview)),
-          deadline(),
-        ]);
-        api.remember(address, BigInt(result.value));
-        return result;
-      },
+  const ctx: Ctx = {
+    api,
+    address,
+    market,
+    data,
+    wallet,
+    busy: !!busy || !address || !data,
+    href,
+    review,
+    clear,
+  };
+  if (path === "/legacy")
+    return (
+      <Suspense fallback={<p>Opening legacy market…</p>}>
+        <a className="legacy-return" href="/markets">
+          ← Return to current markets
+        </a>
+        <Legacy />
+      </Suspense>
     );
-  }
-  async function exit(p: Position, backing: boolean) {
-    if (!api) return;
-    await tx(backing ? "Claim backing" : "Withdraw receipts", async () => {
-      const output = (await api.view(api.config.pool, "preview_exit", [
-        api.idSc(p.id),
-        api.boolSc(backing),
-      ])) as bigint;
-      return transaction(api.config.pool, "exit", [
-        api.idSc(p.id),
-        api.boolSc(backing),
-        api.amountSc(min(output)),
-        deadline(),
-      ]);
-    });
-  }
-  const free = data ? data.state.liquidity - data.state.reserved : undefined;
-  const ready = !!api && !busy;
   return (
-    <>
-      <div className="network">
-        <span className="dot" />
-        STELLAR TESTNET
-        <span className="network-note">
-          Experimental · valueless assets · AI-assisted build
+    <div className="v3">
+      <div className="network-banner">
+        STELLAR TESTNET{" "}
+        <span>
+          Valueless demo assets · Unaudited contracts · XLM pays network fees
+          only
         </span>
-        <a href="#limits">Read the boundaries ↗</a>
+        <a href="/legacy">Legacy market ↗</a>
       </div>
-      <div className="shell">
-        <header>
-          <a className="brand" href="#">
-            <span className="brand-mark">Y</span>yieldshield
-            <span className="brand-chain">/ stellar</span>
-          </a>
-          <nav>
-            <a href="#workspace">Workspace</a>
-            <a href="#how">How it works</a>
-            <button className="wallet" onClick={connect} disabled={!ready}>
-              {address ? small(address) : "Connect Freighter"} <span>↗</span>
-            </button>
-          </nav>
-        </header>
-        <main>
-          <section className="hero">
-            <div className="hero-copy">
-              <p className="eyebrow">RESERVE LAB / 01</p>
-              <h1>
-                A reserve.
-                <br />A choice.
-                <br />
-                <span>Your vault position.</span>
-              </h1>
-              <p className="lead">
-                Explore vault risk with separately funded backing. Keep your
-                receipts, or exchange the whole position for its recorded
-                TESTUSD payout.
-              </p>
-              <a className="text-link" href="#workspace">
-                Try the Stellar proof <span>↓</span>
-              </a>
-            </div>
-            <div
-              className="diagram"
-              aria-label="TESTUSD funds vault receipts. Protection holds receipts and reserves a separate TESTUSD payout."
-            >
-              <div className="diagram-head">
-                <span>NATIVE SOROBAN</span>
-                <span>03 CONTRACTS</span>
-              </div>
-              <div className="flow">
-                <div className="flow-label">Your funded position</div>
-                <div className="vault-chip">
-                  <div className="coin">y</div>
-                  <div>
-                    <strong>ysvUSD</strong>
-                    <span>Demo vault receipts</span>
-                  </div>
-                </div>
-                <div className="flow-arrow">↓</div>
-                <div className="reserve-box">
-                  <div className="shield-glyph">◇</div>
-                  <div>
-                    <strong>YieldShield reserve</strong>
-                    <span>150% entry backing reserved</span>
-                  </div>
-                </div>
-                <div className="fork">
-                  <div>
-                    ↙<strong>Keep receipts</strong>
-                    <span>Less a share of gains</span>
-                  </div>
-                  <div>
-                    ↘<strong>Claim TESTUSD</strong>
-                    <span>Surrender all receipts</span>
-                  </div>
-                </div>
-              </div>
-              <div className="diagram-foot">
-                <span>ONE POSITION</span>
-                <strong>TWO EXITS</strong>
-              </div>
-            </div>
-          </section>
-          <section className="stats" aria-label="Live testnet metrics">
-            <div>
-              <span>Free test backing</span>
-              <strong>
-                {fmt(free)}
-                <small>TESTUSD</small>
-              </strong>
-            </div>
-            <div>
-              <span>Reserved for positions</span>
-              <strong>
-                {fmt(data?.state.reserved)}
-                <small>TESTUSD</small>
-              </strong>
-            </div>
-            <div>
-              <span>Vault value per receipt</span>
-              <strong>
-                {fmt(data?.nav, 4)}
-                <small>TESTUSD</small>
-              </strong>
-            </div>
-            <div>
-              <span>Open positions</span>
-              <strong>
-                {data?.state.active ?? "—"}
-                <small>
-                  {data
-                    ? clock - data.readAt < 90000
-                      ? "LIVE TESTNET"
-                      : "LAST KNOWN DATA"
-                    : "CONNECTING"}
-                </small>
-              </strong>
-            </div>
-          </section>
-          <section id="workspace" className="workspace">
-            <div className="section-title">
-              <p className="eyebrow">THE WORKSPACE</p>
-              <h2>
-                From test assets
-                <br />
-                to a protected position.
-              </h2>
-              <p>
-                No wallet? Explore the live reserve above.
-                <br />
-                Connect Freighter on Testnet to try the flow.
-              </p>
-            </div>
-            <div className="work-card">
-              <div className="card-head">
-                <h3>Your testnet wallet</h3>
-                <span className="pill">NO REAL FUNDS</span>
-              </div>
-              {!address ? (
-                <div className="empty">
-                  <div className="outline-coin">↗</div>
-                  <h4>A wallet is your starting point.</h4>
-                  <p>
-                    Use Freighter on Stellar Testnet. We never receive your
-                    secret key.
-                  </p>
-                  <button
-                    className="primary"
-                    onClick={connect}
-                    disabled={!ready}
-                  >
-                    Connect Freighter ↗
-                  </button>
-                  <a
-                    href="https://www.freighter.app/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Get Freighter
-                  </a>
-                </div>
-              ) : (
-                <>
-                  <div className="balances">
-                    <div>
-                      <span>TESTUSD</span>
-                      <strong>{fmt(wallet?.backing)}</strong>
-                    </div>
-                    <div>
-                      <span>ysvUSD receipts</span>
-                      <strong>{fmt(wallet?.shares, 4)}</strong>
-                    </div>
-                    <a
-                      href={`${explorer}/account/${address}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {small(address)} ↗
-                    </a>
-                  </div>
-                  <div className="setup">
-                    <span>Start here</span>
-                    <a
-                      href={`https://friendbot.stellar.org/?addr=${address}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      1. Fund test XLM ↗
-                    </a>
-                    <button
-                      disabled={!ready || wallet?.trusted}
-                      onClick={() =>
-                        tx("Add TESTUSD trustline", () =>
-                          api!.trust(address, setHash),
-                        )
-                      }
-                    >
-                      {wallet?.trusted
-                        ? "✓ Trustline ready"
-                        : "2. Add TESTUSD trustline"}
-                    </button>
-                    <button
-                      disabled={!ready || !wallet?.trusted || wallet?.claimed}
-                      onClick={() =>
-                        tx("Claim test tokens", () =>
-                          transaction(api!.config.faucet, "claim", [
-                            api!.addressSc(address),
-                          ]),
-                        )
-                      }
-                    >
-                      {wallet?.claimed
-                        ? "✓ Test tokens claimed"
-                        : "3. Claim 1,000 TESTUSD"}
-                    </button>
-                  </div>
-                  <div
-                    className="tabs"
-                    role="tablist"
-                    aria-label="Wallet action"
-                  >
-                    {(["deposit", "protect", "redeem"] as const).map((m, i) => (
-                      <button
-                        key={m}
-                        role="tab"
-                        aria-selected={mode === m}
-                        onClick={() => setMode(m)}
-                      >
-                        {i + 1}. {m[0].toUpperCase() + m.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                  <label className="amount-label" htmlFor="amount">
-                    {mode === "deposit"
-                      ? "TESTUSD to deposit"
-                      : "ysvUSD receipts"}
-                  </label>
-                  <div className="amount-input">
-                    <input
-                      id="amount"
-                      inputMode="decimal"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      aria-describedby="action-detail"
-                    />
-                    <span>{mode === "deposit" ? "TESTUSD" : "ysvUSD"}</span>
-                  </div>
-                  <p id="action-detail" className="fine">
-                    {mode === "deposit"
-                      ? "Deposit funded test assets into the demo vault and receive transferable receipts."
-                      : mode === "protect"
-                        ? "Move receipts into protection. A fixed TESTUSD claim and a 50% reserve buffer are recorded at entry."
-                        : "Redeem unprotected receipts for the vault’s available TESTUSD. Protected receipts must exit first."}{" "}
-                    Signed transactions allow at most 0.5% less than the fresh
-                    output quote and expire after two minutes.
-                  </p>
-                  <button
-                    className="primary full"
-                    disabled={!ready || !wallet?.trusted}
-                    onClick={submit}
-                  >
-                    {busy ||
-                      (mode === "deposit"
-                        ? "Deposit into demo vault"
-                        : mode === "protect"
-                          ? "Create protected position"
-                          : "Redeem vault receipts")}{" "}
-                    <span>↗</span>
-                  </button>
-                </>
-              )}
-            </div>
-          </section>
-          {(error || message || busy || hash) && (
-            <div
-              className={`notice ${error ? "error" : ""}`}
-              role="status"
-              aria-live="polite"
-            >
-              {busy
-                ? busy === "Connect wallet"
-                  ? "Checking Freighter availability and requesting a wallet connection…"
-                  : `${busy} in progress. Follow any Freighter prompt.`
-                : error || message}
-              {hash && (
-                <a
-                  href={`${explorer}/tx/${hash}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View transaction status ↗
-                </a>
-              )}
-            </div>
-          )}
-          <section className="positions">
-            <div className="row">
-              <h2>Your positions</h2>
-              <button
-                className="text-button"
-                disabled={!ready}
-                onClick={() => run("Refresh", () => refresh())}
+      <header className="app-header">
+        <a className="brand" href="/">
+          yieldshield<span>STELLAR / 03</span>
+        </a>
+        <nav aria-label="Main navigation">
+          {nav.map(([p, label]) => (
+            <a key={p} className={path === p ? "active" : ""} href={href(p)}>
+              {label}
+            </a>
+          ))}
+        </nav>
+        <button
+          className="wallet-button"
+          disabled={!api || !!busy}
+          onClick={connect}
+        >
+          {address ? small(address) : "Connect Freighter"}
+        </button>
+      </header>
+      <main>
+        {path === "/" ? (
+          <Home href={href} />
+        ) : (
+          <div className="page-heading">
+            <p className="eyebrow">NATIVE SOROBAN · FUNDED TEST MARKETS</p>
+            <h1>{title(path)}</h1>
+          </div>
+        )}
+        {path !== "/" && market && (
+          <div className="market-switch">
+            <label>
+              Selected pool
+              <select
+                value={market.pool}
+                onChange={(e) => {
+                  const next = new URL(location.href);
+                  next.searchParams.set("pool", e.target.value);
+                  if (path.startsWith("/markets/"))
+                    next.pathname = `/markets/${e.target.value}`;
+                  if (path.startsWith("/positions/"))
+                    next.pathname = "/positions";
+                  history.pushState({}, "", next);
+                  window.dispatchEvent(new PopStateEvent("popstate"));
+                }}
               >
-                Refresh ↻
+                {markets.map((m) => (
+                  <option value={m.pool} key={m.pool}>
+                    {m.name} · {small(m.pool)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <span>
+              {market.symbol} / {market.backingSymbol}
+            </span>
+            <a href={href(`/markets/${market.pool}`)}>Pool details ↗</a>
+          </div>
+        )}
+        {(error || notice || busy || hash) && (
+          <div className={`feedback ${error ? "error" : ""}`} role="status">
+            {busy && <p>{busy}</p>}
+            {error && <p>{error}</p>}
+            {notice && <p>{notice}</p>}
+            {hash && (
+              <a
+                href={`${explorer}/tx/${hash}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View transaction status ↗
+              </a>
+            )}
+            {follow && (
+              <a href={follow}>
+                {follow.startsWith("/provide")
+                  ? "Fund your created pool →"
+                  : "Continue to protection →"}
+              </a>
+            )}
+          </div>
+        )}
+        {quote && (
+          <section className="review" aria-label="Transaction review">
+            <div>
+              <p className="eyebrow">REVIEW BEFORE SIGNING</p>
+              <h2>{quote.title}</h2>
+              <p>Wallet {small(address)} · Stellar Testnet</p>
+              <dl>
+                {quote.lines.map(([k, v]) => (
+                  <React.Fragment key={k}>
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </React.Fragment>
+                ))}
+                <dt>Review expires</dt>
+                <dd>{date(quote.deadline)}</dd>
+              </dl>
+            </div>
+            <div>
+              <p>
+                {[
+                  "buy",
+                  "sell",
+                  "provide",
+                  "withdraw",
+                  "protect",
+                  "exit",
+                  "deposit",
+                  "redeem",
+                ].includes(quote.method)
+                  ? "This amount-sensitive method enforces the displayed output limit and transaction deadline on chain."
+                  : "This action authorizes the specific contract method shown above; the review expiry is a browser safeguard."}{" "}
+                Network fees are paid separately in test XLM.
+              </p>
+              <button disabled={!!busy} onClick={confirm}>
+                Confirm in Freighter →
+              </button>
+              <button className="quiet" disabled={!!busy} onClick={clear}>
+                Cancel review
               </button>
             </div>
-            {!address ? (
-              <p className="fine">
-                Connect a wallet to load positions that belong to you.
-              </p>
-            ) : (
-              <>
-                <div className="lookup">
-                  <label htmlFor="position-id">Find by ID</label>
-                  <input
-                    id="position-id"
-                    placeholder="e.g. 1"
-                    value={lookup}
-                    onChange={(e) => setLookup(e.target.value)}
-                    inputMode="numeric"
-                  />
-                  <button
-                    disabled={!ready}
-                    onClick={() =>
-                      run("Find position", async () => {
-                        const p = await api!.readPosition(lookup);
-                        if (p.owner !== address)
-                          throw new Error(
-                            "This position belongs to another wallet.",
-                          );
-                        api!.remember(address, p.id);
-                        setPositions((old) => [
-                          ...old.filter((x) => x.id !== p.id),
-                          p,
-                        ]);
-                      })
-                    }
-                  >
-                    Load ↗
-                  </button>
-                </div>
-                {!positions.length ? (
-                  <p className="fine">
-                    No positions found among your saved IDs or the latest 30
-                    positions. Use an ID to recover an older position.
-                  </p>
-                ) : (
-                  positions.map((p) => {
-                    const delay = Math.max(
-                      0,
-                      Number(p.opened) + 60 - Math.floor(clock / 1000),
-                    );
-                    return (
-                      <article className="position" key={String(p.id)}>
-                        <div>
-                          <span className="eyebrow">
-                            POSITION {String(p.id)}
-                          </span>
-                          <strong>{fmt(p.shares, 4)} ysvUSD</strong>
-                          <span>Recorded payout: {fmt(p.claim)} TESTUSD</span>
-                        </div>
-                        <div className="position-actions">
-                          {p.closed ? (
-                            <span className="pill">CLOSED</span>
-                          ) : (
-                            <>
-                              <button
-                                disabled={!ready || delay > 0}
-                                onClick={() => exit(p, false)}
-                              >
-                                Keep receipts ↗
-                              </button>
-                              <button
-                                className="dark"
-                                disabled={
-                                  !ready || delay > 0 || !wallet?.trusted
-                                }
-                                onClick={() => exit(p, true)}
-                              >
-                                Claim backing ↗
-                              </button>
-                              {delay > 0 && (
-                                <span>Exit available in {delay}s</span>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </article>
-                    );
-                  })
-                )}
-              </>
-            )}
           </section>
-          <section id="how" className="how">
-            <p className="eyebrow">THE MECHANICS</p>
-            <div className="steps">
-              <article>
-                <span>01 / FUND</span>
-                <h3>
-                  Real test balances.
-                  <br />
-                  Explicit token identity.
-                </h3>
-                <p>
-                  TESTUSD has a named issuer and no dollar redemption. A deposit
-                  funds the demo vault before receipts are issued.
-                </p>
-              </article>
-              <article>
-                <span>02 / RESERVE</span>
-                <h3>
-                  Separate backing.
-                  <br />
-                  Visible capacity.
-                </h3>
-                <p>
-                  A single test sponsor funds the first-loss reserve. Each
-                  position locks its payout plus a 50% buffer; reserved backing
-                  cannot be withdrawn.
-                </p>
-              </article>
-              <article>
-                <span>03 / CHOOSE</span>
-                <h3>
-                  Two exits.
-                  <br />
-                  One clear tradeoff.
-                </h3>
-                <p>
-                  After 60 seconds, take receipts back with 10% of positive
-                  gains shared in receipts, or surrender the entire position for
-                  recorded backing.
-                </p>
-              </article>
+        )}
+        {selected && !market && markets.length > 0 && (
+          <p className="feedback error">
+            This pool is not registered.{" "}
+            <a href="/markets">Choose a verified market</a>; no other pool has
+            been selected.
+          </p>
+        )}
+        {!address && path !== "/" && (
+          <p className="wallet-prompt">
+            Connect Freighter to review transactions. Market terms remain
+            available without a wallet.
+          </p>
+        )}
+        {!markets.length && api && (
+          <p className="empty">
+            Loading the verified onchain registry. No market data is invented
+            while the network is unavailable.
+          </p>
+        )}
+        {path === "/markets" && (
+          <Markets markets={markets} api={api} href={href} />
+        )}
+        {path.startsWith("/markets/") && market && <PoolDetail {...ctx} />}
+        {path === "/trade" && market && (
+          <Trade {...ctx} initial={url.searchParams.get("amount") || "100"} />
+        )}
+        {path === "/protect" && market && (
+          <Protect {...ctx} initial={url.searchParams.get("amount") || "100"} />
+        )}
+        {path === "/provide" && market && <Provide {...ctx} />}
+        {path === "/positions" && <Portfolio {...ctx} markets={markets} />}
+        {path.startsWith("/positions/") && market && (
+          <PositionPage {...ctx} id={path.split("/")[2]} />
+        )}
+        {(path === "/faucet" || path === "/assets") && <Assets {...ctx} />}
+        {path === "/create-pool" && <CreatePool {...ctx} markets={markets} />}
+        {path === "/account" && (
+          <section className="panel">
+            <h2>Your connected account</h2>
+            <p>{address || "No wallet connected"}</p>
+            <p>
+              Network: Stellar Testnet. Switching accounts clears wallet
+              balances and transaction reviews.
+            </p>
+            <div className="actions">
+              <button disabled={!!busy} onClick={connect}>
+                Switch or reconnect wallet
+              </button>
+              <button
+                className="secondary"
+                disabled={!!busy || !address}
+                onClick={() => {
+                  clear();
+                  setAddress("");
+                  setWallet(undefined);
+                  setHash("");
+                  setNotice("Wallet disconnected from this page.");
+                }}
+              >
+                Disconnect
+              </button>
             </div>
+            <a href="/faucet">Fund test assets →</a>
           </section>
-          <section id="limits" className="limits">
-            <div>
-              <p className="eyebrow">BUILT FOR REVIEW</p>
-              <h2>
-                A transparent proof,
-                <br />
-                with visible boundaries.
-              </h2>
-            </div>
-            <div>
-              <p>
-                This demo uses funded test assets. Donations simulate gains. The
-                vault administrator can deliberately remove TESTUSD to simulate
-                a loss; there is no live investment strategy or market oracle.
-              </p>
-              <p>
-                The reserve has one sponsor and no forced expiry. Sponsor
-                backing stays reserved until a user exits. There is no recurring
-                premium, promised return or risk-free protection. Native XLM is
-                used only for network fees and account reserves.
-              </p>
-              <p>
-                Contracts are unaudited and AI-assisted. Testnet resets and
-                archived storage may interrupt access. Real USDC, lending
-                adapters, independent security review and multiple reserve
-                providers are future work.
-              </p>
-              <div className="source-links">
-                <a
-                  href="https://developers.stellar.org/docs/tokens/stellar-asset-contract"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Stellar asset standard ↗
-                </a>
-                <a
-                  href={`${explorer}/account/${manifest.issuer}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  TESTUSD issuer ↗
-                </a>
-                {api && (
-                  <>
-                    <a
-                      href={`${explorer}/contract/${api.config.pool}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Pool contract ↗
-                    </a>
-                    <a
-                      href={`${explorer}/contract/${api.config.vault}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Vault contract ↗
-                    </a>
-                  </>
-                )}
-              </div>
-            </div>
-          </section>
-        </main>
-        <footer>
-          <a className="brand" href="#">
-            <span className="brand-mark">Y</span>yieldshield
-          </a>
-          <span>STELLAR RESERVE LAB / TESTNET</span>
-          <span>Hawig Ventures UG (haftungsbeschränkt)</span>
-        </footer>
-      </div>
-    </>
+        )}
+        {path === "/activity" && market && <Activity {...ctx} />}
+        {path === "/status" && <Status {...ctx} markets={markets} />}
+        {(path === "/how-it-works" || path === "/learn/scenarios") && (
+          <Learn {...ctx} />
+        )}
+        {path === "/legal" && <Legal />}
+        {![
+          "/",
+          "/markets",
+          "/trade",
+          "/protect",
+          "/provide",
+          "/positions",
+          "/faucet",
+          "/assets",
+          "/create-pool",
+          "/activity",
+          "/account",
+          "/status",
+          "/how-it-works",
+          "/learn/scenarios",
+          "/legal",
+        ].includes(path) &&
+          !path.startsWith("/positions/") &&
+          !path.startsWith("/markets/") && (
+            <p>
+              Page not found. <a href="/markets">Explore markets →</a>
+            </p>
+          )}
+      </main>
+      <footer>
+        <a className="brand" href="/">
+          yieldshield
+        </a>
+        <div>
+          <a href="/faucet">Test assets</a>
+          <a href="/how-it-works">How it works</a>
+          <a href="/learn/scenarios">Scenarios</a>
+          <a href="/account">Account</a>
+          <a href="/status">Network & contracts</a>
+          <a href="/legal">Risks & terms</a>
+        </div>
+        <p>
+          Hawig Ventures UG (haftungsbeschränkt) · Testnet research prototype
+        </p>
+      </footer>
+    </div>
   );
+}
+function title(p: string) {
+  return p.startsWith("/positions/")
+    ? "Your protected position"
+    : p.startsWith("/markets/")
+      ? "Inside this pool"
+      : (
+          {
+            "/markets": "Choose your market.",
+            "/trade": "Buy. Sell. Then protect.",
+            "/protect": "Keep a defined exit.",
+            "/provide": "Put capacity to work.",
+            "/positions": "Every position, in view.",
+            "/faucet": "Start with test assets.",
+            "/assets": "Your native test assets.",
+            "/create-pool": "Build your own pool.",
+            "/activity": "Follow the onchain activity.",
+            "/account": "Your wallet, your control.",
+            "/status": "Proof, not promises.",
+            "/how-it-works": "Two roles. One funded pool.",
+            "/learn/scenarios": "Explore the outcomes.",
+            "/legal": "Know the boundaries.",
+          } as Record<string, string>
+        )[p] || "YieldShield";
 }
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
