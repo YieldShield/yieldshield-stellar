@@ -1,0 +1,15 @@
+YieldShield on Stellar makes vault risk easier to inspect: which assets are exposed, what backing is reserved, and who absorbs a loss.
+
+This is our native Soroban prototype. The live interface shows separately funded markets, their asset pairs, collateral requirements, gain-sharing fees, and maturity dates. Every asset shown here is a valueless test asset.
+
+A holder acquires vault receipts, then chooses protection. The pool reserves a fixed amount of backing for that position. Before maturity, the holder can reclaim receipts under the gain-sharing terms, or surrender them for the reserved backing. Partial exits are supported. At maturity, remaining receipts are surrendered for backing, and their remaining upside is forfeited.
+
+Providers supply the first-loss capital. They can receive surrendered receipts and a share of gains. Their capital can lose value. Deposits and withdrawals pause while holders remain protected, and withdrawals require notice. Acquired receipts and fee rewards have separate claims.
+
+The trading and funding pages connect these steps. Receipt Reserve, for example, uses Alpha receipts as backing. The interface guides users to the corresponding vault and returns them to their original pool and amount.
+
+YieldShield is built by David Hawig, founder and managing director, and Santiago Balaguer, cofounder and product lead. David previously led ecosystem work at Web3 Foundation. Santiago brings fifteen years of product experience, including five in crypto.
+
+Our next phase focuses on verified asset integrations, conservative valuation, monitoring, and independent review before any real-asset release. The prototype is substantially AI-assisted and unaudited. This walkthrough demonstrates the interface; it is not a claim of adoption or investment performance.
+
+Explore the current prototype at stellar dot yieldshield dot A I.
