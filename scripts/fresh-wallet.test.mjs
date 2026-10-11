@@ -12,7 +12,7 @@ const result = await build({
     b.onLoad({ filter: /.*/, namespace: "mock" }, () => ({ contents: `
       export const config={backing:"TESTUSD"};
       export const readFunding=async()=>({backing:0n,trusted:false,claimed:false});
-      export const addressSc=x=>x;
+      export const addressSc=x=>x, idSc=x=>x;
       export const view=(...args)=>globalThis.testView(...args);
     ` }));
   } }],
