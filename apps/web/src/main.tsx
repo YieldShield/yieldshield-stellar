@@ -79,7 +79,7 @@ const nav = [
   ["/create-pool", "Create pool"],
   ["/activity", "Activity"],
 ];
-function App() {
+export function App() {
   const url = useRoute();
   const [api, setApi] = useState<Api>();
   const [markets, setMarkets] = useState<Market[]>([]);
@@ -248,8 +248,8 @@ function App() {
         throw new Error("This review expired. Review the action again.");
       const r =
         q.special === "trust"
-          ? await api.trust(address, setHash)
-          : await api.transact(address, q.contract, q.method, q.args, setHash);
+          ? await api.trust(address, submitted)
+          : await api.transact(address, q.contract, q.method, q.args, submitted);
       setHash(r.hash);
       setNotice(`${q.title} confirmed on Stellar Testnet.`);
       setFollow(q.follow || "");
@@ -269,6 +269,12 @@ function App() {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy("");
+    }
+    function submitted(transactionHash: string) {
+      // Once broadcast can occur, this review must never authorize a second
+      // transaction, including when RPC confirmation is unavailable.
+      setHash(transactionHash);
+      clear();
     }
   }
   const ctx: Ctx = {
