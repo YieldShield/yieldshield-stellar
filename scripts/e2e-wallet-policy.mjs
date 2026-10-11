@@ -26,5 +26,5 @@ export function validateTestSignature(request, allowed) {
     method = call.functionName.toString();
     if (!allowed.contracts.get(contract)?.includes(method)) throw Error("Contract method is not allowed");
   } else throw Error("Operation is not allowed");
-  return { tx, record: { source: tx.source, contract, method, hash: tx.hash().toString("hex") } };
+  return { tx, record: { source: tx.source, contract, method, hash: Buffer.from(tx.hash()).toString("hex") } };
 }

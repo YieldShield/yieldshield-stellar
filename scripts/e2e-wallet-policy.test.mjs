@@ -12,6 +12,7 @@ function request(operation, options = {}) {
 test("local signing allows only bounded known Testnet contract calls", () => {
   const r = request(new Contract(contract).call("provide"));
   assert.equal(validateTestSignature(r, allowed).record.method, "provide");
+  assert.match(validateTestSignature(r, allowed).record.hash, /^[a-f0-9]{64}$/);
   assert.throws(() => validateTestSignature({ ...r, networkPassphrase: Networks.PUBLIC }, allowed), /Testnet only/);
   assert.throws(() => validateTestSignature({ ...r, accountToSign: issuer }, allowed), /mismatched/);
   assert.throws(() => validateTestSignature(request(new Contract(contract).call("admin")), allowed), /not allowed/);

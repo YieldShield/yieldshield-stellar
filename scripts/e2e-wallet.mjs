@@ -45,7 +45,7 @@ const server = await createServer({
           const { tx, record } = validateTestSignature(request, { accounts, contracts, issuer: legacy.issuer });
           const signer = keys.find(k => k.publicKey() === tx.source);
           tx.sign(signer);
-          log.signatures.push({ at: new Date().toISOString(), ...record });
+          log.signatures.push({ at: new Date().toISOString(), ...record, hash: Buffer.from(tx.hash()).toString("hex") });
           save(evidence, log); // Public identity/hash only; never keys or signed XDR.
           res.setHeader("Content-Type", "application/json");
           res.end(JSON.stringify({ signedTransaction: tx.toXDR(), signerAddress: signer.publicKey() }));
