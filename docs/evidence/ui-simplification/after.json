@@ -1,0 +1,23 @@
+{
+  "method": "Same desktop whole-body innerText whitespace count as baseline, no wallet, Reserve Alpha; optional details and menus closed",
+  "protect": {
+    "primaryLinks": [
+      "Markets",
+      "Trade",
+      "Protect",
+      "Provide",
+      "Portfolio"
+    ],
+    "terms": "Free backing\n10,000.0000000 TESTUSD\nReserved backing\n0.0000000\nPool ends\n11/10/2026, 7:33:02 PM\nCollateral ratio\n150%\nGain fees\n10% provider + 1% creator + 1% protocol",
+    "url": "http://127.0.0.1:5195/protect?pool=CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "words": 186
+  },
+  "trade": {
+    "url": "http://127.0.0.1:5195/trade?pool=CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "words": 189
+  },
+  "provide": {
+    "url": "http://127.0.0.1:5195/provide?pool=CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "words": 215
+  }
+}

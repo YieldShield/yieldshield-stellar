@@ -1,0 +1,26 @@
+{
+  "method": "Desktop document.body.innerText whitespace word count, no wallet, Reserve Alpha, full page including navigation and footer; baseline live release before simplification",
+  "protect": {
+    "navLinks": [
+      "Markets",
+      "Trade",
+      "Protect",
+      "Provide",
+      "Portfolio",
+      "Create pool",
+      "Activity"
+    ],
+    "url": "https://stellar.yieldshield.ai/protect",
+    "words": 240
+  },
+  "trade": {
+    "heading": "Buy. Sell. Then protect.",
+    "url": "https://stellar.yieldshield.ai/trade?pool=CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "words": 258
+  },
+  "provide": {
+    "heading": "Put capacity to work.",
+    "url": "https://stellar.yieldshield.ai/provide?pool=CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "words": 347
+  }
+}
