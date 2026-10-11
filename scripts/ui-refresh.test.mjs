@@ -13,7 +13,7 @@ const temp = mkdtempSync(resolve("node_modules/.ui-refresh-test-"));
 const output = await build({
   stdin: {
     contents:
-      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx"; export {Provide} from "./apps/web/src/ProtectionPages.tsx";',
+      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx"; export {Provide} from "./apps/web/src/ProtectionPages.tsx"; export {Assets} from "./apps/web/src/TradingPages.tsx";',
     resolveDir: resolve("."),
   },
   bundle: true,
@@ -24,7 +24,7 @@ const output = await build({
 });
 const modulePath = join(temp, "components.mjs");
 writeFileSync(modulePath, output.outputFiles[0].text);
-const { PositionPage, Portfolio, Activity, Provide } = await import(
+const { PositionPage, Portfolio, Activity, Provide, Assets } = await import(
   pathToFileURL(modulePath).href
 );
 after(() => {
@@ -129,6 +129,22 @@ async function mount(component, props) {
 async function unmount(renderer) {
   await act(async () => renderer.unmount());
 }
+
+test("nested backing acquisition names its destination and keeps the exact provider return draft", async () => {
+  const nested = { ...market, pool: "nested-pool", vault: "nested-vault", symbol: "ysNEST", backing: market.vault, backingSymbol: market.symbol, name: "Receipt Reserve" };
+  const returnUrl = "/provide?amount=12.3456789&pool=nested-pool";
+  globalThis.location.href = `http://localhost/assets?pool=pool-one&returnTo=${encodeURIComponent(returnUrl)}`;
+  const props = context({ address: "", wallet: undefined, api: { ...context().api, deployment: { markets: [market, nested] } } });
+  const r = await mount(Assets, props);
+  const returnLink = r.root.findAllByType("a").find((a) => a.props.href === returnUrl);
+  assert.ok(returnLink, "return retains exact original pool and seven-decimal amount");
+  assert.match(text(r), /Acquire.*ysALPHA.*backing for.*Receipt Reserve.*then return to.*Provide/);
+  assert.equal(r.root.findByProps({ label: "Backing to deposit" }).props.suffix, market.backingSymbol);
+  await act(async () => r.update(React.createElement(Assets, { ...props, market: { ...market, vault: "other-vault" } })));
+  assert.doesNotMatch(text(r), /Acquire.*ysALPHA.*backing for.*Receipt Reserve/, "guidance must disappear if selected vault no longer supplies that backing");
+  await unmount(r);
+  globalThis.location.href = "http://localhost/provide";
+});
 
 test("Provide keeps public terms visible and shows personal balances and separate claims only after connection", async () => {
   let reviewed;

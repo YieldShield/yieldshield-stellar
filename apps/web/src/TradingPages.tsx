@@ -149,13 +149,21 @@ export function Assets(c: Ctx) {
     ["/trade", "/protect", "/provide"].includes(rawReturn.split("?")[0])
       ? rawReturn
       : c.href("/protect");
+  const returnTarget = new URL(returnUrl, location.href);
+  const returnLabel = { "/provide": "Provide", "/trade": "Trade", "/protect": "Protect" }[returnTarget.pathname];
+  const returnMarket = c.api?.deployment.markets.find(
+    (market) => market.pool === returnTarget.searchParams.get("pool"),
+  );
   const [mode, setMode] = useState("deposit");
   const [n, set] = useState("100");
   return (
     <>
       <div className="two-column">
         <section className="panel">
-          <a href={returnUrl}>← Return to your previous workflow</a>
+          <a href={returnUrl}>← Return to {returnLabel}</a>
+          {returnMarket && returnMarket.backing === c.market?.vault && (
+            <p>Acquire {c.market.symbol} backing for {returnMarket.name}, then return to {returnLabel}.</p>
+          )}
           <p className="eyebrow">01 / FUND YOUR TEST WALLET</p>
           <h2>Get ready on Stellar.</h2>
           <p>
