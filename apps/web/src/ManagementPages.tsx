@@ -371,23 +371,32 @@ export function AdminClaims(c: Ctx) {
 }
 
 export function Activity(c: Ctx) {
+  return <ActivityFeed key={c.market?.pool || ""} {...c} />;
+}
+function ActivityFeed(c: Ctx) {
   const [rows, setRows] = useState<Awaited<ReturnType<Api["events"]>>>([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    setRows([]);
-    setError("");
     if (!c.api || !c.market) return;
+    setLoading(true);
     let alive = true;
     c.api
       .events(c.market.pool)
       .then((r) => {
-        if (alive) setRows(r);
+        if (alive) {
+          setRows(r);
+          setError("");
+        }
       })
       .catch(() => {
         if (alive)
           setError(
-            "Recent contract events are unavailable from the public RPC. Use the contract explorer link below.",
+            "Recent contract events could not be refreshed. Any displayed events are from the last successful read. Use the contract explorer link below.",
           );
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
       });
     return () => {
       alive = false;
@@ -400,6 +409,11 @@ export function Activity(c: Ctx) {
         Up to50 events from the most recent17,280 ledgers. This bounded RPC feed
         is not a full historical index.
       </p>
+      {loading && (
+        <p role="status">
+          {rows.length ? "Refreshing recent events…" : "Reading recent events…"}
+        </p>
+      )}
       {error && <p role="alert">{error}</p>}
       {rows.map((r) => (
         <div className="position-row" key={r.id}>
@@ -414,7 +428,7 @@ export function Activity(c: Ctx) {
           </a>
         </div>
       ))}
-      {!rows.length && !error && (
+      {!rows.length && !error && !loading && (
         <p>No events returned in this recent window.</p>
       )}
       <ContractLink id={c.market?.pool} />
