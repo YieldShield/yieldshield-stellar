@@ -80,3 +80,25 @@ test("a broadcast review is consumed when confirmation is unavailable", async ()
   assert.ok(findButton(r, "Review buy"), "a new deliberate review remains available");
   await act(async () => r.unmount());
 });
+
+test("confirmed transaction with failed balance read clears stale actionable balances", async () => {
+  let confirmed = false;
+  const r = await start({
+    readMarket: async () => {
+      if (confirmed) throw new Error("RPC read unavailable");
+      return data;
+    },
+    transact: async (_owner, _contract, _method, _args, submitted) => {
+      submitted("confirmed-transaction-hash");
+      confirmed = true;
+      return { hash: "confirmed-transaction-hash", value: null };
+    },
+  });
+  await act(async () => findButton(r, "Confirm in Freighter").props.onClick());
+  assert.match(text(r), /confirmed\. Balances are temporarily unavailable/);
+  assert.match(text(r), /confirmed-transaction-hash/);
+  assert.equal(findButton(r, "Review buy").props.disabled, true);
+  assert.equal(findButton(r, "Confirm in Freighter"), undefined);
+  assert.doesNotMatch(text(r), /100\.0000000 TESTUSD/, "cached wallet balance must be removed");
+  await act(async () => r.unmount());
+});

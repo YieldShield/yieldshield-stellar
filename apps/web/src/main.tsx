@@ -167,7 +167,12 @@ export function App() {
       setData(d);
       setWallet(w);
     } catch (e) {
-      if (current()) throw e;
+      if (current()) {
+        setData(undefined);
+        setWallet(undefined);
+        clear();
+        throw e;
+      }
     }
   }
   useEffect(() => {
