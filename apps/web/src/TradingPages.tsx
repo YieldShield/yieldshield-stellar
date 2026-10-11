@@ -42,6 +42,7 @@ export function Trade(c: Ctx & { initial: string }) {
           {(["buy", "sell"] as const).map((s) => (
             <button
               className={side === s ? "selected" : "quiet"}
+              aria-pressed={side === s}
               key={s}
               onClick={() => {
                 setSide(s);
@@ -234,6 +235,7 @@ export function Assets(c: Ctx) {
               <button
                 key={v}
                 className={mode === v ? "selected" : "quiet"}
+                aria-pressed={mode === v}
                 onClick={() => {
                   setMode(v);
                   c.clear();

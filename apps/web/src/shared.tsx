@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useId } from "react";
 import type { Data, Market, Wallet, State } from "./v3";
 import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
 export type Api = typeof import("./v3");
@@ -49,17 +49,22 @@ export function Amount({
   onChange: (s: string) => void;
   suffix: string;
 }) {
+  const unitId = useId();
   return (
     <label className="amount-field">
       {label}
       <div>
         <input
+          name={label.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}
           inputMode="decimal"
+          autoComplete="off"
+          spellCheck={false}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           aria-label={label}
+          aria-describedby={unitId}
         />
-        <span>{suffix}</span>
+        <span id={unitId}>{suffix}</span>
       </div>
     </label>
   );

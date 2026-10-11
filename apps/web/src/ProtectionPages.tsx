@@ -238,6 +238,7 @@ export function Provide(c: Ctx) {
               <button
                 key={v}
                 className={mode === v ? "selected" : "quiet"}
+                aria-pressed={mode === v}
                 onClick={() => {
                   setMode(v);
                   c.clear();
