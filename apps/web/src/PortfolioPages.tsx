@@ -186,35 +186,53 @@ function PortfolioAccount(c: Ctx & { markets: Market[] }) {
 }
 
 export function PositionPage(c: Ctx & { id: string }) {
+  return (
+    <PositionDetails
+      key={`${c.market?.pool || ""}:${c.id}:${c.address}`}
+      {...c}
+    />
+  );
+}
+function PositionDetails(c: Ctx & { id: string }) {
+  const creditOnly = c.id === "credit";
+  const validId =
+    /^[1-9][0-9]{0,19}$/.test(c.id) &&
+    BigInt(c.id) <= 18_446_744_073_709_551_615n;
   const [position, setPosition] =
     useState<Awaited<ReturnType<Api["readPosition"]>>>();
   const [amount, setAmount] = useState("");
+  const amountDirty = useRef(false);
   const [recipient, setRecipient] = useState("");
+  const [loading, setLoading] = useState(!creditOnly && validId);
   const [loadError, setLoadError] = useState("");
   useEffect(() => {
-    setPosition(undefined);
-    setLoadError("");
-    if (!c.api || !c.market || !/^[0-9]+$/.test(c.id)) return;
+    if (!c.api || !c.market || !validId || creditOnly) return;
     let alive = true;
+    setLoading(true);
     c.api
       .view(c.market.pool, "position", [c.api.idSc(BigInt(c.id))])
       .then((p) => {
-        if (alive) {
-          setPosition({ ...p, id: BigInt(c.id) });
+        if (!alive) return;
+        setPosition({ ...p, id: BigInt(c.id) });
+        if (!amountDirty.current)
           setAmount(format(p.shares, 7).replaceAll(",", ""));
-        }
+        setLoadError("");
       })
       .catch(() => {
         if (alive)
           setLoadError(
-            "Position unavailable. Check this pool and position number.",
+            "Position could not be refreshed. Displayed values may be out of date. Check this pool and position number before proceeding.",
           );
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
       });
     return () => {
       alive = false;
     };
-  }, [c.api, c.market?.pool, c.id, c.wallet]);
+  }, [c.api, c.market?.pool, c.id, c.wallet, validId, creditOnly]);
   const p = position;
+  const actionUnavailable = c.busy || !!loadError;
   const expired = !!c.data && now() >= Number(c.data.state.end);
   const exit = (backing: boolean) =>
     c.review(async (a) => {
@@ -252,6 +270,11 @@ export function PositionPage(c: Ctx & { id: string }) {
   return (
     <>
       <a href={c.href("/positions")}>← All positions</a>
+      {loading && (
+        <p role="status">
+          {p ? "Refreshing position details…" : "Reading position details…"}
+        </p>
+      )}
       {loadError && <p role="alert">{loadError}</p>}
       {p && (
         <div className="two-column">
@@ -285,20 +308,21 @@ export function PositionPage(c: Ctx & { id: string }) {
                     value={amount}
                     suffix={c.market?.symbol || ""}
                     onChange={(v) => {
+                      amountDirty.current = true;
                       setAmount(v);
                       c.clear();
                     }}
                   />
                   <div className="actions">
                     <button
-                      disabled={c.busy || p.owner !== c.address}
+                      disabled={actionUnavailable || p.owner !== c.address}
                       onClick={() => exit(false)}
                     >
                       Review receipt exit
                     </button>
                     <button
                       className="secondary"
-                      disabled={c.busy || p.owner !== c.address}
+                      disabled={actionUnavailable || p.owner !== c.address}
                       onClick={() => exit(true)}
                     >
                       Review backing exit
@@ -313,7 +337,7 @@ export function PositionPage(c: Ctx & { id: string }) {
                     block provider exits.
                   </p>
                   <button
-                    disabled={c.busy}
+                    disabled={actionUnavailable}
                     onClick={() =>
                       c.review((a) => ({
                         title: "Settle matured position",
@@ -351,7 +375,7 @@ export function PositionPage(c: Ctx & { id: string }) {
                 </label>
                 <button
                   className="quiet"
-                  disabled={c.busy || !recipient}
+                  disabled={actionUnavailable || !recipient}
                   onClick={() =>
                     c.review((a) => ({
                       title: "Transfer protected position",
