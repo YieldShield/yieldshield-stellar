@@ -295,3 +295,49 @@ fn cancel_notice_resets_withdrawal_allowance() {
     f.p().cancel_notice(&f.a);
     assert_eq!(f.p().provider(&f.a).notice_shares, 0);
 }
+#[test]
+fn fee_and_inventory_indices_conserve_under_churn() {
+    let f = F::new();
+    f.p().provide(&f.a, &(997 * U + 3), &1, &u64::MAX);
+    f.p().provide(&f.b, &(991 * U + 7), &1, &u64::MAX);
+    let mut fees_claimed = 0;
+    let mut inventory_claimed = 0;
+    let mut distributed_fees = 0;
+    let mut distributed_inventory = 0;
+    for round in 0..4 {
+        let id = f.p().protect(&f.h, &(11 * U + 3), &1, &u64::MAX);
+        f.v().donate(&f.a, &(10 * U + round as i128));
+        f.time(1061 + round * 100);
+        let previous = f.p().state();
+        f.p().exit(&id, &(5 * U + 1), &true, &0, &u64::MAX);
+        let left = f.p().position(&id).shares;
+        f.p().exit(&id, &left, &false, &0, &u64::MAX);
+        let current = f.p().state();
+        distributed_fees += current.reward_balance - previous.reward_balance;
+        distributed_inventory += current.inventory_balance - previous.inventory_balance;
+        for o in [&f.a, &f.b] {
+            if f.p().provider(o).rewards > 0 {
+                fees_claimed += f.p().claim_rewards(o, o);
+            }
+            if f.p().provider(o).inventory > 0 {
+                inventory_claimed += f.p().claim_inventory(o, o);
+            }
+        }
+        f.p().notice(&f.a, &(7 * U + 1));
+        f.time(1092 + round * 100);
+        f.p().withdraw(&f.a, &(7 * U + 1), &0, &u64::MAX);
+        f.p().provide(&f.a, &(7 * U + 1), &1, &u64::MAX);
+        assert!(fees_claimed <= distributed_fees);
+        assert!(inventory_claimed <= distributed_inventory);
+        assert_eq!(
+            f.p().state().reward_balance,
+            distributed_fees - fees_claimed
+        );
+        assert_eq!(
+            f.p().state().inventory_balance,
+            distributed_inventory - inventory_claimed
+        );
+    }
+    assert!(distributed_fees - fees_claimed <= 8);
+    assert!(distributed_inventory - inventory_claimed <= 8);
+}

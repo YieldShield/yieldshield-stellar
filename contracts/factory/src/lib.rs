@@ -3,7 +3,11 @@ use soroban_sdk::xdr::ToXdr;
 use soroban_sdk::{
     contract, contractimpl, contracttype, symbol_short, token, Address, BytesN, Env, Vec,
 };
-use yieldshield_pool_v3::{Terms, VaultClient};
+#[soroban_sdk::contractclient(name="VaultClient")]
+pub trait Vault { fn asset(e:Env)->Address; }
+#[contracttype]
+#[derive(Clone,Debug)]
+pub struct Terms {pub collateral_bps:u32,pub junior_fee_bps:u32,pub creator_fee_bps:u32,pub duration:u64,pub notice_delay:u64}
 #[contracttype]
 #[derive(Clone)]
 enum Key {

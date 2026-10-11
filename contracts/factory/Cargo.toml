@@ -7,7 +7,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 [dependencies]
 soroban-sdk = { workspace = true }
-yieldshield-pool-v3 = { path = "../pool-v3" }
 [dev-dependencies]
+yieldshield-pool-v3 = { path = "../pool-v3" }
 soroban-sdk = { workspace = true, features = ["testutils"] }
 yieldshield-vault = { path = "../vault" }
