@@ -494,6 +494,26 @@
   outline: 3px solid #547441;
   outline-offset: 3px;
 }
+.v3 .skip-link {
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  z-index: 10;
+  padding: 14px 20px;
+  background: var(--accent);
+  color: var(--ink);
+  transform: translateY(-150%);
+}
+.v3 .skip-link:focus {
+  transform: translateY(0);
+}
+.v3 main:focus {
+  outline: none;
+}
+.v3 .review:focus {
+  outline: 3px solid #547441;
+  outline-offset: 3px;
+}
 @media (max-width: 1050px) {
   .v3 .app-header {
     flex-wrap: wrap;

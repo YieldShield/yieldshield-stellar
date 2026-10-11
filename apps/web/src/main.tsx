@@ -95,7 +95,22 @@ function App() {
   const version = useRef(0);
   const readVersion = useRef(0);
   const active = useRef({ address: "", pool: "" });
+  const mainRef = useRef<HTMLElement>(null);
+  const reviewRef = useRef<HTMLElement>(null);
+  const reviewTrigger = useRef<HTMLElement | null>(null);
   const path = url.pathname;
+  const previousPath = useRef(path);
+  useEffect(() => {
+    document.title = `${path === "/" ? "Reserve Lab" : path === "/legacy" ? "Legacy market" : title(path)} | YieldShield Stellar`;
+    if (previousPath.current !== path) {
+      mainRef.current?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0 });
+      previousPath.current = path;
+    }
+  }, [path]);
+  useEffect(() => {
+    if (quote) reviewRef.current?.focus();
+  }, [quote]);
   const selected = path.startsWith("/markets/")
     ? path.split("/")[2]
     : url.searchParams.get("pool");
@@ -188,6 +203,9 @@ function App() {
     }
   }
   async function review(make: (a: Api) => Promise<Quote> | Quote) {
+    reviewTrigger.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
     if (!api || !address) {
       setError("Connect Freighter to review this action.");
       return;
@@ -270,6 +288,7 @@ function App() {
     );
   return (
     <div className="v3">
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <div className="network-banner">
         STELLAR TESTNET{" "}
         <span>
@@ -284,7 +303,12 @@ function App() {
         </a>
         <nav aria-label="Main navigation">
           {nav.map(([p, label]) => (
-            <a key={p} className={path === p ? "active" : ""} href={href(p)}>
+            <a
+              key={p}
+              className={path === p || path.startsWith(`${p}/`) ? "active" : ""}
+              aria-current={path === p || path.startsWith(`${p}/`) ? "page" : undefined}
+              href={href(p)}
+            >
               {label}
             </a>
           ))}
@@ -297,7 +321,7 @@ function App() {
           {address ? small(address) : "Connect Freighter"}
         </button>
       </header>
-      <main>
+      <main id="main-content" ref={mainRef} tabIndex={-1} aria-label={path === "/" ? "Stellar Reserve Lab" : title(path)}>
         {path === "/" ? (
           <Home href={href} />
         ) : (
@@ -339,7 +363,7 @@ function App() {
         {(error || notice || busy || hash) && (
           <div className={`feedback ${error ? "error" : ""}`} role="status">
             {busy && <p>{busy}</p>}
-            {error && <p>{error}</p>}
+            {error && <p role="alert">{error}</p>}
             {notice && <p>{notice}</p>}
             {hash && (
               <a
@@ -360,10 +384,10 @@ function App() {
           </div>
         )}
         {quote && (
-          <section className="review" aria-label="Transaction review">
+          <section className="review" ref={reviewRef} tabIndex={-1} aria-labelledby="review-title">
             <div>
               <p className="eyebrow">REVIEW BEFORE SIGNING</p>
-              <h2>{quote.title}</h2>
+              <h2 id="review-title">{quote.title}</h2>
               <p>Wallet {small(address)} · Stellar Testnet</p>
               <dl>
                 {quote.lines.map(([k, v]) => (
@@ -395,7 +419,10 @@ function App() {
               <button disabled={!!busy} onClick={confirm}>
                 Confirm in Freighter →
               </button>
-              <button className="quiet" disabled={!!busy} onClick={clear}>
+              <button className="quiet" disabled={!!busy} onClick={() => {
+                clear();
+                reviewTrigger.current?.focus();
+              }}>
                 Cancel review
               </button>
             </div>
