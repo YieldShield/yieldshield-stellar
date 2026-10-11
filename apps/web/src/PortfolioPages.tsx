@@ -202,7 +202,8 @@ function PositionDetails(c: Ctx & { id: string }) {
     useState<Awaited<ReturnType<Api["readPosition"]>>>();
   const [amount, setAmount] = useState("");
   const amountDirty = useRef(false);
-  const [recipient, setRecipient] = useState("");
+  const [transferRecipient, setTransferRecipient] = useState("");
+  const [creditRecipient, setCreditRecipient] = useState("");
   const [loading, setLoading] = useState(!creditOnly && validId);
   const [loadError, setLoadError] = useState("");
   useEffect(() => {
@@ -365,9 +366,13 @@ function PositionDetails(c: Ctx & { id: string }) {
                 <label>
                   New Stellar address
                   <input
-                    value={recipient}
+                    value={transferRecipient}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     onChange={(e) => {
-                      setRecipient(e.target.value);
+                      setTransferRecipient(e.target.value);
                       c.clear();
                     }}
                     placeholder="G… or C…"
@@ -375,13 +380,13 @@ function PositionDetails(c: Ctx & { id: string }) {
                 </label>
                 <button
                   className="quiet"
-                  disabled={actionUnavailable || !recipient}
+                  disabled={actionUnavailable || !transferRecipient}
                   onClick={() =>
                     c.review((a) => ({
                       title: "Transfer protected position",
                       lines: [
                         ["Position", `#${p.id}`],
-                        ["New owner", recipient],
+                        ["New owner", transferRecipient],
                         [
                           "Consequence",
                           "The new owner receives all remaining exit rights",
@@ -389,7 +394,7 @@ function PositionDetails(c: Ctx & { id: string }) {
                       ],
                       contract: c.market!.pool,
                       method: "transfer_position",
-                      args: [a.idSc(p.id), a.addressSc(recipient)],
+                      args: [a.idSc(p.id), a.addressSc(transferRecipient)],
                       deadline: now() + 120,
                     }))
                   }
@@ -412,9 +417,13 @@ function PositionDetails(c: Ctx & { id: string }) {
         <label>
           Credit destination (defaults to connected wallet)
           <input
-            value={recipient}
+            value={creditRecipient}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck={false}
             onChange={(e) => {
-              setRecipient(e.target.value);
+              setCreditRecipient(e.target.value);
               c.clear();
             }}
             placeholder={c.address || "G…"}
@@ -427,13 +436,13 @@ function PositionDetails(c: Ctx & { id: string }) {
               title: "Claim maturity backing",
               lines: [
                 ["Credit", `${f(c.wallet!.credit)} ${c.market!.backingSymbol}`],
-                ["Destination", recipient || c.address],
+                ["Destination", creditRecipient || c.address],
               ],
               contract: c.market!.pool,
               method: "claim_backing",
               args: [
                 a.addressSc(c.address),
-                a.addressSc(recipient || c.address),
+                a.addressSc(creditRecipient || c.address),
               ],
               deadline: now() + 120,
             }))
