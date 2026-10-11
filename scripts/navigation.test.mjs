@@ -11,7 +11,12 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 const listeners = new Map();
 const breakpoint = { addEventListener: (key, fn) => listeners.set(`media:${key}`, fn), removeEventListener: (key) => listeners.delete(`media:${key}`) };
 globalThis.window = { matchMedia: () => breakpoint };
-globalThis.document = { addEventListener: (key, fn) => listeners.set(key, fn), removeEventListener: (key) => listeners.delete(key) };
+let mainFocused = false;
+globalThis.document = {
+  addEventListener: (key, fn) => listeners.set(key, fn),
+  removeEventListener: (key) => listeners.delete(key),
+  getElementById: (id) => id === "main-content" ? { focus: () => { mainFocused = true; } } : null,
+};
 const temp = mkdtempSync(resolve("node_modules/.navigation-test-"));
 const output = await build({
   entryPoints: ["apps/web/src/Navigation.tsx"], bundle: true, format: "esm",
@@ -51,8 +56,23 @@ test("navigation retains every destination and pool context behind correctly con
   await act(async () => toggle(r, "More").props.onClick());
   assert.equal(toggle(r, "More").props["aria-expanded"], true);
   assert.equal(controlled(r, "More").props.hidden, false);
-  await act(async () => controlled(r, "More").findAllByType("a")[0].props.onClick());
+  await act(async () => controlled(r, "More").findAllByType("a")[0].props.onClick({}));
   assert.equal(controlled(r, "More").props.hidden, true, "link activation closes even before route changes");
+  await act(async () => r.unmount());
+});
+
+test("activating the current mobile destination keeps focus visible after its link is hidden", async () => {
+  const { r } = await mount();
+  const current = controlled(r, "Menu").findAllByType("a").find((a) => a.props.children === "Protect");
+  mainFocused = false;
+  await act(async () => toggle(r, "Menu").props.onClick());
+  await act(async () => current.props.onClick({}));
+  assert.equal(controlled(r, "Menu").props.hidden, true);
+  assert.equal(mainFocused, true);
+  mainFocused = false;
+  await act(async () => toggle(r, "Menu").props.onClick());
+  await act(async () => current.props.onClick({ metaKey: true }));
+  assert.equal(mainFocused, false, "opening another tab should not move this page's focus");
   await act(async () => r.unmount());
 });
 

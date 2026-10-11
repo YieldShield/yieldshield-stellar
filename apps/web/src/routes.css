@@ -624,6 +624,7 @@
   }
   .v3 .mobile-navigation {
     display: block;
+    width: 100%;
   }
   .v3 .mobile-navigation .navigation-toggle {
     justify-content: space-between;

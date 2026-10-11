@@ -50,7 +50,13 @@ export function Navigation({ path, routeKey, href }: {
     return items.map(([link, label]) => (
       <li key={link}>
         <a href={href(link)} aria-current={isCurrent(link) ? "page" : undefined}
-          onClick={() => setOpen(undefined)}>{label}</a>
+          onClick={(event) => {
+            setOpen(undefined);
+            // The router focuses main when the pathname changes. A same-page
+            // activation also needs a visible destination after this link hides.
+            if (path === link && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey)
+              document.getElementById("main-content")?.focus({ preventScroll: true });
+          }}>{label}</a>
       </li>
     ));
   }
