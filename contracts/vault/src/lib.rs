@@ -58,6 +58,9 @@ enum Key {
     Asset,
     Admin,
     Supply,
+    Name,
+    Symbol,
+    Minted,
     Balance(Address),
     Allowance(Address, Address),
 }
@@ -177,6 +180,7 @@ impl DemoVault {
         );
         put_balance(&e, &from, balance(&e, &from) + shares);
         e.storage().instance().set(&Key::Supply, &(total + shares));
+        e.storage().instance().set(&Key::Minted, &true);
         Mint {
             to: from,
             amount: shares,
@@ -300,10 +304,53 @@ impl DemoVault {
     pub fn decimals(_e: Env) -> u32 {
         7
     }
+    pub fn set_metadata(e: Env, name: String, symbol: String) {
+        let admin: Address = e.storage().instance().get(&Key::Admin).unwrap();
+        admin.require_auth();
+        assert!(
+            !e.storage().instance().has(&Key::Minted) && !e.storage().instance().has(&Key::Name),
+            "metadata locked"
+        );
+        assert!(
+            name.len() > 0 && name.len() <= 64 && symbol.len() > 0 && symbol.len() <= 12,
+            "metadata length"
+        );
+        e.storage().instance().set(&Key::Name, &name);
+        e.storage().instance().set(&Key::Symbol, &symbol);
+        touch(&e);
+    }
     pub fn name(e: Env) -> String {
-        String::from_str(&e, "YieldShield TESTUSD Demo Vault")
+        e.storage()
+            .instance()
+            .get(&Key::Name)
+            .unwrap_or(String::from_str(&e, "YieldShield TESTUSD Demo Vault"))
     }
     pub fn symbol(e: Env) -> String {
-        String::from_str(&e, "ysvUSD")
+        e.storage()
+            .instance()
+            .get(&Key::Symbol)
+            .unwrap_or(String::from_str(&e, "ysvUSD"))
+    }
+}
+#[cfg(test)]
+mod metadata_tests {
+    use super::*;
+    use soroban_sdk::testutils::Address as _;
+    #[test]
+    fn metadata_is_named_once_before_deposit() {
+        let e = Env::default();
+        e.mock_all_auths();
+        let admin = Address::generate(&e);
+        let asset = e
+            .register_stellar_asset_contract_v2(admin.clone())
+            .address();
+        let id = e.register(DemoVault, (&asset, &admin));
+        let c = DemoVaultClient::new(&e, &id);
+        let name = String::from_str(&e, "TEST Reserve Alpha");
+        let symbol = String::from_str(&e, "ysALPHA");
+        c.set_metadata(&name, &symbol);
+        assert_eq!(c.name(), name);
+        assert_eq!(c.symbol(), symbol);
+        assert!(c.try_set_metadata(&name, &symbol).is_err());
     }
 }
