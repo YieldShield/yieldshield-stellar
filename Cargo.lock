@@ -2066,6 +2066,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "yieldshield-factory"
+version = "0.1.0"
+dependencies = [
+ "soroban-sdk",
+ "yieldshield-pool-v3",
+ "yieldshield-vault",
+]
+
+[[package]]
 name = "yieldshield-faucet"
 version = "0.1.0"
 dependencies = [
@@ -2073,7 +2082,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "yieldshield-market"
+version = "0.1.0"
+dependencies = [
+ "soroban-sdk",
+ "yieldshield-vault",
+]
+
+[[package]]
 name = "yieldshield-pool"
+version = "0.1.0"
+dependencies = [
+ "soroban-sdk",
+ "yieldshield-vault",
+]
+
+[[package]]
+name = "yieldshield-pool-v3"
 version = "0.1.0"
 dependencies = [
  "soroban-sdk",
