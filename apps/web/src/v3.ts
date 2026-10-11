@@ -99,10 +99,15 @@ export async function readMarket(m: Market): Promise<Data> {
   return { state, nav, assets, supply, inventory, readAt: Date.now() };
 }
 export async function readAccount(m: Market, address: string): Promise<Wallet> {
-  const [base, shares, backing, provider, credit, ids] = await Promise.all([
-    api.readFunding(address),
+  const base = await api.readFunding(address);
+  const [shares, backing, provider, credit, ids] = await Promise.all([
     api.view(m.vault, "balance", [api.addressSc(address)]),
-    api.view(m.backing, "balance", [api.addressSc(address)]),
+    // A classic SAC balance read fails before the account has its trustline.
+    // Horizon already supplies the TESTUSD balance (zero if not trusted), so
+    // onboarding must not depend on calling that unavailable token balance.
+    m.backing === api.config.backing
+      ? Promise.resolve(base.backing)
+      : api.view(m.backing, "balance", [api.addressSc(address)]),
     api.view(m.pool, "provider", [api.addressSc(address)]),
     api.view(m.pool, "credit", [api.addressSc(address)]),
     api.view(m.pool, "positions", [api.addressSc(address)]),
