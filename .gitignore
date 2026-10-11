@@ -1,0 +1,9 @@
+node_modules/
+target/
+dist/
+.env*
+!.env.example
+.secrets/
+.stellar/
+.vercel/
+.DS_Store
