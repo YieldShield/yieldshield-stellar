@@ -102,3 +102,29 @@ test("confirmed transaction with failed balance read clears stale actionable bal
   assert.doesNotMatch(text(r), /100\.0000000 TESTUSD/, "cached wallet balance must be removed");
   await act(async () => r.unmount());
 });
+
+test("changing wallet invalidates an already reviewed transaction", async () => {
+  let account = "wallet-A", submitted = 0;
+  const r = await start({ connect: async () => account, transact: async () => { submitted++; } });
+  account = "wallet-B";
+  await act(async () => r.root.findByProps({ className: "wallet-button" }).props.onClick());
+  assert.equal(findButton(r, "Confirm in Freighter"), undefined);
+  assert.equal(submitted, 0);
+  await act(async () => r.unmount());
+});
+
+test("expired review cannot reach wallet signing", async () => {
+  let submitted = 0;
+  const r = await start({ transact: async () => { submitted++; } });
+  const originalNow = Date.now;
+  try {
+    const time = originalNow();
+    Date.now = () => time + 121000;
+    await act(async () => findButton(r, "Confirm in Freighter").props.onClick());
+    assert.equal(submitted, 0);
+    assert.match(text(r), /This review expired/);
+  } finally {
+    Date.now = originalNow;
+    await act(async () => r.unmount());
+  }
+});
