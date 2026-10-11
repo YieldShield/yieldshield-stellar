@@ -22,8 +22,8 @@ export function Protect(c: Ctx & { initial: string }) {
   return (
     <div className="two-column">
       <section className="panel">
-        <p className="eyebrow">HOLDER / FIXED BACKING EXIT</p>
-        <h2>Protect your vault receipts.</h2>
+        <p className="eyebrow">HOLDER</p>
+        <h2>Fixed backing exit</h2>
         <Amount
           label="Receipt amount"
           value={n}
@@ -102,10 +102,9 @@ export function Protect(c: Ctx & { initial: string }) {
           Review protection →
         </button>
         <p className="fine">
-          Before maturity, choose a partial or full receipt exit or fixed
-          backing exit. At maturity, the remaining position settles into backing
-          credit. No payout is available beyond the contract’s funded
-          obligations.
+          Exit partially or fully before maturity. At maturity, remaining
+          receipts become fixed backing credit; remaining upside is forfeited.
+          Payouts are limited to funded obligations.
         </p>
       </section>
       <Context {...c} />
@@ -213,12 +212,12 @@ export function Provide(c: Ctx) {
       />
       <div className="two-column">
         <section className="panel">
-          <p className="eyebrow">CAPITAL PROVIDER / PUBLIC PARTICIPATION</p>
-          <h2>Back a defined claim.</h2>
+          <p className="eyebrow">PROVIDER</p>
+          <h2>Backing capital</h2>
           <p>
-            New deposits and cash withdrawals freeze whenever any holder
-            liability is open. Fee and acquired-inventory claims stay separate;
-            cash withdrawal also requires a matured notice.
+            Deposits and withdrawals pause while holders are protected.
+            Withdrawals also require notice. Backing may be exchanged for
+            lower-value receipts.
           </p>
           <a
             href={c.href(
@@ -260,12 +259,13 @@ export function Provide(c: Ctx) {
             }}
           />
           <p>
-            Deposits and cash withdrawals are{" "}
-            {c.data?.state.active
-              ? "currently locked because holder liabilities are open."
-              : "available when the pool term permits."}{" "}
-            LP shares price cash only; previously earned or acquired receipts
-            stay with the providers who funded them.
+            {!c.data
+              ? "Reading provider availability…"
+              : c.data.state.active
+                ? "Cash actions locked: holder positions remain open."
+                : now() + 60 >= Number(c.data.state.end)
+                  ? "Deposits closed. Withdraw after your notice matures."
+                  : "Deposits open. Withdraw after your notice matures."}
           </p>
           <button
             disabled={
@@ -283,8 +283,7 @@ export function Provide(c: Ctx) {
           {p && p.notice_shares > 0n && (
             <>
               <p>
-                Notice matures {date(p.notice_at)}. Active positions must also
-                close or settle before cash can leave.
+                Notice matures {date(p.notice_at)}. Holder positions must also close.
               </p>
               <button
                 className="quiet"
@@ -304,6 +303,11 @@ export function Provide(c: Ctx) {
               </button>
             </>
           )}
+          <details className="optional-details">
+            <summary>How provider shares are valued</summary>
+            <p>LP shares price cash only. Previously earned fees and acquired
+              receipts remain with the providers who funded them.</p>
+          </details>
         </section>
         <Context {...c} />
       </div>
@@ -311,8 +315,7 @@ export function Provide(c: Ctx) {
         <section className="panel">
           <h2>Gain-fee receipts</h2>
           <p>
-            Fees from positive-gain receipt exits. These are distinct from
-            principal recovered through backing exits.
+            Fees earned on holders’ positive-gain receipt exits, separate from principal.
           </p>
           <strong className="large-number">
             {f(p?.rewards)} {m?.symbol}
@@ -327,10 +330,10 @@ export function Provide(c: Ctx) {
           </button>
         </section>
         <section className="panel">
-          <h2>Acquired receipt inventory</h2>
+          <h2>Acquired receipts</h2>
           <p>
-            Your share of receipts surrendered by protected holders. Their value
-            may be lower than the backing paid. Receipt inventory is not yield.
+            Surrendered receipts may be worth less than backing paid. This is
+            recovered principal, not yield.
           </p>
           <strong className="large-number">
             {f(p?.inventory)} {m?.symbol}

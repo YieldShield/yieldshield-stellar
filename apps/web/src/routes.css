@@ -743,3 +743,21 @@
   background: #eaedda;
   font-size: 12px;
 }
+.v3 .asset-pair {
+  font: 12px monospace;
+}
+.v3 .optional-details {
+  margin-top: 20px;
+  border-top: 1px solid #c9cfc3;
+  padding-top: 12px;
+  font-size: 13px;
+}
+.v3 .optional-details summary {
+  cursor: pointer;
+  padding: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.v3 .optional-details p {
+  margin: 8px 0 0;
+}

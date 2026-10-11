@@ -28,7 +28,7 @@ export function Trade(c: Ctx & { initial: string }) {
   return (
     <div className="two-column">
       <section className="panel">
-        <p className="eyebrow">FUNDED RECEIPT EXCHANGE</p>
+        <p className="eyebrow">EXCHANGE</p>
         <h2>{side === "buy" ? "Buy a receipt." : "Sell a receipt."}</h2>
         <a
           href={c.href(
@@ -132,10 +132,8 @@ export function Trade(c: Ctx & { initial: string }) {
           Review {side} →
         </button>
         <p className="fine">
-          Prices use actual vault redemption value plus a 0.3% buy fee or minus
-          a 0.3% sell fee. This is a funded, operator-managed test market, not
-          an external price feed or an AMM. The quote can move; your signed
-          limit caps the change.
+          Operator-managed inventory. Prices track vault redemption with a
+          0.3% buy/sell fee. Your signed limit caps quote changes.
         </p>
       </section>
       <Context {...c} />

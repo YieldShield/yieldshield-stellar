@@ -86,9 +86,8 @@ export function Stats({ items }: { items: [string, string][] }) {
 export function Context({ market, data }: { market?: Market; data?: Data }) {
   return (
     <aside className="context-panel">
-      <p className="eyebrow">SELECTED MARKET</p>
-      <h2>{market?.name || "Loading…"}</h2>
-      <p>{market?.description}</p>
+      <h2>Pool terms</h2>
+      <p className="asset-pair">{market ? `${market.symbol} / ${market.backingSymbol}` : "Loading…"}</p>
       <dl>
         <dt>Free backing</dt>
         <dd>
@@ -109,10 +108,13 @@ export function Context({ market, data }: { market?: Market; data?: Data }) {
         </dd>
       </dl>
       <p className="fine">
-        Fees apply only to positive gain on receipt exits. Backing exits
-        surrender the receipt. All assets are valueless test tokens; a receipt
-        claim is not a dollar guarantee.
+        Receipt exits pay fees only on gains. Backing exits surrender receipts.
+        Claims are in {market?.backingSymbol || "backing tokens"}, not guaranteed dollars.
       </p>
+      <details className="optional-details">
+        <summary>How this vault is backed</summary>
+        <p>{market?.description}</p>
+      </details>
     </aside>
   );
 }

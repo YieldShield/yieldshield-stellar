@@ -300,8 +300,7 @@ export function App() {
       <div className="network-banner">
         STELLAR TESTNET{" "}
         <span>
-          Valueless demo assets · Unaudited contracts · XLM pays network fees
-          only
+          Valueless assets · Unaudited contracts · XLM for fees only
         </span>
       </div>
       <header className="app-header">
@@ -322,7 +321,6 @@ export function App() {
           <Home href={href} />
         ) : (
           <div className="page-heading">
-            <p className="eyebrow">NATIVE SOROBAN · FUNDED TEST MARKETS</p>
             <h1>{title(path)}</h1>
           </div>
         )}
@@ -408,9 +406,9 @@ export function App() {
                   "deposit",
                   "redeem",
                 ].includes(quote.method)
-                  ? "This amount-sensitive method enforces the displayed output limit and transaction deadline on chain."
-                  : "This action authorizes the specific contract method shown above; the review expiry is a browser safeguard."}{" "}
-                Network fees are paid separately in test XLM.
+                  ? "The contract enforces these amount limits and the transaction deadline."
+                  : "Only this action is authorized. Review expiry is a browser safeguard."}{" "}
+                Network fees are separate, in test XLM.
               </p>
               <button disabled={!!busy} onClick={confirm}>
                 Confirm in Freighter →
@@ -433,8 +431,7 @@ export function App() {
         )}
         {!address && (["/trade", "/protect", "/provide", "/positions", "/faucet", "/assets", "/create-pool"].includes(path) || path.startsWith("/positions/")) && (
           <p className="wallet-prompt">
-            Connect Freighter to review transactions. Market terms remain
-            available without a wallet.
+            Connect Freighter to review a transaction.
           </p>
         )}
         {!["/", "/legal", "/how-it-works", "/account"].includes(path) && !markets.length && (
@@ -534,11 +531,8 @@ export function App() {
           yieldshield
         </a>
         <div>
-          <a href="/faucet">Test assets</a>
-          <a href="/how-it-works">How it works</a>
           <a href="/learn/scenarios">Scenarios</a>
-          <a href="/account">Account</a>
-          <a href="/status">Network & contracts</a>
+          <a href="/status">Status</a>
           <a href="/legal">Risks & terms</a>
         </div>
         <p>
@@ -556,15 +550,15 @@ function title(p: string) {
       : (
           {
             "/markets": "Choose your market.",
-            "/trade": "Buy. Sell. Then protect.",
-            "/protect": "Keep a defined exit.",
-            "/provide": "Put capacity to work.",
-            "/positions": "Every position, in view.",
+            "/trade": "Trade vault receipts.",
+            "/protect": "Protect your receipts.",
+            "/provide": "Provide backing.",
+            "/positions": "Your portfolio.",
             "/faucet": "Start with test assets.",
-            "/assets": "Your native test assets.",
+            "/assets": "Fund your wallet.",
             "/create-pool": "Build your own pool.",
-            "/activity": "Follow the onchain activity.",
-            "/account": "Your wallet, your control.",
+            "/activity": "Pool activity.",
+            "/account": "Your wallet.",
             "/status": "Proof, not promises.",
             "/how-it-works": "Two roles. One funded pool.",
             "/learn/scenarios": "Explore the outcomes.",

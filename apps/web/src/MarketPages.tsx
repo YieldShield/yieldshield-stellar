@@ -27,9 +27,8 @@ export function Home({ href }: { href: Ctx["href"] }) {
           <em>A different side of risk.</em>
         </h1>
         <p>
-          Protect a funded vault receipt, or supply the backing that makes its
-          exit possible. Choose a market, inspect its capacity, and take your
-          side.
+          Protect funded vault receipts, or provide the backing for their exit.
+          Choose a market and your role.
         </p>
         <div className="actions">
           <a className="button" href={href("/protect")}>
@@ -103,9 +102,7 @@ export function Markets({
   return (
     <>
       <p className="intro">
-        Real contract addresses, real test inventory. Each receipt is redeemable
-        against its own funded vault. Select the asset and backing pair that
-        matches the position you want to test.
+        Choose a receipt and its backing. Each vault holds real, valueless test assets.
       </p>
       <div className="market-grid">
         {markets.map((m, i) => (
@@ -180,15 +177,14 @@ export function PoolDetail(c: Ctx) {
         <section className="panel">
           <h2>Choose your side.</h2>
           <p>
-            Holders lock receipts for a defined backing claim. Providers supply
-            cash and absorb the economics of surrendered receipts. New provider
-            deposits and cash withdrawals pause while any holder liability is
-            open.
+            Holders lock receipts for a fixed backing claim. Providers fund
+            that claim and risk receiving lower-value receipts. Provider deposits
+            and withdrawals pause while holders are protected.
           </p>
           <p>
-            At maturity anyone can settle a holder position into a separate
-            backing credit. Providers can then withdraw after their notice
-            period; the holder claims their credit when ready.
+            At maturity, receipts become backing credit and remaining upside is
+            forfeited. Holders claim separately; providers withdraw after notice
+            once all positions are settled.
           </p>
           <div className="actions">
             <a className="button" href={c.href("/protect")}>
