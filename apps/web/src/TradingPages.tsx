@@ -30,6 +30,14 @@ export function Trade(c: Ctx & { initial: string }) {
       <section className="panel">
         <p className="eyebrow">FUNDED RECEIPT EXCHANGE</p>
         <h2>{side === "buy" ? "Buy a receipt." : "Sell a receipt."}</h2>
+        <a
+          href={c.href(
+            `/assets?returnTo=${encodeURIComponent(c.href(`/trade?amount=${n}`))}`,
+            c.api?.deployment.markets.find((x) => x.vault === m?.backing) || m,
+          )}
+        >
+          Fund or acquire backing →
+        </a>
         <div className="tabs">
           {(["buy", "sell"] as const).map((s) => (
             <button

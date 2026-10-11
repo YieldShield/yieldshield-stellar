@@ -617,3 +617,18 @@
     transition: none !important;
   }
 }
+/* Keep the native app navigation visible despite the legacy page's mobile rules. */
+.v3 nav > a {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.v3 nav {
+  min-width: 0;
+  max-width: 100%;
+}
+.v3 .wallet-prompt {
+  padding: 12px 16px;
+  border-left: 3px solid #abb36f;
+  background: #eaedda;
+  font-size: 12px;
+}

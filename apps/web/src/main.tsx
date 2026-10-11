@@ -93,6 +93,7 @@ function App() {
   const [quote, setQuote] = useState<Quote>();
   const [follow, setFollow] = useState("");
   const version = useRef(0);
+  const readVersion = useRef(0);
   const active = useRef({ address: "", pool: "" });
   const path = url.pathname;
   const selected = path.startsWith("/markets/")
@@ -132,16 +133,21 @@ function App() {
   async function refresh() {
     if (!api || !market) return;
     const requested = { address, pool: market.pool };
-    const d = await api.readMarket(market);
-    if (active.current.pool !== requested.pool) return;
-    setData(d);
-    if (address) {
-      const w = await api.readAccount(market, address);
-      if (
-        active.current.address === requested.address &&
-        active.current.pool === requested.pool
-      )
-        setWallet(w);
+    const request = ++readVersion.current;
+    const current = () =>
+      request === readVersion.current &&
+      active.current.pool === requested.pool &&
+      active.current.address === requested.address;
+    try {
+      const [d, w] = await Promise.all([
+        api.readMarket(market),
+        address ? api.readAccount(market, address) : Promise.resolve(undefined),
+      ]);
+      if (!current()) return;
+      setData(d);
+      setWallet(w);
+    } catch (e) {
+      if (current()) throw e;
     }
   }
   useEffect(() => {

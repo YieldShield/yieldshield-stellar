@@ -115,6 +115,16 @@ export function Markets({
             </span>
             <h2>{m.name}</h2>
             <p>{m.description}</p>
+            {states[m.pool] && (
+              <p className="fine">
+                {now() >= Number(states[m.pool].state.end)
+                  ? "Matured — settlement and claims only"
+                  : now() + 60 >= Number(states[m.pool].state.end)
+                    ? "Admissions closed — maturity approaching"
+                    : `Term ends ${date(states[m.pool].state.end)}`}{" "}
+                · Read {new Date(states[m.pool].readAt).toLocaleTimeString()}
+              </p>
+            )}
             <Stats
               items={[
                 ["Receipt", m.symbol],
@@ -125,7 +135,7 @@ export function Markets({
                     : "Reading…",
                 ],
                 [
-                  "Free capacity",
+                  "Free backing",
                   states[m.pool]
                     ? f(
                         states[m.pool].state.liquidity -

@@ -114,7 +114,9 @@ export function Protect(c: Ctx & { initial: string }) {
 }
 
 export function Provide(c: Ctx) {
-  const [n, set] = useState("500");
+  const [n, set] = useState(
+    new URL(location.href).searchParams.get("amount") || "500",
+  );
   const [mode, setMode] = useState("deposit");
   const p = c.wallet?.provider;
   const m = c.market;
@@ -139,11 +141,31 @@ export function Provide(c: Ctx) {
           args: [a.addressSc(c.address), a.amountSc(amount)],
         };
       const deposit = mode === "deposit";
+      const fresh = await a.readMarket(m!);
+      if (fresh.state.active)
+        throw new Error(
+          "Provider cash actions are locked while holder liabilities remain open.",
+        );
+      if (deposit && now() + 60 >= Number(fresh.state.end))
+        throw new Error(
+          "This pool has closed deposits. Choose or create a newer pool.",
+        );
+      if (!deposit) {
+        const current = (await a.view(m!.pool, "provider", [
+          a.addressSc(c.address),
+        ])) as import("./v3").Provider;
+        if (amount > current.notice_shares || now() < Number(current.notice_at))
+          throw new Error(
+            "Request a sufficient withdrawal notice and wait for it to mature.",
+          );
+      }
       const output = (await a.view(
         m!.pool,
         deposit ? "preview_provide" : "preview_withdraw",
         [a.amountSc(amount)],
       )) as bigint;
+      if (deposit && output <= 0n)
+        throw new Error("This deposit is too small to mint a provider share.");
       return {
         ...base,
         title: deposit
@@ -193,6 +215,20 @@ export function Provide(c: Ctx) {
         <section className="panel">
           <p className="eyebrow">CAPITAL PROVIDER / PUBLIC PARTICIPATION</p>
           <h2>Back a defined claim.</h2>
+          <p>
+            New deposits and cash withdrawals freeze whenever any holder
+            liability is open. Fee and acquired-inventory claims stay separate;
+            cash withdrawal also requires a matured notice.
+          </p>
+          <a
+            href={c.href(
+              `/assets?returnTo=${encodeURIComponent(c.href(`/provide?amount=${n}`))}`,
+              c.api?.deployment.markets.find((x) => x.vault === m?.backing) ||
+                m,
+            )}
+          >
+            Fund or acquire backing →
+          </a>
           <div className="tabs">
             {[
               ["deposit", "Deposit"],
@@ -230,7 +266,17 @@ export function Provide(c: Ctx) {
             LP shares price cash only; previously earned or acquired receipts
             stay with the providers who funded them.
           </p>
-          <button disabled={!m || c.busy} onClick={submit}>
+          <button
+            disabled={
+              !m ||
+              c.busy ||
+              (mode !== "notice" && !!c.data?.state.active) ||
+              (mode === "deposit" &&
+                !!c.data &&
+                now() + 60 >= Number(c.data.state.end))
+            }
+            onClick={submit}
+          >
             Review {mode === "notice" ? "withdrawal notice" : mode} →
           </button>
           {p && p.notice_shares > 0n && (
