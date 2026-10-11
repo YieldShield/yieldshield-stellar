@@ -32,6 +32,7 @@ The five-minute maturity fixture was prepared by **three native setup transactio
 - Missing Freighter reports an actionable message and re-enables connection.
 - Protection → nested vault funding → protection preserves the exact seven-decimal amount and selected nested market.
 - An invalid position identifier displays a recovery action; returning to the portfolio works.
+- After publishing, the custom domain served the expected production bundle, all three icon links, six registry pools and no test-wallet controls. Desktop and 390px phone views had no horizontal page overflow; screenshots and exact release identity are in [HOSTING.md](HOSTING.md).
 
 ## Recovery and onboarding fixes
 

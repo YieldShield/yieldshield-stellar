@@ -34,6 +34,6 @@ The funded native pairs are `ysALPHA / TESTUSD`, `ysBETA / TESTUSD`, and `ysNEST
 
 Native deployment and signed transaction evidence is stored under `docs/evidence/v3/`. Featured markets are funded separately from the short-lived lifecycle proof pool, preserving usable provider entry in the featured markets.
 
-Browser acceptance covered deployed market reads, dedicated protection/provider pages, buy/sell and conversion controls, account recovery without Freighter, exact funding return context, invalid-pool rejection, direct routes and desktop/mobile navigation. Scripted testnet signing is separate evidence; actual browser-extension signing is not claimed as tested.
+Browser acceptance covered deployed market reads, dedicated protection/provider pages, buy/sell and conversion controls, account recovery without Freighter, exact funding return context, invalid-pool rejection, direct routes and desktop/mobile navigation. The later end-to-end pass completed 23 confirmed transactions through the browser application's real Freighter API and Testnet RPC path using a restricted local test signer. [E2E_REPORT.md](E2E_REPORT.md) records onboarding, lifecycle, recovery and native-fixture boundaries. Actual Freighter extension consent and approval screens remain unverified.
 
 Both grant applications remain held for user review. Existing application drafts describe the earlier release and must be reconciled with this expanded implementation before any future submission.
