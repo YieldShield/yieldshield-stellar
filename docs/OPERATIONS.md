@@ -43,7 +43,7 @@ Contract writes request a 1,000,000-ledger storage lifetime (roughly 58 days at 
 
 ## Storage lifetime renewal
 
-Without renewal, the instances and code deployed on 11 October 2026 expire around ledger 6,144,082 (early to mid December 2026). Renewal covers every entry the public application depends on: the v3 factory recorded in `config/markets.json`, three vaults, three exchanges and **every pool in the factory registry** (including community pools, read page by page from a paged registry), the factory and pools a `--fresh-pools` deployment replaced (`previous`, which still hold positions), the legacy vault and pool, the shared faucet, the TESTUSD asset contract, and the Wasm code of all of them.
+Without renewal, the instances and code of the stack deployed on 12 October 2026 expire around ledger 6,161,661 (mid-December 2026). Renewal covers every entry the public application depends on: the v3 factory recorded in `config/markets.json`, three vaults, three exchanges and **every pool in the factory registry** (including community pools, read page by page from a paged registry), the factory and pools a `--fresh-pools` deployment replaced (`previous`, which still hold positions), the legacy vault and pool, the shared faucet, the TESTUSD asset contract, and the Wasm code of all of them.
 
 | Setting | Value |
 |---|---|
@@ -56,12 +56,12 @@ Without renewal, the instances and code deployed on 11 October 2026 expire aroun
 
 1. Run `node scripts/extend-testnet.mjs` without flags. It reads every live-until ledger and prints what is due, archived or missing; it signs nothing and exits non-zero when an entry is missing or overdue, so it can serve as a scheduled health check.
 2. Run `node scripts/extend-testnet.mjs --broadcast`. Only entries below the threshold are extended; archived entries are restored with `stellar contract restore`. Healthy entries are skipped, so an immediate second run does nothing.
-3. Commit the new evidence: one CLI record per renewed entry under `docs/evidence/ttl/<date>/`, named by contract (for example `extend-factory-CA7DG5I2.json`), and `summary.json` with before/after lifetimes. Earlier records are never overwritten.
+3. Commit the new evidence: one CLI record per renewed entry under `docs/evidence/ttl/<date>/`, named by contract (for example `extend-factory-CBE2M56H.json`), and `summary.json` with before/after lifetimes. Earlier records are never overwritten.
 4. Run `node scripts/verify-v3-deployment.mjs` to read back hashes, lifetimes, solvency and provider-entry status into the deployment's evidence directory (`evidence` in `config/markets.json`, default `v3`). `--extend` performs step 2 first and records it under that directory's `ttl/<date>/`.
 
 A **missing** entry cannot be extended. Try `stellar contract restore --id <contract> --network testnet --source-account ys-stellar-sponsor --config-dir .secrets/stellar`; if the contract no longer exists, the testnet has reset and the demo must be redeployed. Per-user contract data (balances, positions, provider records) is renewed by the contracts whenever it is written; data left untouched for about 58 days archives and must be restored before use. The web application detects archived storage: reads show "archived – restore needed" with a restore action, and a transaction that needs archived entries first asks the wallet to sign a `restoreFootprint` transaction, then re-simulates.
 
-The initial experimental addresses are preserved under `docs/evidence/archive-initial` for provenance. The current deployment manifest is authoritative; initial addresses are not the supported public application.
+The initial experimental addresses are preserved under `docs/evidence/archive-initial` for provenance. On 12 October 2026 the owner replaced the original stack (issuer `GBT2CT2N…J5JIH`, sponsor `GCHX4WWG…FYB3I`, factory `CA7DG5I2…3NTJR`) with a completely fresh one under new disposable keys: a new TESTUSD issuer `GBSIZTW6UJ2DYDNYDIXHMR4ROHQEPGWK6Y2CJW3E3KEPPQMDVLNJI7AS`, so wallets need a new trustline. The original manifests and evidence are in `docs/evidence/archive-2026-10-12`. Those contracts stay on Testnet as legacy, but they are no longer renewed and their storage archives around mid-December 2026. The current deployment manifest is authoritative; initial addresses are not the supported public application.
 
 ## Risk and scope limits
 

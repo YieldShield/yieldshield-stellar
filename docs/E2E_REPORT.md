@@ -62,7 +62,7 @@ Grant applications remain held for user review. This is functional verification,
 
 ## Fresh-user rerun, 12 October 2026
 
-A new disposable wallet (`GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML`) used the same localhost-only test-wallet harness against the deployed contracts on the featured Reserve Alpha market. The app's **Fund with Friendbot** button created the account (Friendbot transaction `b5ecbc967a2c0e0da76b19e13a90ee8dcdb918e964c438b9411b75da016a41fa`). Then **13 browser-signed transactions** confirmed SUCCESS on public Testnet:
+A new disposable wallet (`GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML`) used the same localhost-only test-wallet harness against the then-current contracts (the original stack, archived later that day in `evidence/archive-2026-10-12`) on the featured Reserve Alpha market. The app's **Fund with Friendbot** button created the account (Friendbot transaction `b5ecbc967a2c0e0da76b19e13a90ee8dcdb918e964c438b9411b75da016a41fa`). Then **13 browser-signed transactions** confirmed SUCCESS on public Testnet:
 
 | Step | Result |
 |---|---|

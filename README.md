@@ -40,7 +40,7 @@ Factory tests deploy the built pool Wasm, so run `stellar contract build` before
 - [Native contract math and safety boundaries](contracts/README.md)
 - [Release evidence and validation boundaries](docs/RELEASE.md)
 - [Build ledger](docs/BUILD_LEDGER.md)
-- [Testnet lifecycle evidence](docs/evidence/lifecycle.json)
+- [Testnet lifecycle evidence (original stack, archived)](docs/evidence/archive-2026-10-12/lifecycle.json)
 
 SCF #46 interest screening and any later application concern **future work**: hardened reserve accounting, verified USDC/strategy adapters and pilot tooling. Today's proof is not a reimbursement request. Independent audit funding belongs to the separate Audit Bank. A public source release and license need owner review; the initial repository is private. No partnership, award, audited status, mainnet readiness or customer traction is claimed.
 

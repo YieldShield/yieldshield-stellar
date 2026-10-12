@@ -26,7 +26,7 @@ The manifest is testnet-only; native XLM is limited to network costs. Actual dep
 - Surrender receipts and claim reserved backing: [ledger 5143557 transaction](https://stellar.expert/explorer/testnet/tx/21b35b35197e10c7330ee3b3d7978e01e87d8d9289e2d16063c933e6f3850d1a).
 - Leave a small visible test position open: [ledger 5143559 transaction](https://stellar.expert/explorer/testnet/tx/7eddfcd3c00824be4b006929ed90162b494e5a42da08573d72983a994aafc002).
 
-The automated verifier asserts actual recipient balance deltas and exact onchain output previews. It confirms gains are shared in receipts, returned receipts redeem to funded TESTUSD, loss exits pay the fixed recorded backing claim, old positions close, and reserve inventory remains accounted for. Raw results: [lifecycle.json](evidence/lifecycle.json).
+The automated verifier asserts actual recipient balance deltas and exact onchain output previews. It confirms gains are shared in receipts, returned receipts redeem to funded TESTUSD, loss exits pay the fixed recorded backing claim, old positions close, and reserve inventory remains accounted for. Raw results: [lifecycle.json](evidence/archive-2026-10-12/lifecycle.json) (original stack, archived on 12 October 2026).
 
 ## Validation and boundaries
 
