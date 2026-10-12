@@ -1,15 +1,20 @@
 # Public website release
 
-Verified on 11 October 2026.
+Published on 12 October 2026.
 
 - Public website: https://stellar.yieldshield.ai
 - Private source repository: https://github.com/YieldShield/yieldshield-stellar
 - Branch: `codex/stellar-scf46`
-- Published application commit: `0767fe5fe4bbb0b7f71747718e556b1bcf1d4e5c`
+- Published application commit: `7a2eee78cbbec69520d0859240c90bcc525eb7ac`
 - Vercel project: `yieldshield-stellar` (`prj_3q75ugtINazrFgxJZ9hZVu9kJN9r`)
 - Vercel team: `team_B1gmlyua4FRgXZSs0859SCoQ`
-- Deployment: `dpl_2hJhfXyLEaZvgRq6s9PbpkSfacan`, verified `READY` with the expected commit and custom-domain alias.
-- Immutable deployment: https://yieldshield-stellar-o6ceuxngt-noc2-6281s-projects.vercel.app
+- Deployment: `dpl_DRXuGzKEtBRHwvXLAMQMQwtHaLUu`, `READY` with the expected commit and custom-domain alias. Vercel built it from the pushed GitHub commit; the preview of the same tree served the new CSP, framing, referrer, permissions and immutable-asset headers, and a local Chromium run of `dist/` under those headers showed zero CSP violations.
+- Immutable deployment: https://yieldshield-stellar-7q9hcmyy5-noc2-6281s-projects.vercel.app
+- Previous release: `0767fe5fe4bbb0b7f71747718e556b1bcf1d4e5c`, deployment `dpl_2hJhfXyLEaZvgRq6s9PbpkSfacan`.
+
+This review release keeps unfunded wallets usable (Friendbot onboarding instead of an error), restores archived contract storage before reads and writes, simulates the reviewed transaction and explains failures, keeps polling through RPC blips, reads from the SDK null account, names testnet resets, keeps last good data when a read fails, reports trustline rejection codes with a surge-tolerant fee, shows the newest pool events, accepts a decimal comma, moves focus to the result, and adds security headers and link previews. Operations scripts now renew every v3 and legacy TTL by threshold and detect a testnet reset before skipping deployment steps. Checks: 82 JavaScript tests, 67 native contract tests and the production build; browser scenarios ran against mocked RPC/Horizon/Freighter because this environment cannot reach Stellar Testnet.
+
+The same release contains pool-v3 and factory fixes (provider index snapshots, bounded wallet index, minimum claim, live-pool limits with a paged registry, claim events) and `deploy-v3.mjs --fresh-pools`. **These contract fixes are not yet on chain.** The deployed v3 factory and pools are immutable and still run the earlier code until they mature on 10 November 2026; the website keeps reading them through the compatible registry path until the owner deploys the new factory and pools and records them in `config/markets.json`.
 
 The preceding E2E release (`1044b9c`) fixed transaction-review replay, stale actionable balances after failed refresh and fresh-wallet trustline onboarding. Development servers also deny private repository directories. Seventeen JavaScript tests, 52 native contract tests, production build and 23 browser-to-Testnet transactions pass. [E2E_REPORT.md](E2E_REPORT.md) records paths, receipts and limits. Earlier SVG/ICO/touch-icon, keyboard, mobile-navigation and draft-persistence evidence remains in [UI_REVIEW.md](UI_REVIEW.md).
 
