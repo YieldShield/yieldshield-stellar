@@ -109,7 +109,7 @@ export function CreatePool(c: Ctx & { markets: Market[] }) {
         <button
           disabled={!selected || c.busy}
           onClick={() =>
-            c.review((a) => {
+            c.review(async (a) => {
               const terms = {
                 collateral_bps: percent(collateral, 30000),
                 junior_fee_bps: percent(junior, 3000),
@@ -128,6 +128,8 @@ export function CreatePool(c: Ctx & { markets: Market[] }) {
                 throw new Error(
                   "Collateral must be 100–300%, provider fee 0–30%, creator fee 0–5%.",
                 );
+              const limit = await a.creationLimit(c.address);
+              if (limit) throw new Error(limit);
               return {
                 title: "Create native protection pool",
                 lines: [
@@ -184,7 +186,7 @@ export function Status(c: Ctx & { markets: Market[] }) {
       <Stats
         items={[
           ["Network", "Stellar Testnet"],
-          ["Registered pools", String(c.markets.length)],
+          ["Listed pools", String(c.markets.length)],
           [
             "Selected pool read",
             c.data

@@ -1,4 +1,4 @@
-import { nativeToScVal, scValToNative, xdr } from "@stellar/stellar-sdk";
+import { StrKey, nativeToScVal, scValToNative, xdr } from "@stellar/stellar-sdk";
 import * as api from "./stellar";
 import catalog from "../../../config/markets.json";
 export * from "./stellar";
@@ -68,25 +68,89 @@ export const deployment = catalog as {
   poolWasmHash: string;
   markets: Market[];
 };
+export type Listing = {
+  pool: string;
+  creator: string;
+  vault: string;
+  end: bigint;
+};
+export type Registry = {
+  count: number;
+  max_live: number;
+  max_per_creator: number;
+};
+// Matches the factory's PAGE_LIMIT: the newest registrations shown besides
+// unmatured pools, so matured pools stay reachable for settlement and claims.
+export const RECENT_POOLS = 25;
+const u32Sc = (v: number) => nativeToScVal(v, { type: "u32" });
+function community(reference: Market, pool: string): Market {
+  return { ...reference, pool, name: `Community pool · ${reference.symbol}` };
+}
+function referenceFor(vault: string) {
+  const reference = deployment.markets.find((m) => m.vault === vault);
+  if (!reference) throw new Error("Registry contains an unsupported vault.");
+  return reference;
+}
+// Featured pools, then unmatured and recently registered community pools,
+// newest first. The factory bounds both reads, so page load stays bounded.
 export async function markets(): Promise<Market[]> {
   if (!deployment.factory) return deployment.markets;
   const registry = await api.view(deployment.factory, "state");
-  const listed = registry.pools as string[];
+  if (Array.isArray(registry.pools)) return unpagedMarkets(registry.pools);
+  const count = Number(registry.count);
+  const [live, recent] = (await Promise.all([
+    api.view(deployment.factory, "live_pools"),
+    api.view(deployment.factory, "pools", [
+      u32Sc(Math.max(0, count - RECENT_POOLS)),
+      u32Sc(RECENT_POOLS),
+    ]),
+  ])) as [Listing[], Listing[]];
+  const seen = new Set(deployment.markets.map((m) => m.pool));
+  const listed = [...deployment.markets];
+  for (const l of [...live.slice().reverse(), ...recent.slice().reverse()]) {
+    if (seen.has(l.pool)) continue;
+    seen.add(l.pool);
+    listed.push(community(referenceFor(l.vault), l.pool));
+  }
+  return listed;
+}
+// Factories deployed before the paged registry return every pool in
+// `state().pools` (capped at 200 by that contract).
+async function unpagedMarkets(pools: string[]) {
   const known = new Map(deployment.markets.map((m) => [m.pool, m]));
   return Promise.all(
-    listed.map(async (pool) => {
+    pools.map(async (pool) => {
       if (known.has(pool)) return known.get(pool)!;
       const s = (await api.view(pool, "state")) as State;
-      const reference = deployment.markets.find((m) => m.vault === s.vault);
-      if (!reference)
-        throw new Error("Registry contains an unsupported vault.");
-      return {
-        ...reference,
-        pool,
-        name: `Community pool · ${reference.symbol}`,
-      };
+      return community(referenceFor(s.vault), pool);
     }),
   );
+}
+// Resolves a linked pool outside the bounded listing. Only pools the
+// factory registered (it alone writes records) for a known vault qualify.
+export async function registeredMarket(pool: string): Promise<Market | null> {
+  if (!deployment.factory || !StrKey.isValidContract(pool)) return null;
+  const known = deployment.markets.find((m) => m.pool === pool);
+  if (known) return known;
+  let record: { vault: string };
+  try {
+    record = await api.view(deployment.factory, "record", [api.addressSc(pool)]);
+  } catch {
+    return null;
+  }
+  return community(referenceFor(record.vault), pool);
+}
+// Checks the factory's own creation limits so the review explains them
+// instead of failing in transaction preparation.
+export async function creationLimit(creator: string) {
+  const registry = (await api.view(deployment.factory, "state")) as Registry;
+  if (registry.max_live === undefined) return "";
+  const live = (await api.view(deployment.factory, "live_pools")) as Listing[];
+  if (live.length >= registry.max_live)
+    return `The factory already has ${registry.max_live} unmatured pools. Create one after a pool matures.`;
+  if (live.filter((l) => l.creator === creator).length >= registry.max_per_creator)
+    return `Each wallet can have ${registry.max_per_creator} unmatured pools. Create another after one of yours matures.`;
+  return "";
 }
 export async function readMarket(m: Market): Promise<Data> {
   const [state, nav, assets, supply, inventory] = await Promise.all([

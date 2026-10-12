@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { createServer } from "vite";
 import react from "@vitejs/plugin-react";
 import { Networks } from "@stellar/stellar-sdk";
-import { key, readJson, view, assertTestnet, save } from "./testnet.mjs";
+import { key, readJson, assertTestnet, save, registryPools } from "./testnet.mjs";
 import { validateTestSignature } from "./e2e-wallet-policy.mjs";
 
 if (!process.argv.includes("--local-test-signing"))
@@ -40,8 +40,7 @@ const server = await createServer({
           let body = "";
           for await (const chunk of req) { body += chunk; if (body.length > 100_000) throw Error("Request too large"); }
           const request = JSON.parse(body);
-          const registry = await view(catalog.factory, "state");
-          for (const pool of registry.pools) contracts.set(pool, poolMethods);
+          for (const pool of await registryPools(catalog.factory)) contracts.set(pool, poolMethods);
           const { tx, record } = validateTestSignature(request, { accounts, contracts, issuer: legacy.issuer });
           const signer = keys.find(k => k.publicKey() === tx.source);
           tx.sign(signer);

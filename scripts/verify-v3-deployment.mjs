@@ -9,18 +9,20 @@ import {
   server,
   view,
   scAddress,
+  registryPools,
 } from "./testnet.mjs";
 await assertTestnet();
 const m = readJson("config/markets.json"),
   l = readJson("config/testnet.json");
 const registry = await view(m.factory, "state");
+const registered = await registryPools(m.factory);
 const items = [
   { kind: "factory", id: m.factory, hash: m.factoryWasmHash },
   ...m.markets.flatMap((x) => [
     { kind: `vault-${x.key}`, id: x.vault, hash: m.vaultWasmHash },
     { kind: `market-${x.key}`, id: x.exchange, hash: m.marketWasmHash },
   ]),
-  ...registry.pools.map((id) => ({
+  ...registered.map((id) => ({
     kind: `pool-${id.slice(0, 8)}`,
     id,
     hash: m.poolWasmHash,
@@ -101,7 +103,7 @@ for (const hash of [...new Set(items.map((x) => x.hash))]) {
   });
 }
 const pools = [];
-for (const id of registry.pools) {
+for (const id of registered) {
   const s = await view(id, "state"),
     cash = await view(s.backing, "balance", [scAddress(id)]),
     receipts = await view(s.vault, "balance", [scAddress(id)]);

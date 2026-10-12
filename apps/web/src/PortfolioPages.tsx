@@ -79,7 +79,7 @@ function PortfolioAccount(c: Ctx & { markets: Market[] }) {
             <p role="status">
               {rows.length
                 ? "Refreshing your portfolio…"
-                : "Reading all registered pools…"}
+                : "Reading listed pools…"}
             </p>
           )}
           {warning && <p role="status">{warning}</p>}
@@ -183,8 +183,8 @@ function PortfolioAccount(c: Ctx & { markets: Market[] }) {
         </>
       )}
       <p className="fine">
-        Positions are discovered from each registered contract, including
-        user-created pools. Ownership changes are checked on chain. Previous
+        Positions are read from featured, unmatured and recently created
+        pools. Ownership changes are checked on chain. Previous
         single-sponsor positions remain accessible in the{" "}
         <a href="/legacy">legacy market</a>.
       </p>

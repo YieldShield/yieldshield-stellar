@@ -13,7 +13,7 @@ const temp = mkdtempSync(resolve("node_modules/.ui-refresh-test-"));
 const output = await build({
   stdin: {
     contents:
-      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx"; export {Provide,Protect} from "./apps/web/src/ProtectionPages.tsx"; export {Assets} from "./apps/web/src/TradingPages.tsx";',
+      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity,CreatePool} from "./apps/web/src/ManagementPages.tsx"; export {Provide,Protect} from "./apps/web/src/ProtectionPages.tsx"; export {Assets} from "./apps/web/src/TradingPages.tsx";',
     resolveDir: resolve("."),
   },
   bundle: true,
@@ -24,7 +24,7 @@ const output = await build({
 });
 const modulePath = join(temp, "components.mjs");
 writeFileSync(modulePath, output.outputFiles[0].text);
-const { PositionPage, Portfolio, Activity, Provide, Protect, Assets } = await import(
+const { PositionPage, Portfolio, Activity, Provide, Protect, Assets, CreatePool } = await import(
   pathToFileURL(modulePath).href
 );
 after(() => {
@@ -435,4 +435,40 @@ test("protection and partial exit reviews reject claims below the pool minimum",
     assert.equal(outcome.quote.method, "exit");
   }
   await unmount(p);
+});
+
+test("pool creation review explains the factory's live pool limit before signing", async () => {
+  let limit = "Each wallet can have 5 unmatured pools. Create another after one of yours matures.";
+  const outcome = {};
+  const api = {
+    ...context().api,
+    deployment: { factory: "factory" },
+    creationLimit: async (creator) => {
+      assert.equal(creator, "wallet-A");
+      return limit;
+    },
+    termsSc: (v) => v,
+    saltSc: () => "salt",
+  };
+  const props = context({
+    api,
+    markets: [market],
+    review: async (make) => {
+      try {
+        outcome.quote = await make(api);
+        outcome.error = undefined;
+      } catch (e) {
+        outcome.quote = undefined;
+        outcome.error = e;
+      }
+    },
+  });
+  const r = await mount(CreatePool, props);
+  await act(async () => button(r, "Review pool creation →").props.onClick());
+  assert.match(outcome.error.message, /Each wallet can have 5 unmatured pools/);
+  limit = "";
+  await act(async () => button(r, "Review pool creation →").props.onClick());
+  assert.equal(outcome.quote.method, "create");
+  assert.equal(outcome.quote.contract, "factory");
+  await unmount(r);
 });

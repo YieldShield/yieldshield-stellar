@@ -78,6 +78,7 @@ export function App() {
   const [registryLoading, setRegistryLoading] = useState(true);
   const [registryError, setRegistryError] = useState(false);
   const [registryAttempt, setRegistryAttempt] = useState(0);
+  const [unlisted, setUnlisted] = useState({ pool: "", checking: false });
   const [address, setAddress] = useState("");
   const [data, setData] = useState<Data>();
   const [wallet, setWallet] = useState<Wallet>();
@@ -138,6 +139,30 @@ export function App() {
       live = false;
     };
   }, [registryAttempt]);
+  // The registry listing is bounded; a linked pool outside it is accepted
+  // only after the factory confirms it registered that pool.
+  useEffect(() => {
+    if (!api || !selected || registryLoading || markets.some((m) => m.pool === selected))
+      return;
+    let live = true;
+    setUnlisted({ pool: selected, checking: true });
+    api
+      .registeredMarket(selected)
+      .then((found) => {
+        if (!live) return;
+        if (found)
+          setMarkets((list) =>
+            list.some((m) => m.pool === found.pool) ? list : [...list, found],
+          );
+        setUnlisted({ pool: selected, checking: false });
+      })
+      .catch(() => {
+        if (live) setUnlisted({ pool: selected, checking: false });
+      });
+    return () => {
+      live = false;
+    };
+  }, [api, selected, registryLoading, markets]);
   useEffect(() => {
     clear();
     setError("");
@@ -423,8 +448,10 @@ export function App() {
           </section>
         )}
         {selected && !market && markets.length > 0 && (
-          <p className="feedback error">
-            This pool is not registered.{" "}
+          <p className={unlisted.pool === selected && !unlisted.checking ? "feedback error" : "feedback"} role="status">
+            {unlisted.pool === selected && !unlisted.checking
+              ? "This pool is not registered, or the registry could not be read. "
+              : "Checking this pool in the factory registry… "}
             <a href="/markets">Choose a verified market</a>; no other pool has
             been selected.
           </p>

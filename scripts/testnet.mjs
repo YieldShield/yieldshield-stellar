@@ -116,6 +116,22 @@ export async function view(id, method, args = []) {
     throw new Error(`Read ${method} failed`);
   return scValToNative(result.result.retval);
 }
+// Every pool the factory registered. Paged factories list 25 per read;
+// factories deployed before paging return them all from state().pools.
+export async function registryPools(factory) {
+  const s = await view(factory, "state");
+  if (Array.isArray(s.pools)) return s.pools;
+  const pools = [];
+  for (let start = 0; start < s.count; start += 25) {
+    const page = await view(factory, "pools", [
+      nativeToScVal(start, { type: "u32" }),
+      nativeToScVal(25, { type: "u32" }),
+    ]);
+    if (!page.length) throw new Error("Registry page unexpectedly empty");
+    pools.push(...page.map((l) => l.pool));
+  }
+  return pools;
+}
 export async function trust(name, issuer) {
   const k = key(name);
   const acct = await horizon.loadAccount(k.publicKey());
