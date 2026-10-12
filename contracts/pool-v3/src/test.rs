@@ -402,3 +402,47 @@ fn late_entrants_never_overallocate_fee_rewards() {
     assert_eq!(claimed, owed);
     assert!(f.p().state().reward_balance <= 3, "only rounding dust remains");
 }
+// transfer_position needs no recipient consent, so anyone can push positions
+// into another wallet's index. A full index must never block that wallet.
+#[test]
+fn transfer_spam_cannot_block_recipient_protection() {
+    let f = F::new();
+    f.seed();
+    let victim = Address::generate(&f.e);
+    f.v().transfer(&f.h, &victim, &(20 * U));
+    for _ in 0..1000 {
+        let id = f.p().protect(&f.h, &100_000, &1, &u64::MAX);
+        f.p().transfer_position(&id, &victim);
+    }
+    let spam = f.p().positions(&victim);
+    assert_eq!(spam.len(), 100, "index stays bounded");
+    assert_eq!(f.p().positions(&f.h).len(), 0, "sender index pruned");
+    // Protection still succeeds; the full index just skips the new id.
+    let own = f.p().protect(&victim, &(10 * U), &1, &u64::MAX);
+    assert_eq!(f.p().position(&own).owner, victim);
+    assert!(!f.p().positions(&victim).contains(own));
+    // The recipient owns the gifted positions and can close one to make room.
+    f.time(1100);
+    let gift = spam.get(0).unwrap();
+    f.p().exit(&gift, &100_000, &false, &0, &u64::MAX);
+    let next = f.p().protect(&victim, &U, &1, &u64::MAX);
+    assert!(f.p().positions(&victim).contains(next));
+}
+#[test]
+fn closed_and_transferred_positions_leave_the_wallet_index() {
+    let f = F::new();
+    f.seed();
+    let moved = f.p().protect(&f.h, &(10 * U), &1, &u64::MAX);
+    let exited = f.p().protect(&f.h, &(10 * U), &1, &u64::MAX);
+    let kept = f.p().protect(&f.h, &(10 * U), &1, &u64::MAX);
+    f.p().transfer_position(&moved, &f.b);
+    f.time(1061);
+    f.p().exit(&exited, &(4 * U), &true, &0, &u64::MAX);
+    assert_eq!(f.p().positions(&f.h), soroban_sdk::vec![&f.e, exited, kept]);
+    f.p().exit(&exited, &(6 * U), &false, &0, &u64::MAX);
+    assert_eq!(f.p().positions(&f.h), soroban_sdk::vec![&f.e, kept]);
+    assert_eq!(f.p().positions(&f.b), soroban_sdk::vec![&f.e, moved]);
+    f.time(1600);
+    f.p().settle(&moved);
+    assert_eq!(f.p().positions(&f.b).len(), 0);
+}

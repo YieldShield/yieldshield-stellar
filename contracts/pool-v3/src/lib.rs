@@ -133,14 +133,32 @@ fn credit(e: &Env, o: &Address) -> i128 {
         .get(&Key::Credit(o.clone()))
         .unwrap_or(0)
 }
+// The per-wallet position index is a bounded discovery aid, not ownership.
+// It holds only open positions the wallet owns. Anyone can transfer a
+// position to any wallet without consent, so a full index skips new ids
+// instead of rejecting the protect or transfer. Positions stay readable by id.
+const MAX_WALLET_IDS: u32 = 100;
 fn index(e: &Env, o: &Address, id: u64) {
     let k = Key::Ids(o.clone());
     let mut ids: Vec<u64> = e.storage().persistent().get(&k).unwrap_or(Vec::new(e));
-    assert!(ids.len() < 1000, "wallet index full");
-    if !ids.contains(id) {
+    if ids.len() < MAX_WALLET_IDS && !ids.contains(id) {
         ids.push_back(id);
+        put(e, &k, &ids);
     }
-    put(e, &k, &ids);
+}
+fn unindex(e: &Env, o: &Address, id: u64) {
+    let k = Key::Ids(o.clone());
+    let Some(mut ids) = e.storage().persistent().get::<_, Vec<u64>>(&k) else {
+        return;
+    };
+    if let Some(i) = ids.first_index_of(id) {
+        ids.remove(i);
+        if ids.is_empty() {
+            e.storage().persistent().remove(&k);
+        } else {
+            put(e, &k, &ids);
+        }
+    }
 }
 fn distribute(s: &mut State, receipts: i128, inventory: bool) {
     if receipts > 0 {
@@ -270,6 +288,8 @@ impl PoolV3 {
     pub fn credit(e: Env, owner: Address) -> i128 {
         credit(&e, &owner)
     }
+    /// Open positions indexed for `owner`, at most 100. Best effort: ids
+    /// beyond the bound are not listed but remain readable via `position`.
     pub fn positions(e: Env, owner: Address) -> Vec<u64> {
         e.storage()
             .persistent()
@@ -482,6 +502,7 @@ impl PoolV3 {
         if p.shares == 0 {
             p.closed = true;
             s.active -= 1;
+            unindex(&e, &p.owner, id);
         }
         if backing_exit {
             s.liquidity -= out;
@@ -507,6 +528,7 @@ impl PoolV3 {
         let from = p.owner.clone();
         p.owner = to.clone();
         put(&e, &Key::Position(id), &p);
+        unindex(&e, &from, id);
         index(&e, &to, id);
         e.events()
             .publish((symbol_short!("transfer"), id), (from, to));
@@ -522,6 +544,7 @@ impl PoolV3 {
         s.credit_total += p.claim;
         distribute(&mut s, p.shares, true);
         p.closed = true;
+        unindex(&e, &p.owner, id);
         let n = credit(&e, &p.owner) + p.claim;
         put(&e, &Key::Credit(p.owner.clone()), &n);
         put(&e, &Key::Position(id), &p);
