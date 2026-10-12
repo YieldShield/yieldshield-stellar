@@ -11,13 +11,20 @@ import {
   scAmount,
   sha,
   trust,
+  server,
+  sleep,
   RPC,
 } from "./testnet.mjs";
+import {
+  archiveDeployment,
+  missingContracts,
+  planRedeploy,
+} from "./redeploy.mjs";
 if (!process.argv.includes("--broadcast"))
   throw new Error("Pass --broadcast to deploy using disposable testnet keys");
 await assertTestnet();
 const path = "config/testnet.json";
-const m = readJson(path, {
+const defaults = () => ({
   network: "Stellar Testnet",
   networkPassphrase: Networks.TESTNET,
   rpcUrl: RPC,
@@ -26,10 +33,32 @@ const m = readJson(path, {
   decimals: 7,
   createdAt: new Date().toISOString(),
 });
+let m = readJson(path, defaults());
+// Recorded IDs and evidence are only trusted while the contracts exist: after
+// a testnet reset they would make every step a silent no-op.
+const plan = planRedeploy({
+  missing: await missingContracts(server, m),
+  fresh: process.argv.includes("--fresh"),
+});
+if (plan.action === "abort") throw new Error(plan.message);
+if (plan.action === "fresh") {
+  const { target, moved } = archiveDeployment({ manifestPath: path });
+  console.log(`Archived ${moved.length} files of the vanished deployment to ${target}.`);
+  m = { ...defaults(), ...(m.revision ? { revision: m.revision } : {}) };
+}
 m.issuer = address("issuer");
 m.sponsor = address("sponsor");
 m.tester = address("tester");
 save(path, m);
+// Disposable accounts also vanish in a reset; Friendbot recreates them.
+for (const name of ["issuer", "sponsor", "tester"]) {
+  const exists = await server.getAccount(m[name]).then(() => true, () => false);
+  if (exists) continue;
+  const r = await fetch(`https://friendbot.stellar.org/?addr=${m[name]}`);
+  if (!r.ok) throw new Error(`Friendbot could not fund the ${name} account`);
+  save(`docs/evidence/fund-${name}.json`, { account: m[name], status: r.status });
+  await sleep(6000);
+}
 if (!m.backing) {
   const id = new Asset("TESTUSD", m.issuer).contractId(Networks.TESTNET);
   cliRun(
