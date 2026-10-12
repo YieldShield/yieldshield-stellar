@@ -57,6 +57,7 @@ test("a wallet Friendbot has not funded yet reads as unfunded instead of failing
   assert.deepEqual(funding, { funded: false, claimed: false, trusted: false, backing: 0n });
   net.accounts.add(user);
   net.trustlines.set(user, { asset_issuer: config.issuer, balance: "12.5000000" });
+  await api.fundWithFriendbot(user); // funding invalidates the shared read
   assert.deepEqual(await api.readFunding(user), { funded: true, claimed: false, trusted: true, backing: 125_000_000n });
 });
 
@@ -65,7 +66,7 @@ test("a Horizon blip is retried once; a persistent outage is still a read failur
   net.unavailable.horizon = 1;
   assert.equal((await api.readFunding(user)).funded, true);
   net.unavailable.horizon = 2;
-  await assert.rejects(api.readFunding(user));
+  await assert.rejects(api.readFunding(Keypair.random().publicKey()));
 });
 
 test("Friendbot funding accepts an already funded account and reports outages", async () => {
@@ -195,4 +196,20 @@ test("the trustline fee follows surge pricing within the demo cap", async () => 
   net.feeStats = () => [503, "down"];
   await api.trust(user);
   assert.equal(net.submitted.at(-1).fee, "10000");
+});
+
+test("one funding read per wallet serves every market of a refresh until a transaction", async () => {
+  net.accounts.add(user);
+  const reads = await Promise.all([1, 2, 3, 4, 5, 6].map(() => api.readFunding(user)));
+  assert.ok(reads.every((r) => r === reads[0]));
+  const count = () => ({
+    horizon: net.log.filter((l) => l === `horizon GET /accounts/${user}`).length,
+    claimed: net.log.filter((l) => l.startsWith("simulate claimed")).length,
+  });
+  assert.deepEqual(count(), { horizon: 1, claimed: 1 });
+  await api.readFunding(user);
+  assert.deepEqual(count(), { horizon: 1, claimed: 1 }, "a read moments later is shared too");
+  await api.trust(user);
+  await api.readFunding(user);
+  assert.deepEqual(count(), { horizon: 3, claimed: 2 }, "a signed transaction forces a fresh read (trust itself loads the account once)");
 });

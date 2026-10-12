@@ -165,7 +165,24 @@ export async function readPool() {
     readAt: Date.now(),
   };
 }
-export async function readFunding(address: string) {
+type Funding = Awaited<ReturnType<typeof loadFunding>>;
+// Funding (Horizon account + faucet claim) is per wallet, not per market:
+// one refresh reads it for the selected market and the portfolio reads it for
+// every registered pool. Concurrent and recent (3 s) reads share one request;
+// any signed transaction or Friendbot funding invalidates it.
+const fundingReads = new Map<string, { at: number; value: Promise<Funding> }>();
+const forgetFunding = () => fundingReads.clear();
+export function readFunding(address: string): Promise<Funding> {
+  const recent = fundingReads.get(address);
+  if (recent && Date.now() - recent.at < 3000) return recent.value;
+  const value = loadFunding(address);
+  fundingReads.set(address, { at: Date.now(), value });
+  value.catch(() => {
+    if (fundingReads.get(address)?.value === value) fundingReads.delete(address);
+  });
+  return value;
+}
+async function loadFunding(address: string) {
   const [account, claimed] = await Promise.all([
     // A brand-new wallet has no account until Friendbot funds it; Horizon
     // answers 404. That is an onboarding state, not a read failure.
@@ -203,6 +220,7 @@ export async function fundWithFriendbot(address: string) {
       "Friendbot did not respond. Try again shortly, or open Friendbot in a new tab.",
     );
   }
+  forgetFunding();
   if (response.ok) return;
   const body = await response.text().catch(() => "");
   // Funding twice is harmless: the account then already exists.
@@ -275,6 +293,19 @@ export function remember(address: string, id: bigint) {
   }
 }
 async function signAndSend(
+  tx: ReturnType<TransactionBuilder["build"]>,
+  address: string,
+  soroban: boolean,
+  onSubmitted?: (hash: string) => void,
+) {
+  try {
+    return await signSubmitConfirm(tx, address, soroban, onSubmitted);
+  } finally {
+    // Balances may have changed (or still change) whatever the outcome.
+    forgetFunding();
+  }
+}
+async function signSubmitConfirm(
   tx: ReturnType<TransactionBuilder["build"]>,
   address: string,
   soroban: boolean,
