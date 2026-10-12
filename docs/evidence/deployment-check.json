@@ -1,0 +1,54 @@
+{
+  "verifiedAt": "2026-10-12T19:08:13.672Z",
+  "network": "Stellar Testnet",
+  "records": [
+    {
+      "name": "pool",
+      "id": "CBJV5RWC5775GSSXX66LQDWOJMW7VP56N4CLNUHMHBMTW6SNYBUKFS4C",
+      "executable": {
+        "wasm": "c7d36cd7099341e2789b7ad598c672ff859ddb2fcc0c4a73e973e64da96fd14f"
+      },
+      "latestLedger": 5161701,
+      "liveUntilLedger": 6161663
+    },
+    {
+      "name": "vault",
+      "id": "CA26ORGYTS4PFXRNCL5M63WWL6CPGRYK6A57JHQPPF6BF44IMFB3Y5JJ",
+      "executable": {
+        "wasm": "a0fd6625572d0569d30ab5a80ab715b9faa1302b91fb8b1c3b0cc2018d82155d"
+      },
+      "latestLedger": 5161701,
+      "liveUntilLedger": 6161661
+    },
+    {
+      "name": "faucet",
+      "id": "CDX2KQBR2XJLLAXF5BYJ2V4YN2WOJGXT4IP2OF37MQLS6HLZYJIC7BFR",
+      "executable": {
+        "wasm": "070414a2def96280543ad345dd0291b6ab7f4915d57b949895b4a73634c61124"
+      },
+      "latestLedger": 5161701,
+      "liveUntilLedger": 6161665
+    },
+    {
+      "name": "backing",
+      "id": "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4",
+      "executable": "stellar_asset",
+      "latestLedger": 5161701,
+      "liveUntilLedger": 6161700
+    }
+  ],
+  "state": {
+    "active": 0,
+    "backer": "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW",
+    "backing": "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4",
+    "earned": "0",
+    "liquidity": "500000000000",
+    "next_id": "1",
+    "reserved": "0",
+    "vault": "CA26ORGYTS4PFXRNCL5M63WWL6CPGRYK6A57JHQPPF6BF44IMFB3Y5JJ"
+  },
+  "backingBalance": "500000000000",
+  "nav": "10000000",
+  "vaultAssets": "100000000000",
+  "vaultSupply": "100000000000"
+}
