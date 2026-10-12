@@ -1,6 +1,6 @@
 # Stellar application video — production brief
 
-Status: prepared for ElevenLabs Studio; narration and video have not yet been generated.
+Status: exported on 12 October 2026. Review `exports/yieldshield-stellar-demo.mp4` (1:56, 720p, captioned). ElevenLabs generated the stock narration and caption timing in Chrome; the final video was assembled locally from the real UI captures. See `DELIVERY.md` for verification and source details.
 
 Format: approximately two minutes, 16:9, neutral professional stock narrator, clear English, restrained transitions, no background music required. Use the exact narration in narration.txt. Do not synthesize a founder's voice or likeness. Burn in readable captions; retain safe margins. No fees, subscription changes or public publishing are authorized by this brief.
 
