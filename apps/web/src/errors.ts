@@ -10,3 +10,15 @@ export const isNotFound = (e: unknown) => httpStatus(e) === 404;
 
 export const message = (e: unknown) =>
   e instanceof Error ? e.message : String(e);
+
+/**
+ * A read or transaction touches archived contract storage. The opaque
+ * preamble (from simulation) is what a restore transaction needs.
+ */
+export function restoreRequired(text: string, preamble: unknown) {
+  return Object.assign(new Error(text), { restorePreamble: preamble });
+}
+export const restorePreambleOf = (e: unknown): unknown =>
+  e && typeof e === "object" && "restorePreamble" in e
+    ? (e as { restorePreamble: unknown }).restorePreamble
+    : undefined;

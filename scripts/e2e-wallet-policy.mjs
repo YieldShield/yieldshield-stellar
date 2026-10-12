@@ -25,6 +25,16 @@ export function validateTestSignature(request, allowed) {
     contract = Address.fromScAddress(call.contractAddress).toString();
     method = call.functionName.toString();
     if (!allowed.contracts.get(contract)?.includes(method)) throw Error("Contract method is not allowed");
+  } else if (operation.type === "restoreFootprint") {
+    // The app restores archived storage before an approved call; only data
+    // of approved contracts (and contract code) may be renewed.
+    const ext = tx.toEnvelope().value.tx.ext;
+    const keys = ext.type === "sorobanData" ? ext.value.resources.footprint.readWrite : [];
+    if (!keys.length) throw Error("Restore footprint is empty");
+    for (const key of keys)
+      if (key.type !== "contractCode" && !(key.type === "contractData" && allowed.contracts.has(Address.fromScAddress(key.value.contract).toString())))
+        throw Error("Restore touches an unapproved contract");
+    method = "restoreFootprint";
   } else throw Error("Operation is not allowed");
   return { tx, record: { source: tx.source, contract, method, hash: Buffer.from(tx.hash()).toString("hex") } };
 }

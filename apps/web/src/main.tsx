@@ -30,7 +30,7 @@ import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import type { Data, Market, Wallet, State } from "./v3";
 import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
-import { message } from "./errors";
+import { message, restorePreambleOf } from "./errors";
 import "./style.css";
 import "./routes.css";
 const Legacy = lazy(() => import("./Legacy"));
@@ -87,6 +87,7 @@ export function App() {
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [readError, setReadError] = useState("");
+  const [archived, setArchived] = useState<{ text: string; preamble: unknown }>();
   const [notice, setNotice] = useState("");
   const [hash, setHash] = useState("");
   const [quote, setQuote] = useState<Quote>();
@@ -136,7 +137,11 @@ export function App() {
       .then((m) => {
         if (live) setMarkets(m);
       })
-      .catch(() => { if (live) setRegistryError(true); })
+      .catch((e) => {
+        if (!live) return;
+        setRegistryError(true);
+        if (restorePreambleOf(e)) readFailed(e);
+      })
       .finally(() => { if (live) setRegistryLoading(false); });
     return () => {
       live = false;
@@ -199,24 +204,40 @@ export function App() {
       clear();
     }
     setWallet(w.status === "fulfilled" ? w.value : undefined);
+    // Archived storage keeps its own error so the restore action can use it.
     if (m.status === "rejected")
-      throw new Error(`Pool data could not be read. ${message(m.reason)}`);
+      throw restorePreambleOf(m.reason)
+        ? m.reason
+        : new Error(`Pool data could not be read. ${message(m.reason)}`);
     if (w.status === "rejected")
-      throw new Error(`Wallet balances could not be read. ${message(w.reason)}`);
+      throw restorePreambleOf(w.reason)
+        ? w.reason
+        : new Error(`Wallet balances could not be read. ${message(w.reason)}`);
+  }
+  function readOk() {
+    setReadError("");
+    setArchived(undefined);
+  }
+  function readFailed(e: unknown) {
+    const preamble = restorePreambleOf(e);
+    if (preamble) {
+      setReadError("");
+      setArchived({ text: message(e), preamble });
+    } else setReadError(message(e));
   }
   useEffect(() => {
     setData(undefined);
     setWallet(undefined);
-    setReadError("");
+    readOk();
     if (!api || !market) return;
     let live = true;
     const run = () =>
       refresh().then(
         () => {
-          if (live) setReadError("");
+          if (live) readOk();
         },
         (e) => {
-          if (live) setReadError(message(e));
+          if (live) readFailed(e);
         },
       );
     void run();
@@ -234,10 +255,26 @@ export function App() {
     try {
       await api.fundWithFriendbot(address);
       setNotice("Wallet funded with valueless test XLM. Next, add the TESTUSD trustline.");
-      await refresh().then(
-        () => setReadError(""),
-        (e) => setReadError(message(e)),
-      );
+      await refresh().then(readOk, readFailed);
+    } catch (e) {
+      setError(message(e));
+    } finally {
+      setBusy("");
+    }
+  }
+  async function restoreArchived() {
+    if (!api || !address || !archived) return;
+    setBusy("Confirm the storage restore in Freighter…");
+    setError("");
+    setNotice("");
+    setHash("");
+    try {
+      const r = await api.restore(address, archived.preamble, setHash);
+      setHash(r.hash);
+      setArchived(undefined);
+      setNotice("Archived contract storage restored on Stellar Testnet.");
+      if (!markets.length) setRegistryAttempt((attempt) => attempt + 1);
+      else await refresh().then(readOk, readFailed);
     } catch (e) {
       setError(message(e));
     } finally {
@@ -290,7 +327,8 @@ export function App() {
       )
         setQuote(q);
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      if (restorePreambleOf(e)) readFailed(e);
+      else setError(message(e));
     } finally {
       setBusy("");
     }
@@ -308,14 +346,24 @@ export function App() {
       const r =
         q.special === "trust"
           ? await api.trust(address, submitted)
-          : await api.transact(address, q.contract, q.method, q.args, submitted);
+          : await api.transact(
+              address,
+              q.contract,
+              q.method,
+              q.args,
+              submitted,
+              () =>
+                setBusy(
+                  "Archived contract storage must be restored first. Confirm the restore in Freighter, then the transaction.",
+                ),
+            );
       setHash(r.hash);
       setNotice(`${q.title} confirmed on Stellar Testnet.`);
       setFollow(q.follow || "");
       setQuote(undefined);
       try {
         await refresh(true);
-        setReadError("");
+        readOk();
         if (q.method === "create") {
           setMarkets(await api.markets());
           setFollow(`/provide?pool=${r.value}`);
@@ -443,6 +491,25 @@ export function App() {
         {readError && (
           <div className="feedback error" role="status">
             <p>{readError}</p>
+          </div>
+        )}
+        {archived && (
+          <div className="feedback error" role="status">
+            <p>
+              {archived.text} Restoring renews the existing entries for a small
+              test-XLM fee and one Freighter signature.
+            </p>
+            {address ? (
+              <button
+                className="secondary"
+                disabled={!!busy}
+                onClick={restoreArchived}
+              >
+                Restore archived storage
+              </button>
+            ) : (
+              <p>Connect Freighter to restore it.</p>
+            )}
           </div>
         )}
         {address && wallet?.funded === false && (

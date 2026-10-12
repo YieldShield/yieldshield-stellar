@@ -15,7 +15,7 @@ globalThis.window = { addEventListener() {}, removeEventListener() {}, scrollTo(
 // Every network-facing function of ./v3 delegates to the current test's fake.
 const exported = [
   "markets", "connect", "readMarket", "readAccount", "view", "transact",
-  "trust", "fundWithFriendbot",
+  "trust", "fundWithFriendbot", "restore",
 ];
 const temp = mkdtempSync(resolve("node_modules/.app-refresh-test-"));
 const result = await build({
@@ -95,4 +95,25 @@ test("a failed wallet read reports the wallet only and keeps public pool data", 
   assert.match(text(r), /150%/);
   assert.match(text(r), /Wallet balances could not be read\. Bad Gateway/);
   assert.equal(findButton(r, "Review buy").props.disabled, false);
+});
+
+test("archived pool storage offers a restore and reloads after it", async () => {
+  let archived = true;
+  const restores = [];
+  const preamble = { minResourceFee: "200000" };
+  const r = await start({
+    readMarket: async () => {
+      if (archived) throw Object.assign(new Error("Unable to read state: contract storage is archived – restore needed."), { restorePreamble: preamble });
+      return data;
+    },
+    restore: async (address, given) => { restores.push([address, given]); archived = false; return { hash: "restore-hash" }; },
+  });
+  assert.match(text(r), /archived – restore needed/);
+  assert.doesNotMatch(text(r), /Pool data could not be read/);
+  await act(async () => findButton(r, "Restore archived storage").props.onClick());
+  assert.deepEqual(restores, [["wallet-A", preamble]]);
+  assert.match(text(r), /Archived contract storage restored/);
+  assert.match(text(r), /restore-hash/);
+  assert.doesNotMatch(text(r), /restore needed/);
+  assert.match(text(r), /150%/);
 });

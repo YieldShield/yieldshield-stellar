@@ -23,7 +23,7 @@ export const config = manifest as typeof manifest & {
   faucet: string;
 };
 import { UNIT } from "./amounts";
-import { isNotFound } from "./errors";
+import { isNotFound, restoreRequired } from "./errors";
 export { UNIT, parseAmount, format, minimumOutput } from "./amounts";
 const server = new rpc.Server(config.rpcUrl);
 const horizon = new Horizon.Server(config.horizonUrl);
@@ -125,6 +125,13 @@ export async function view(id: string, method: string, args: xdr.ScVal[] = []) {
     .setTimeout(120)
     .build();
   const result = await server.simulateTransaction(tx);
+  // A restore preamble means the value was simulated as if archived entries
+  // were live; using it would hide that every write will fail until restored.
+  if (rpc.Api.isSimulationRestore(result))
+    throw restoreRequired(
+      `Unable to read ${method}: contract storage is archived – restore needed.`,
+      result.restorePreamble,
+    );
   if (!rpc.Api.isSimulationSuccess(result) || !result.result)
     throw new Error(
       `Unable to read ${method}. The testnet may have reset or contract storage may need restoration.`,
@@ -332,24 +339,66 @@ async function signAndSend(
     `Still pending: ${result.hash}. Check the explorer before trying again.`,
   );
 }
+type RestorePreamble = rpc.Api.SimulateTransactionRestoreResponse["restorePreamble"];
+/**
+ * Restores archived contract storage named by a simulation's restore
+ * preamble, signed by the connected wallet, and waits for a successful
+ * ledger receipt. Restoration only renews existing entries.
+ */
+export async function restore(
+  address: string,
+  preamble: unknown,
+  onSubmitted?: (hash: string) => void,
+) {
+  await checkNetwork();
+  const { transactionData, minResourceFee } = preamble as RestorePreamble;
+  const tx = new TransactionBuilder(await server.getAccount(address), {
+    fee: "100000",
+    networkPassphrase: Networks.TESTNET,
+  })
+    .setSorobanData(transactionData.setResourceFee(minResourceFee).build())
+    .addOperation(Operation.restoreFootprint({}))
+    .setTimeout(120)
+    .build();
+  return signAndSend(tx, address, true, onSubmitted);
+}
 export async function transact(
   address: string,
   id: string,
   method: string,
   args: xdr.ScVal[],
   onSubmitted?: (hash: string) => void,
+  onRestore?: () => void,
 ) {
   await checkNetwork();
-  const source = await server.getAccount(address);
-  const tx = new TransactionBuilder(source, {
-    fee: "100000",
-    networkPassphrase: Networks.TESTNET,
-  })
-    .addOperation(new Contract(id).call(method, ...args))
-    .setTimeout(120)
-    .build();
+  const operation = new Contract(id).call(method, ...args);
+  const build = async () =>
+    new TransactionBuilder(await server.getAccount(address), {
+      fee: "100000",
+      networkPassphrase: Networks.TESTNET,
+    })
+      .addOperation(operation)
+      .setTimeout(120)
+      .build();
+  let tx = await build();
+  let simulation = await server.simulateTransaction(tx);
+  // Archived entries make the invocation fail on chain even though the
+  // simulation succeeds, so restore them first (one extra signature), then
+  // simulate again from the account's new sequence number.
+  if (rpc.Api.isSimulationRestore(simulation)) {
+    onRestore?.();
+    await restore(address, simulation.restorePreamble);
+    tx = await build();
+    simulation = await server.simulateTransaction(tx);
+    if (rpc.Api.isSimulationRestore(simulation))
+      throw new Error(
+        "Contract storage is still archived after the restore. Review the action again.",
+      );
+  }
+  if (!rpc.Api.isSimulationSuccess(simulation))
+    throw new Error(simulation.error);
   return signAndSend(
-    await server.prepareTransaction(tx),
+    rpc.assembleTransaction(tx, simulation).build(),
     address,
     true,
     onSubmitted,

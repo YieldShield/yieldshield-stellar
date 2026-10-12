@@ -69,3 +69,39 @@ test("Friendbot funding accepts an already funded account and reports outages", 
   net.friendbot = () => [500, "error"];
   await assert.rejects(api.fundWithFriendbot(user), /Friendbot could not fund this wallet/);
 });
+
+const pool = JSON.parse(readFileSync("config/markets.json", "utf8")).markets[0].pool;
+
+test("reads of archived storage ask for a restore instead of using simulated values", async () => {
+  net.simulate = () => ({ retval: nativeToScVal(5n, { type: "i128" }), restore: true });
+  const failure = await api.view(pool, "state").catch((e) => e);
+  assert.match(failure.message, /archived – restore needed/);
+  assert.equal(failure.restorePreamble.minResourceFee, "200000");
+});
+
+test("a transaction on archived storage restores it first, then re-simulates and sends", async () => {
+  net.accounts.add(user);
+  let restored = false;
+  net.simulate = ({ method }) => ({ retval: nativeToScVal(1n, { type: "i128" }), restore: method === "deposit" && !restored });
+  net.send = (call) => {
+    if (call.type === "restoreFootprint") restored = true;
+    return { status: "PENDING" };
+  };
+  const notices = [], hashes = [];
+  const result = await api.transact(user, pool, "deposit", [], (h) => hashes.push(h), () => notices.push("restore"));
+  assert.deepEqual(net.sent.map((s) => s.method || s.type), ["restoreFootprint", "deposit"]);
+  assert.equal(globalThis.wallet.signed.length, 2, "restore and invocation are signed separately");
+  assert.deepEqual(notices, ["restore"]);
+  assert.deepEqual(hashes, [result.hash], "only the reviewed invocation consumes the review");
+  assert.equal(BigInt(net.sent[0].fee), 100_000n + 200_000n, "restore pays the preamble's minimum resource fee");
+  assert.equal(net.log.filter((l) => l.startsWith("simulate deposit")).length, 2);
+});
+
+test("restore() renews a read's archived footprint with the connected wallet", async () => {
+  net.accounts.add(user);
+  net.simulate = () => ({ retval: nativeToScVal(5n, { type: "i128" }), restore: true });
+  const failure = await api.view(pool, "state").catch((e) => e);
+  const r = await api.restore(user, failure.restorePreamble);
+  assert.match(r.hash, /^[0-9a-f]{64}$/);
+  assert.deepEqual(net.sent.map((s) => [s.type, s.source]), [["restoreFootprint", user]]);
+});
