@@ -446,3 +446,28 @@ fn closed_and_transferred_positions_leave_the_wallet_index() {
     f.p().settle(&moved);
     assert_eq!(f.p().positions(&f.b).len(), 0);
 }
+// Receipt exits must remove at least a proportional claim. Flooring the slice
+// let one-raw-unit receipt exits remove no claim while the holder kept the
+// full fixed claim for a later backing exit.
+#[test]
+fn receipt_exits_never_leave_more_than_a_proportional_claim() {
+    let f = F::new();
+    f.seed();
+    f.v().simulate_loss(&(500 * U)); // NAV ~0.5, so claim < shares
+    let shares = 400_000;
+    let id = f.p().protect(&f.h, &shares, &1, &u64::MAX);
+    let claim = f.p().position(&id).claim;
+    assert!(claim >= 100_000 && claim < shares);
+    f.time(1061);
+    for _ in 0..3 {
+        assert_eq!(f.p().exit(&id, &1, &false, &0, &u64::MAX), 1);
+        let p = f.p().position(&id);
+        assert!(
+            p.claim * shares <= claim * p.shares,
+            "remaining claim exceeds the remaining receipts' share"
+        );
+    }
+    assert_eq!(f.p().position(&id).claim, claim - 3);
+    // Backing exits still floor the paid slice in the providers' favour.
+    assert_eq!(f.p().preview_exit(&id, &1, &true), 0);
+}

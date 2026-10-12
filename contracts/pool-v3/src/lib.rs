@@ -173,17 +173,25 @@ fn distribute(s: &mut State, receipts: i128, inventory: bool) {
         }
     }
 }
-fn slice(p: &Position, shares: i128) -> (i128, i128) {
+// Claim and reserve removed when `shares` of a position close. A full exit
+// removes everything. A partial backing exit pays a floored claim slice, so
+// rounding favours providers. A partial receipt exit removes a ceiled claim
+// slice, so the remaining fixed claim never exceeds the remaining receipts'
+// proportional share. The released reserve is floored in both cases, which
+// keeps the remaining reserve at least the remaining claim.
+fn slice(p: &Position, shares: i128, backing: bool) -> (i128, i128) {
     positive(shares);
     assert!(shares <= p.shares && !p.closed, "invalid position shares");
     if shares == p.shares {
-        (p.claim, p.reserved)
-    } else {
-        (
-            p.claim.checked_mul(shares).unwrap() / p.shares,
-            p.reserved.checked_mul(shares).unwrap() / p.shares,
-        )
+        return (p.claim, p.reserved);
     }
+    let scaled = p.claim.checked_mul(shares).unwrap();
+    let claim = if backing {
+        scaled / p.shares
+    } else {
+        (scaled + p.shares - 1) / p.shares
+    };
+    (claim, p.reserved.checked_mul(shares).unwrap() / p.shares)
 }
 fn outputs(
     e: &Env,
@@ -192,7 +200,7 @@ fn outputs(
     shares: i128,
     backing: bool,
 ) -> (i128, i128, i128, i128) {
-    let (claim, _) = slice(p, shares);
+    let (claim, _) = slice(p, shares, backing);
     if backing {
         return (claim, shares, 0, 0);
     }
@@ -492,7 +500,7 @@ impl PoolV3 {
         p.owner.require_auth();
         assert!(e.ledger().timestamp() >= p.opened + 60, "exit delay");
         assert!(e.ledger().timestamp() < s.end, "settle expired position");
-        let (claim, reserved) = slice(&p, shares);
+        let (claim, reserved) = slice(&p, shares, backing_exit);
         let (out, junior, creator, protocol) = outputs(&e, &s, &p, shares, backing_exit);
         assert!(out >= min_out, "output slippage");
         p.shares -= shares;
