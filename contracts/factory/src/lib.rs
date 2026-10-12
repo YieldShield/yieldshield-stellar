@@ -1,7 +1,7 @@
 #![no_std]
 use soroban_sdk::xdr::ToXdr;
 use soroban_sdk::{
-    contract, contractimpl, contracttype, symbol_short, token, Address, BytesN, Env, Vec,
+    contract, contractimpl, contracttype, symbol_short, token, Address, BytesN, Env, Symbol, Vec,
 };
 #[soroban_sdk::contractclient(name="VaultClient")]
 pub trait Vault { fn asset(e:Env)->Address; }
@@ -205,11 +205,15 @@ impl Factory {
         r.creator.require_auth();
         assert!(!r.claimed && e.ledger().timestamp() >= r.end, "bond locked");
         r.claimed = true;
-        e.storage().persistent().set(&Key::Pool(pool), &r);
+        e.storage().persistent().set(&Key::Pool(pool.clone()), &r);
         token::Client::new(&e, &state(&e).backing).transfer(
             &e.current_contract_address(),
             &to,
             &r.bond,
+        );
+        e.events().publish(
+            (Symbol::new(&e, "claim_bond"), pool, r.creator),
+            (to, r.bond),
         );
         r.bond
     }
@@ -406,6 +410,27 @@ mod test {
         for n in 0..=MAX_LIVE_POOLS {
             f.create(&f.funded(), n);
         }
+    }
+    #[test]
+    fn bond_refund_emits_event() {
+        use soroban_sdk::{testutils::Events as _, IntoVal, Symbol};
+        let f = Fx::new();
+        let creator = f.funded();
+        let to = f.funded();
+        let pool = f.create(&creator, 1);
+        f.later(300);
+        f.c().claim_bond(&pool, &to);
+        assert_eq!(
+            f.e.events().all().filter_by_contract(&f.id),
+            vec![
+                &f.e,
+                (
+                    f.id.clone(),
+                    (Symbol::new(&f.e, "claim_bond"), pool, creator).into_val(&f.e),
+                    (to, 100_000_000i128).into_val(&f.e)
+                )
+            ]
+        );
     }
     #[test]
     fn registry_pages_are_bounded_and_ordered() {

@@ -508,3 +508,36 @@ fn minimum_claim_enforced() {
     f.seed();
     f.p().protect(&f.h, &(MIN_CLAIM - 1), &1, &u64::MAX);
 }
+// Claims and notice cancellation must be visible to the activity feed.
+#[test]
+fn claims_and_notice_cancellation_emit_events() {
+    use soroban_sdk::{testutils::Events as _, IntoVal, Symbol, Val};
+    let f = F::new();
+    f.seed();
+    let gain = f.p().protect(&f.h, &(100 * U), &1, &u64::MAX);
+    let fixed = f.p().protect(&f.h, &(100 * U), &1, &u64::MAX);
+    f.v().donate(&f.a, &(1000 * U));
+    f.time(1061);
+    f.p().exit(&gain, &(100 * U), &false, &0, &u64::MAX);
+    f.p().exit(&fixed, &(100 * U), &true, &0, &u64::MAX);
+    let to = Address::generate(&f.e);
+    let only = |name: &str, topics: soroban_sdk::Vec<Val>, data: Val| {
+        let mut t = soroban_sdk::vec![&f.e, Symbol::new(&f.e, name).into_val(&f.e)];
+        t.append(&topics);
+        assert_eq!(
+            f.e.events().all().filter_by_contract(&f.p),
+            soroban_sdk::vec![&f.e, (f.p.clone(), t, data)]
+        );
+    };
+    let n = f.p().claim_rewards(&f.a, &to);
+    only("claim_rewards", (f.a.clone(), to.clone()).into_val(&f.e), n.into_val(&f.e));
+    let n = f.p().claim_inventory(&f.b, &to);
+    only("claim_inventory", (f.b.clone(), to.clone()).into_val(&f.e), n.into_val(&f.e));
+    let n = f.p().claim_creator(&to);
+    only("claim_creator", (f.a.clone(), to.clone()).into_val(&f.e), n.into_val(&f.e));
+    let n = f.p().claim_protocol(&to);
+    only("claim_protocol", (f.a.clone(), to.clone()).into_val(&f.e), n.into_val(&f.e));
+    f.p().notice(&f.b, &(7 * U));
+    f.p().cancel_notice(&f.b);
+    only("cancel_notice", (f.b.clone(),).into_val(&f.e), (7 * U).into_val(&f.e));
+}

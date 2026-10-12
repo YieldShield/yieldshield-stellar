@@ -219,6 +219,20 @@ export const termsSc = (t: {
   );
 export const saltSc = () =>
   nativeToScVal(crypto.getRandomValues(new Uint8Array(32)), { type: "bytes" });
+// Every event the pool emits, plus factory events whose second topic is the
+// pool: its creation and the creator's bond refund.
+export function eventFilters(pool: string) {
+  const filters: { type: "contract"; contractIds: string[]; topics?: string[][] }[] = [
+    { type: "contract", contractIds: [pool] },
+  ];
+  if (deployment.factory)
+    filters.push({
+      type: "contract",
+      contractIds: [deployment.factory],
+      topics: [["*", nativeToScVal(pool, { type: "address" }).toXDR("base64"), "*"]],
+    });
+  return filters;
+}
 export async function events(pool: string) {
   const server = new (await import("@stellar/stellar-sdk")).rpc.Server(
     api.config.rpcUrl,
@@ -226,7 +240,7 @@ export async function events(pool: string) {
   const ledger = await server.getLatestLedger();
   const r = await server.getEvents({
     startLedger: Math.max(1, ledger.sequence - 17280),
-    filters: [{ type: "contract", contractIds: [pool] }],
+    filters: eventFilters(pool),
     limit: 50,
   });
   return r.events.map((e) => ({

@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
-import { StrKey } from "@stellar/stellar-sdk";
+import { StrKey, xdr, scValToNative } from "@stellar/stellar-sdk";
 const temp = mkdtempSync(resolve("node_modules/.registry-test-"));
 const result = await build({
   entryPoints: ["apps/web/src/v3.ts"], bundle: true, format: "esm", platform: "node", packages: "external", write: false,
@@ -104,4 +104,14 @@ test("linked pools outside the listing need a factory record", async () => {
   assert.equal(await api.registeredMarket(pool(2)), null);
   assert.equal(await api.registeredMarket("not-a-contract"), null);
   assert.equal((await api.registeredMarket(featured[0])).name, alpha.name);
+});
+
+test("activity reads pool events and factory events naming the pool", () => {
+  const [own, factoryEvents] = api.eventFilters(featured[0]);
+  assert.deepEqual(own, { type: "contract", contractIds: [featured[0]] });
+  assert.deepEqual(factoryEvents.contractIds, [factory]);
+  const [[name, subject, party]] = factoryEvents.topics;
+  assert.equal(name, "*");
+  assert.equal(party, "*");
+  assert.equal(scValToNative(xdr.ScVal.fromXDR(subject, "base64")), featured[0]);
 });

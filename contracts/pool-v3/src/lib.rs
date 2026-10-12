@@ -1,6 +1,7 @@
 #![no_std]
 use soroban_sdk::{
-    contract, contractclient, contractimpl, contracttype, symbol_short, token, Address, Env, Vec,
+    contract, contractclient, contractimpl, contracttype, symbol_short, token, Address, Env,
+    Symbol, Vec,
 };
 const SCALE: i128 = 1_000_000_000_000;
 /// Smallest fixed claim a position may open with or keep after a partial
@@ -357,9 +358,12 @@ impl PoolV3 {
     pub fn cancel_notice(e: Env, owner: Address) {
         owner.require_auth();
         let mut p = provider(&e, &owner, &state(&e));
+        let cancelled = p.notice_shares;
         p.notice_shares = 0;
         p.notice_at = 0;
-        put(&e, &Key::Provider(owner), &p);
+        put(&e, &Key::Provider(owner.clone()), &p);
+        e.events()
+            .publish((Symbol::new(&e, "cancel_notice"), owner), cancelled);
     }
     pub fn preview_withdraw(e: Env, shares: i128) -> i128 {
         positive(shares);
@@ -412,6 +416,8 @@ impl PoolV3 {
         put(&e, &Key::Provider(owner.clone()), &p);
         save(&e, &s);
         token::Client::new(&e, &s.vault).transfer(&e.current_contract_address(), &to, &n);
+        e.events()
+            .publish((Symbol::new(&e, "claim_rewards"), owner, to), n);
         n
     }
     pub fn claim_inventory(e: Env, owner: Address, to: Address) -> i128 {
@@ -423,9 +429,11 @@ impl PoolV3 {
         assert!(n <= s.inventory_balance, "inventory balance");
         p.inventory = 0;
         s.inventory_balance -= n;
-        put(&e, &Key::Provider(owner), &p);
+        put(&e, &Key::Provider(owner.clone()), &p);
         save(&e, &s);
         token::Client::new(&e, &s.vault).transfer(&e.current_contract_address(), &to, &n);
+        e.events()
+            .publish((Symbol::new(&e, "claim_inventory"), owner, to), n);
         n
     }
     pub fn claim_protocol(e: Env, to: Address) -> i128 {
@@ -436,6 +444,8 @@ impl PoolV3 {
         s.protocol_rewards = 0;
         save(&e, &s);
         token::Client::new(&e, &s.vault).transfer(&e.current_contract_address(), &to, &n);
+        e.events()
+            .publish((Symbol::new(&e, "claim_protocol"), s.protocol, to), n);
         n
     }
     pub fn claim_creator(e: Env, to: Address) -> i128 {
@@ -446,6 +456,8 @@ impl PoolV3 {
         s.creator_rewards = 0;
         save(&e, &s);
         token::Client::new(&e, &s.vault).transfer(&e.current_contract_address(), &to, &n);
+        e.events()
+            .publish((Symbol::new(&e, "claim_creator"), s.creator, to), n);
         n
     }
     pub fn protect(e: Env, owner: Address, shares: i128, min_claim: i128, expires: u64) -> u64 {
