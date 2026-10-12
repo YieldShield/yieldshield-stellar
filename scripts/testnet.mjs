@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { spawnSync, execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
+  Account,
   Asset,
   Contract,
   Horizon,
@@ -102,8 +103,13 @@ export async function invoke(name, id, method, args = []) {
   const prepared = await server.prepareTransaction(tx);
   return confirm(prepared, k);
 }
+// Read-only simulations need no real source account (the SDK contract client
+// uses the same placeholder), so readbacks need neither signer keys nor a
+// funded sponsor.
+export const NULL_ACCOUNT =
+  "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
 export async function view(id, method, args = []) {
-  const acct = await server.getAccount(address("sponsor"));
+  const acct = new Account(NULL_ACCOUNT, "0");
   const tx = new TransactionBuilder(acct, {
     fee: "100",
     networkPassphrase: NETWORK,

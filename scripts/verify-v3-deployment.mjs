@@ -1,6 +1,9 @@
+// Read-only readback of the v3 deployment recorded in config/markets.json
+// (and the legacy contracts it shares). Evidence goes to that deployment's
+// evidence directory. `--extend` first renews whatever is below the TTL
+// threshold (same policy as `node scripts/extend-testnet.mjs --broadcast`).
 import fs from "node:fs";
 import assert from "node:assert/strict";
-import { Contract, xdr } from "@stellar/stellar-sdk";
 import {
   assertTestnet,
   cliRun,
@@ -11,96 +14,64 @@ import {
   scAddress,
   registryPools,
 } from "./testnet.mjs";
+import {
+  MIN_REMAINING,
+  RENEW_BELOW,
+  planRenewal,
+  readLifetimes,
+  renewLifetimes,
+  ttlTargets,
+} from "./ttl.mjs";
 await assertTestnet();
 const m = readJson("config/markets.json"),
   l = readJson("config/testnet.json"),
   evidence = m.evidence || "v3";
 const registry = await view(m.factory, "state");
 const registered = await registryPools(m.factory);
-const items = [
-  { kind: "factory", id: m.factory, hash: m.factoryWasmHash },
-  ...m.markets.flatMap((x) => [
-    { kind: `vault-${x.key}`, id: x.vault, hash: m.vaultWasmHash },
-    { kind: `market-${x.key}`, id: x.exchange, hash: m.marketWasmHash },
-  ]),
-  ...registered.map((id) => ({ kind: "pool", id, hash: m.poolWasmHash })),
-];
-if (process.argv.includes("--extend")) {
-  for (const item of items) {
-    // Label by contract ID so a new deployment is never skipped because an
-    // earlier one left evidence under the same kind.
-    const label = `${evidence}/extend-${item.kind}-${item.id.slice(0, 8)}`;
-    if (!fs.existsSync(`docs/evidence/${label}.json`))
-      cliRun(
-        [
-          "contract",
-          "extend",
-          "--id",
-          item.id,
-          "--ledgers-to-extend",
-          "1000000",
-          "--network",
-          "testnet",
-          "--source-account",
-          "ys-stellar-sponsor",
-        ],
-        label,
-      );
-  }
-  for (const hash of [...new Set(items.map((x) => x.hash))]) {
-    const label = `${evidence}/extend-code-${hash.slice(0, 12)}`;
-    if (!fs.existsSync(`docs/evidence/${label}.json`))
-      cliRun(
-        [
-          "contract",
-          "extend",
-          "--wasm-hash",
-          hash,
-          "--ledgers-to-extend",
-          "1000000",
-          "--network",
-          "testnet",
-          "--source-account",
-          "ys-stellar-sponsor",
-        ],
-        label,
-      );
-  }
-}
-const records = [];
-for (const item of items) {
-  const r = await server.getLedgerEntries(new Contract(item.id).getFootprint());
-  const e = r.entries[0];
-  assert.ok(e);
-  const executable = JSON.parse(JSON.stringify(e.val)).contract_data.val
-    .contract_instance.executable;
-  assert.equal(executable.wasm, item.hash);
+const previousPools = m.previous?.factory
+  ? await registryPools(m.previous.factory)
+  : [];
+const targets = ttlTargets({
+  markets: m,
+  legacy: l,
+  registryPools: registered,
+  previousPools,
+});
+const renewal = process.argv.includes("--extend")
+  ? await renewLifetimes({
+      server,
+      targets,
+      run: cliRun,
+      broadcast: true,
+      dir: `${evidence}/ttl`,
+      exists: (label) => fs.existsSync(`docs/evidence/${label}.json`),
+    })
+  : undefined;
+const lifetimes = await readLifetimes(server, targets);
+const rows = planRenewal(lifetimes.rows, lifetimes.latestLedger);
+for (const row of rows) {
   assert.ok(
-    e.liveUntilLedgerSeq - r.latestLedger > 700000,
-    "Instance needs enough remaining lifetime for30day pool plus notice",
+    row.liveUntilLedger != null,
+    `${row.kind} is missing on chain: the testnet may have reset or the entry was evicted`,
   );
-  records.push({
-    ...item,
-    latestLedger: r.latestLedger,
-    liveUntilLedger: e.liveUntilLedgerSeq,
-  });
-}
-const codes = [];
-for (const hash of [...new Set(items.map((x) => x.hash))]) {
-  const r = await server.getLedgerEntries(
-    xdr.LedgerKey.contractCode(
-      new xdr.LedgerKeyContractCode({ hash: Buffer.from(hash, "hex") }),
-    ),
+  if (row.type === "instance" && row.hash)
+    assert.equal(row.executable, row.hash, `${row.kind} executable`);
+  assert.ok(
+    row.remaining >= MIN_REMAINING,
+    `${row.kind} has ${row.remaining} ledgers left; renewal is overdue (node scripts/extend-testnet.mjs --broadcast)`,
   );
-  const e = r.entries[0];
-  assert.ok(e);
-  assert.ok(e.liveUntilLedgerSeq - r.latestLedger > 700000);
-  codes.push({
-    hash,
-    latestLedger: r.latestLedger,
-    liveUntilLedger: e.liveUntilLedgerSeq,
-  });
 }
+const fields = ({ kind, id, hash, liveUntilLedger, remaining, action }) => ({
+  kind,
+  ...(id ? { id } : {}),
+  ...(hash ? { hash } : {}),
+  latestLedger: lifetimes.latestLedger,
+  liveUntilLedger,
+  remaining,
+  renewalDue: action !== "ok",
+});
+const records = rows.filter((r) => r.type === "instance").map(fields);
+const codes = rows.filter((r) => r.type === "code").map(fields);
 const pools = [];
 for (const id of registered) {
   const s = await view(id, "state"),
@@ -117,28 +88,49 @@ for (const id of registered) {
   );
   pools.push({ id, state: s, cash, receipts });
 }
+// Provider deposits require no open holder liabilities and an open admission
+// window (pool-v3 `provide`). Holders protecting receipts is normal use, so
+// this is reported, not asserted.
+const now = Math.floor(Date.now() / 1000);
+const featured = [];
 for (const row of m.markets) {
-  assert.equal((await view(row.pool, "state")).active, 0);
+  assert.ok(registered.includes(row.pool), `${row.key} pool is registered`);
+  const state = pools.find((p) => p.id === row.pool).state;
   assert.equal(await view(row.vault, "asset"), row.backing);
   assert.equal(await view(row.vault, "symbol"), row.symbol);
   const market = await view(row.exchange, "state");
   assert.equal(market.backing, row.backing);
   assert.equal(market.vault, row.vault);
   assert.equal(market.fee_bps, 30);
+  featured.push({
+    key: row.key,
+    pool: row.pool,
+    active: state.active,
+    end: state.end,
+    providerEntryOpen: state.active === 0 && now + 60 < Number(state.end),
+  });
 }
 save(`docs/evidence/${evidence}/deployment-check.json`, {
   at: new Date().toISOString(),
+  ttlPolicy: { renewBelow: RENEW_BELOW, minRemaining: MIN_REMAINING },
+  renewal,
   records,
   codes,
   registry,
+  registered,
   pools,
-  legacy: { pool: l.pool, vault: l.vault, unchanged: true },
+  featured,
 });
 console.log(
   JSON.stringify({
     verifiedContracts: records.length,
     verifiedCode: codes.length,
     pools: pools.length,
-    allFeaturedProviderEntryOpen: true,
+    lowestRemainingLedgers: Math.min(...rows.map((r) => r.remaining)),
+    renewalDue: rows.filter((r) => r.action !== "ok").map((r) => r.kind),
+    providerEntryOpen: Object.fromEntries(
+      featured.map((f) => [f.key, f.providerEntryOpen]),
+    ),
+    allFeaturedProviderEntryOpen: featured.every((f) => f.providerEntryOpen),
   }),
 );

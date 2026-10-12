@@ -39,7 +39,27 @@ Create dedicated disposable aliases `ys-stellar-issuer`, `ys-stellar-sponsor`, a
 
 `node scripts/verify-testnet.mjs --broadcast` runs funded gain and loss scenarios against the active deployment, checks actual balance deltas, and leaves one small demonstration position open. The script refuses to silently overwrite completed lifecycle evidence. It intentionally calls the administrator-only loss simulator using only valueless TESTUSD.
 
-Contract writes request a 1,000,000-ledger storage lifetime (roughly 58 days at five seconds per ledger), capped at the actual host maximum, and refresh entries when below the threshold. `node scripts/extend-testnet.mjs --broadcast` separately extends active deployed code and instances. These measures do not protect against testnet resets or guarantee permanent data availability.
+Contract writes request a 1,000,000-ledger storage lifetime (roughly 58 days at five seconds per ledger), capped at the actual host maximum, and refresh entries when below the threshold. Contract instances and Wasm code are not refreshed by reads, so they need the scheduled renewal below. These measures do not protect against testnet resets or guarantee permanent data availability.
+
+## Storage lifetime renewal
+
+Without renewal, the instances and code deployed on 11 October 2026 expire around ledger 6,144,082 (early to mid December 2026). Renewal covers every entry the public application depends on: the v3 factory recorded in `config/markets.json`, three vaults, three exchanges and **every pool in the factory registry** (including community pools, read page by page from a paged registry), the factory and pools a `--fresh-pools` deployment replaced (`previous`, which still hold positions), the legacy vault and pool, the shared faucet, the TESTUSD asset contract, and the Wasm code of all of them.
+
+| Setting | Value |
+|---|---|
+| Cadence | Weekly; never more than two weeks apart |
+| Command | `node scripts/extend-testnet.mjs --broadcast` |
+| Signer alias | `ys-stellar-sponsor` under `.secrets/stellar` (pays test-XLM fees only; extension is permissionless) |
+| Renew when below | 700,000 ledgers (~40 days: the longest 30-day pool term plus the 7-day maximum notice, with margin) |
+| Renew to | 1,000,000 ledgers (~58 days), capped at the network maximum |
+| Overdue | Below 241,920 ledgers (~14 days); the read-only check and `verify-v3-deployment.mjs` fail |
+
+1. Run `node scripts/extend-testnet.mjs` without flags. It reads every live-until ledger and prints what is due, archived or missing; it signs nothing and exits non-zero when an entry is missing or overdue, so it can serve as a scheduled health check.
+2. Run `node scripts/extend-testnet.mjs --broadcast`. Only entries below the threshold are extended; archived entries are restored with `stellar contract restore`. Healthy entries are skipped, so an immediate second run does nothing.
+3. Commit the new evidence: one CLI record per renewed entry under `docs/evidence/ttl/<date>/`, named by contract (for example `extend-factory-CA7DG5I2.json`), and `summary.json` with before/after lifetimes. Earlier records are never overwritten.
+4. Run `node scripts/verify-v3-deployment.mjs` to read back hashes, lifetimes, solvency and provider-entry status into the deployment's evidence directory (`evidence` in `config/markets.json`, default `v3`). `--extend` performs step 2 first and records it under that directory's `ttl/<date>/`.
+
+A **missing** entry cannot be extended. Try `stellar contract restore --id <contract> --network testnet --source-account ys-stellar-sponsor --config-dir .secrets/stellar`; if the contract no longer exists, the testnet has reset and the demo must be redeployed. Per-user contract data (balances, positions, provider records) is renewed by the contracts whenever it is written; data left untouched for about 58 days archives and must be restored before use.
 
 The initial experimental addresses are preserved under `docs/evidence/archive-initial` for provenance. The current deployment manifest is authoritative; initial addresses are not the supported public application.
 
