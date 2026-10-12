@@ -53,8 +53,10 @@ pub struct Position {
 #[derive(Clone, Debug, Default)]
 pub struct Provider {
     pub shares: i128,
+    /// Fee `reward_index` at this provider's last checkpoint.
     pub debt: i128,
     pub rewards: i128,
+    /// `inventory_index` at this provider's last checkpoint.
     pub inventory_debt: i128,
     pub inventory: i128,
     pub notice_shares: i128,
@@ -103,13 +105,18 @@ fn provider(e: &Env, owner: &Address, s: &State) -> Provider {
         .persistent()
         .get(&Key::Provider(owner.clone()))
         .unwrap_or_default();
-    let entitlement = p.shares.checked_mul(s.reward_index).unwrap() / SCALE;
-    p.rewards += entitlement - p.debt;
-    p.debt = entitlement;
-    let inventory = p.shares.checked_mul(s.inventory_index).unwrap() / SCALE;
-    p.inventory += inventory - p.inventory_debt;
-    p.inventory_debt = inventory;
+    // Accrue only the index growth since this provider's snapshot, rounded
+    // down once per interval. Shares are constant between checkpoints, so the
+    // sum over providers never exceeds what was distributed. Storing
+    // floor(shares * index) instead lets a later accrual round up.
+    p.rewards += accrued(p.shares, s.reward_index, p.debt);
+    p.debt = s.reward_index;
+    p.inventory += accrued(p.shares, s.inventory_index, p.inventory_debt);
+    p.inventory_debt = s.inventory_index;
     p
+}
+fn accrued(shares: i128, index: i128, snapshot: i128) -> i128 {
+    shares.checked_mul(index - snapshot).unwrap() / SCALE
 }
 fn positive(v: i128) {
     assert!(
@@ -290,9 +297,9 @@ impl PoolV3 {
         let minted = Self::preview_provide(e.clone(), amount);
         assert!(minted >= min_shares, "share slippage");
         let mut p = provider(&e, &owner, &s);
+        // provider() checkpointed both snapshots at the current indices, so
+        // new shares start accruing from now.
         p.shares += minted;
-        p.debt = p.shares.checked_mul(s.reward_index).unwrap() / SCALE;
-        p.inventory_debt = p.shares.checked_mul(s.inventory_index).unwrap() / SCALE;
         s.total_lp += minted;
         s.liquidity += amount;
         put(&e, &Key::Provider(owner.clone()), &p);
@@ -345,8 +352,6 @@ impl PoolV3 {
         assert!(assets >= min_assets, "asset slippage");
         p.shares -= shares;
         p.notice_shares -= shares;
-        p.debt = p.shares.checked_mul(s.reward_index).unwrap() / SCALE;
-        p.inventory_debt = p.shares.checked_mul(s.inventory_index).unwrap() / SCALE;
         s.total_lp -= shares;
         s.liquidity -= assets;
         put(&e, &Key::Provider(owner.clone()), &p);

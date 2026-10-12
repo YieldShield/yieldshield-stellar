@@ -341,3 +341,64 @@ fn fee_and_inventory_indices_conserve_under_churn() {
     assert!(distributed_fees - fees_claimed <= 8);
     assert!(distributed_inventory - inventory_claimed <= 8);
 }
+// Provider claims are paid all-or-nothing, so the sum of per-provider
+// entitlements must never exceed the pool's balance. Late entrants used to
+// receive a rounded-down debt (floor(shares * index)), letting their next
+// accrual round up and over-allocate the inventory by one raw unit.
+#[test]
+fn late_entrants_never_overallocate_acquired_inventory() {
+    let f = F::new();
+    let c3 = Address::generate(&f.e);
+    token::StellarAssetClient::new(&f.e, &f.c).mint(&c3, &(10000 * U));
+    f.p().provide(&f.a, &(1000 * U), &1, &u64::MAX);
+    let id = f.p().protect(&f.h, &(100 * U), &1, &u64::MAX);
+    f.time(1061);
+    f.p().exit(&id, &(100 * U), &true, &0, &u64::MAX);
+    f.p().provide(&f.b, &(500 * U), &1, &u64::MAX);
+    f.p().provide(&c3, &(700 * U), &1, &u64::MAX);
+    let id2 = f.p().protect(&f.h, &(100 * U + 6), &1, &u64::MAX);
+    f.time(1130);
+    f.p().exit(&id2, &(100 * U + 6), &true, &0, &u64::MAX);
+    let s = f.p().state();
+    assert_eq!(s.inventory_balance, 200 * U + 6);
+    let owed: i128 = [&f.a, &f.b, &c3]
+        .iter()
+        .map(|o| f.p().provider(o).inventory)
+        .sum();
+    assert!(owed <= s.inventory_balance, "entitlements exceed balance");
+    let mut claimed = 0;
+    for o in [&f.a, &f.b, &c3] {
+        claimed += f.p().claim_inventory(o, o);
+    }
+    assert_eq!(claimed, owed);
+    assert!(f.p().state().inventory_balance <= 3, "only rounding dust remains");
+}
+#[test]
+fn late_entrants_never_overallocate_fee_rewards() {
+    let f = F::new();
+    let c3 = Address::generate(&f.e);
+    token::StellarAssetClient::new(&f.e, &f.c).mint(&c3, &(10000 * U));
+    f.p().provide(&f.a, &(1000 * U), &1, &u64::MAX);
+    let id = f.p().protect(&f.h, &(164 * U + 39), &1, &u64::MAX);
+    f.v().donate(&f.a, &(55 * U + 90));
+    f.time(1061);
+    f.p().exit(&id, &(164 * U + 39), &false, &0, &u64::MAX);
+    f.p().provide(&f.b, &(527 * U + 77), &1, &u64::MAX);
+    f.p().provide(&c3, &(301 * U + 16), &1, &u64::MAX);
+    let id2 = f.p().protect(&f.h, &(106 * U + 18), &1, &u64::MAX);
+    f.v().donate(&f.a, &(280 * U + 92));
+    f.time(1130);
+    f.p().exit(&id2, &(106 * U + 18), &false, &0, &u64::MAX);
+    let s = f.p().state();
+    let owed: i128 = [&f.a, &f.b, &c3]
+        .iter()
+        .map(|o| f.p().provider(o).rewards)
+        .sum();
+    assert!(owed <= s.reward_balance, "entitlements exceed balance");
+    let mut claimed = 0;
+    for o in [&f.a, &f.b, &c3] {
+        claimed += f.p().claim_rewards(o, o);
+    }
+    assert_eq!(claimed, owed);
+    assert!(f.p().state().reward_balance <= 3, "only rounding dust remains");
+}
