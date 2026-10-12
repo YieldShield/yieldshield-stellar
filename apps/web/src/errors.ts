@@ -108,3 +108,39 @@ export function explainSimulationError(raw: string, method = "") {
   const detail = firstDiagnostic(raw);
   return detail ? `${sentence} (${detail})` : sentence;
 }
+
+const RESULT_CODES: Record<string, string> = {
+  op_low_reserve:
+    "The wallet needs more test XLM for the trustline reserve. Fund it with Friendbot, then try again.",
+  op_no_issuer:
+    "The TESTUSD issuer account does not exist. The testnet may have reset.",
+  op_invalid_limit: "The trustline limit is below the current balance.",
+  tx_bad_seq:
+    "The wallet sent another transaction in the meantime. Review the action again.",
+  tx_insufficient_balance:
+    "The wallet does not have enough test XLM for the network fee.",
+  tx_insufficient_fee:
+    "The network fee was too low during a fee surge. Review the action again.",
+  tx_too_late: "The transaction expired before it reached the network. Review the action again.",
+  tx_no_source_account:
+    "The wallet is not funded on Stellar Testnet yet. Fund it with Friendbot first.",
+};
+
+/**
+ * Horizon answers HTTP 400 with result codes when it definitively rejected a
+ * classic transaction. Returns a short reason with the codes, or undefined
+ * when the outcome is unknown (network error, timeout, 5xx).
+ */
+export function explainHorizonRejection(e: unknown) {
+  if (httpStatus(e) !== 400) return undefined;
+  const data = (e as { response: { data?: unknown } }).response.data as
+    | { extras?: { result_codes?: { transaction?: string; operations?: string[] } } }
+    | undefined;
+  const codes = data?.extras?.result_codes;
+  if (!codes?.transaction) return undefined;
+  const all = [codes.transaction, ...(codes.operations ?? [])];
+  const reason =
+    all.map((code) => RESULT_CODES[code]).find(Boolean) ||
+    "The network rejected the transaction.";
+  return `${reason} (result codes: ${all.join(", ")})`;
+}

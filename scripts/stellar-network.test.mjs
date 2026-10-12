@@ -171,3 +171,28 @@ test("one failed read request is retried once before the read fails", async () =
   net.unavailable.simulateTransaction = 2;
   await assert.rejects(api.view(pool, "nav"));
 });
+
+test("trustline submission reports Horizon result codes and keeps timeouts unknown", async () => {
+  net.accounts.add(user);
+  net.submit = () => [400, { type: "https://stellar.org/horizon-errors/transaction_failed", status: 400, extras: { result_codes: { transaction: "tx_failed", operations: ["op_low_reserve"] } } }];
+  await assert.rejects(api.trust(user), /^Error: The testnet rejected this transaction \([0-9a-f]{64}\)\. The wallet needs more test XLM for the trustline reserve.*\(result codes: tx_failed, op_low_reserve\)$/);
+  net.submit = () => [504, { status: 504, title: "Timeout" }];
+  await assert.rejects(api.trust(user), /Submission status unknown/);
+  net.submit = () => [200, { hash: "trust-hash", ledger: 1 }];
+  assert.equal((await api.trust(user)).hash, "trust-hash");
+});
+
+test("the trustline fee follows surge pricing within the demo cap", async () => {
+  net.accounts.add(user);
+  await api.trust(user);
+  assert.equal(net.submitted.at(-1).fee, "10000", "at least 10,000 stroops without a surge");
+  net.feeStats = () => [200, { fee_charged: { p95: "60000" } }];
+  await api.trust(user);
+  assert.equal(net.submitted.at(-1).fee, "120000");
+  net.feeStats = () => [200, { fee_charged: { p95: "900000000" } }];
+  await api.trust(user);
+  assert.equal(net.submitted.at(-1).fee, "10000000", "never above 1 test XLM");
+  net.feeStats = () => [503, "down"];
+  await api.trust(user);
+  assert.equal(net.submitted.at(-1).fee, "10000");
+});

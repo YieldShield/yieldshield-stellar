@@ -39,3 +39,18 @@ test("simulation failures become one short sentence with at most one diagnostic"
   const long = `HostError: Error(Contract, #10)\n 1: [Diagnostic Event] data:["${"x".repeat(300)}"]`;
   assert.ok(explainSimulationError(long).length < 160, "diagnostic detail is shortened");
 });
+
+import { explainHorizonRejection } from "../apps/web/src/errors.ts";
+test("Horizon 400 rejections show their result codes; unknown outcomes stay unknown", () => {
+  const rejected = { response: { status: 400, data: { extras: { result_codes: { transaction: "tx_failed", operations: ["op_low_reserve"] } } } } };
+  assert.equal(
+    explainHorizonRejection(rejected),
+    "The wallet needs more test XLM for the trustline reserve. Fund it with Friendbot, then try again. (result codes: tx_failed, op_low_reserve)",
+  );
+  assert.equal(
+    explainHorizonRejection({ response: { status: 400, data: { extras: { result_codes: { transaction: "tx_weird" } } } } }),
+    "The network rejected the transaction. (result codes: tx_weird)",
+  );
+  for (const e of [{ response: { status: 504, data: {} } }, new Error("Network Error"), { response: { status: 400, data: {} } }])
+    assert.equal(explainHorizonRejection(e), undefined);
+});

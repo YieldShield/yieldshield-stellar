@@ -25,6 +25,7 @@ export const config = manifest as typeof manifest & {
 };
 import { UNIT } from "./amounts";
 import {
+  explainHorizonRejection,
   explainSimulationError,
   isNotFound,
   restoreRequired,
@@ -306,7 +307,14 @@ async function signAndSend(
     try {
       const r = await horizon.submitTransaction(submitted);
       return { hash: r.hash, value: null };
-    } catch {
+    } catch (e) {
+      // HTTP 400 with result codes is a definite rejection; anything else
+      // (network error, 504 timeout) leaves the outcome unknown.
+      const rejected = explainHorizonRejection(e);
+      if (rejected)
+        throw new Error(
+          `The testnet rejected this transaction (${knownHash}). ${rejected}`,
+        );
       throw new Error(
         `Submission status unknown: ${knownHash}. Check the explorer before trying again.`,
       );
@@ -449,14 +457,31 @@ export async function transact(
     onSubmitted,
   );
 }
+/**
+ * Surge-tolerant fee for a classic operation: twice the recent 95th
+ * percentile, at least 10,000 stroops (0.001 test XLM), never above the
+ * 1 test XLM demo cap. Without fee stats, 10,000 stroops.
+ */
+async function classicFee() {
+  try {
+    const stats = await timeout(horizon.feeStats(), 3000, "Fee stats timed out.");
+    const p95 = Number(stats.fee_charged.p95) || 0;
+    return String(Math.min(Number(UNIT), Math.max(10_000, 2 * p95)));
+  } catch {
+    return "10000";
+  }
+}
 export async function trust(
   address: string,
   onSubmitted?: (hash: string) => void,
 ) {
   await checkNetwork();
-  const source = await horizon.loadAccount(address);
+  const [source, fee] = await Promise.all([
+    horizon.loadAccount(address),
+    classicFee(),
+  ]);
   const tx = new TransactionBuilder(source, {
-    fee: "100",
+    fee,
     networkPassphrase: Networks.TESTNET,
   })
     .addOperation(
