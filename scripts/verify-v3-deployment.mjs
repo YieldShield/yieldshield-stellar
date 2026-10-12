@@ -13,7 +13,8 @@ import {
 } from "./testnet.mjs";
 await assertTestnet();
 const m = readJson("config/markets.json"),
-  l = readJson("config/testnet.json");
+  l = readJson("config/testnet.json"),
+  evidence = m.evidence || "v3";
 const registry = await view(m.factory, "state");
 const registered = await registryPools(m.factory);
 const items = [
@@ -22,15 +23,13 @@ const items = [
     { kind: `vault-${x.key}`, id: x.vault, hash: m.vaultWasmHash },
     { kind: `market-${x.key}`, id: x.exchange, hash: m.marketWasmHash },
   ]),
-  ...registered.map((id) => ({
-    kind: `pool-${id.slice(0, 8)}`,
-    id,
-    hash: m.poolWasmHash,
-  })),
+  ...registered.map((id) => ({ kind: "pool", id, hash: m.poolWasmHash })),
 ];
 if (process.argv.includes("--extend")) {
   for (const item of items) {
-    const label = `v3/extend-${item.kind}`;
+    // Label by contract ID so a new deployment is never skipped because an
+    // earlier one left evidence under the same kind.
+    const label = `${evidence}/extend-${item.kind}-${item.id.slice(0, 8)}`;
     if (!fs.existsSync(`docs/evidence/${label}.json`))
       cliRun(
         [
@@ -49,7 +48,7 @@ if (process.argv.includes("--extend")) {
       );
   }
   for (const hash of [...new Set(items.map((x) => x.hash))]) {
-    const label = `v3/extend-code-${hash.slice(0, 12)}`;
+    const label = `${evidence}/extend-code-${hash.slice(0, 12)}`;
     if (!fs.existsSync(`docs/evidence/${label}.json`))
       cliRun(
         [
@@ -127,7 +126,7 @@ for (const row of m.markets) {
   assert.equal(market.vault, row.vault);
   assert.equal(market.fee_bps, 30);
 }
-save("docs/evidence/v3/deployment-check.json", {
+save(`docs/evidence/${evidence}/deployment-check.json`, {
   at: new Date().toISOString(),
   records,
   codes,

@@ -18,7 +18,7 @@ const m = readJson("config/markets.json"),
   l = readJson("config/testnet.json"),
   asset = m.markets[1],
   U = 10_000_000n,
-  path = "docs/evidence/v3/lifecycle.json";
+  path = `docs/evidence/${m.evidence || "v3"}/lifecycle.json`;
 const evidence = readJson(path, {
   startedAt: new Date().toISOString(),
   transactions: [],
