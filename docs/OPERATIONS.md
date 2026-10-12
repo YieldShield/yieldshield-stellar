@@ -21,15 +21,15 @@ Factory tests deploy the built pool Wasm, so run `stellar contract build` (or `s
 ## Public wallet flow
 
 1. Install Freighter; choose Stellar Testnet and connect.
-2. Use official Friendbot to fund the wallet with valueless test XLM for fees and trustline reserves.
+2. Use official Friendbot to fund the wallet with valueless test XLM for fees and trustline reserves. For an unfunded wallet the app shows a **Fund with Friendbot** action; pool data stays readable before funding.
 3. Add the displayed `TESTUSD:<issuer>` trustline. This asset is not Circle USDC.
 4. Claim 1,000 TESTUSD from the prefunded native faucet once per wallet while its claim record exists.
 5. Deposit TESTUSD into the demo vault; protect some receipts.
 6. After the 60-second delay, withdraw receipts or surrender all of them for the fixed backing claim. Returned receipts can be redeemed for vault-held TESTUSD.
 
-Every state-sensitive transaction includes caller-controlled minimum output and a two-minute deadline. The frontend uses a fresh onchain preview and a 0.5% output tolerance; signing uses the testnet passphrase, checks the active wallet network, caps the estimated fee at one test XLM, and waits for a successful ledger receipt before reporting success. Browser-signing evidence remains a separate verification item from scripted signer evidence.
+Every state-sensitive transaction includes caller-controlled minimum output and a two-minute deadline. The frontend uses a fresh onchain preview and a 0.5% output tolerance, and simulates the exact reviewed invocation before showing the review, so contract failures appear as a short explanation before signing; signing uses the testnet passphrase, checks the active wallet network, caps the estimated fee at one test XLM, and waits for a successful ledger receipt before reporting success, retrying failed status requests with backoff until the transaction can no longer be included. Browser-signing evidence remains a separate verification item from scripted signer evidence.
 
-Position IDs are public, scoped by pool+wallet in versioned local storage, and never contain keys. The UI finds the latest 30 pool positions plus up to 100 locally remembered IDs. Older positions can be restored by ID. Contract storage can be archived, so restoration must precede normal reads after TTL expiry. A live service must maintain and restore contract/storage TTLs and detect testnet resets; this prototype does not claim permanent uptime.
+Position IDs are public, scoped by pool+wallet in versioned local storage, and never contain keys. The UI finds the latest 30 pool positions plus up to 100 locally remembered IDs. Older positions can be restored by ID. Contract storage can be archived, so restoration must precede normal reads after TTL expiry: the app reports "archived – restore needed" with a restore action, and reports a probable testnet reset when a configured contract no longer exists. A failed background read is retried once and otherwise leaves the last values on screen, marked stale. Instances and code still need the scheduled renewal below; this prototype does not claim permanent uptime.
 
 ## Deployment
 
