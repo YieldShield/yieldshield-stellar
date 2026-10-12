@@ -11,13 +11,13 @@
     "ys-stellar-sponsor",
     "--",
     "--backer",
-    "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW",
     "--backing",
-    "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4",
     "--vault",
-    "CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ"
+    "CA26ORGYTS4PFXRNCL5M63WWL6CPGRYK6A57JHQPPF6BF44IMFB3Y5JJ"
   ],
-  "stdout": "CBTKPRFTGLW6TGTX2MU2QMOJKXX6DZQMVMEEVZTND2NJPQE7NIGZC7GT\n",
-  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 9d2248be50f629f649a2c4bd7138c7530713368f36043a33d16039b9769f4018\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/9d2248be50f629f649a2c4bd7138c7530713368f36043a33d16039b9769f4018\nℹ️  Deploying contract using wasm hash 2a4b86a425abe08b6c9640e7b8ab2d72de1950e9c748413f748d031d7be51862\nℹ️  Simulating transaction…\nℹ️  Signing transaction: bfd010d65061f54f3d79f2c6ac5d97eaed0a6fcfb19fb4ab8a6639c2bffee9ba\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/bfd010d65061f54f3d79f2c6ac5d97eaed0a6fcfb19fb4ab8a6639c2bffee9ba\n🔗 https://lab.stellar.org/r/testnet/contract/CBTKPRFTGLW6TGTX2MU2QMOJKXX6DZQMVMEEVZTND2NJPQE7NIGZC7GT\n✅ Deployed!\n",
+  "stdout": "CBJV5RWC5775GSSXX66LQDWOJMW7VP56N4CLNUHMHBMTW6SNYBUKFS4C\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: f2be7d6ea0b3069c3ecacc1e584a504a25801526e34c2952de932656ea3f86f8\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/f2be7d6ea0b3069c3ecacc1e584a504a25801526e34c2952de932656ea3f86f8\nℹ️  Deploying contract using wasm hash c7d36cd7099341e2789b7ad598c672ff859ddb2fcc0c4a73e973e64da96fd14f\nℹ️  Simulating transaction…\nℹ️  Signing transaction: fba77e3dc291b9875fccba81693281167169c8d7d814e29e72dcdc023d75314c\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/fba77e3dc291b9875fccba81693281167169c8d7d814e29e72dcdc023d75314c\n🔗 https://lab.stellar.org/r/testnet/contract/CBJV5RWC5775GSSXX66LQDWOJMW7VP56N4CLNUHMHBMTW6SNYBUKFS4C\n✅ Deployed!\n",
   "status": 0
 }

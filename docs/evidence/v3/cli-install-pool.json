@@ -9,7 +9,7 @@
     "--source-account",
     "ys-stellar-sponsor"
   ],
-  "stdout": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba\n",
-  "stderr": "⚠️  `stellar contract install` is deprecated and will be removed in future versions of the CLI. Use `stellar contract upload` instead.\nℹ️  Simulating transaction…\nℹ️  Signing transaction: e78f225935e63173ee3f48a22fe40d6c892e5d9b44641813e06afb2e7bd038d5\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/e78f225935e63173ee3f48a22fe40d6c892e5d9b44641813e06afb2e7bd038d5\n",
+  "stdout": "0c11c9b58bdc37b3e8c1720c52c622f00b28bed2d2a7ffea212bd025a84fbc87\n",
+  "stderr": "⚠️  `stellar contract install` is deprecated and will be removed in future versions of the CLI. Use `stellar contract upload` instead.\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 80c9e1aed311a20de6c75528ebc824e06f12c09d619b81acdfa9d0c9b6fb5779\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/80c9e1aed311a20de6c75528ebc824e06f12c09d619b81acdfa9d0c9b6fb5779\n",
   "status": 0
 }

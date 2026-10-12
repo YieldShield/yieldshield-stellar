@@ -4,13 +4,13 @@
     "asset",
     "deploy",
     "--asset",
-    "TESTUSD:GBT2CT2NUF5X7W447ELA2PIHFQZ5VRJWJBP523JVXYCRCZFKJI3J5JIH",
+    "TESTUSD:GBSIZTW6UJ2DYDNYDIXHMR4ROHQEPGWK6Y2CJW3E3KEPPQMDVLNJI7AS",
     "--network",
     "testnet",
     "--source-account",
     "ys-stellar-issuer"
   ],
-  "stdout": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D\n",
-  "stderr": "ℹ️  Simulating transaction…\nℹ️  Signing transaction: c32f7884d9145147d23f41cf8df7f654294efbfa59cb05663fcfd6557e2ab368\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/c32f7884d9145147d23f41cf8df7f654294efbfa59cb05663fcfd6557e2ab368\n🔗 https://lab.stellar.org/r/testnet/contract/CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D\n✅ Deployed!\n",
+  "stdout": "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4\n",
+  "stderr": "ℹ️  Simulating transaction…\nℹ️  Signing transaction: 81ca13be172a98702280d2932cf06eca94d65966bc7e8cc5e6f893096e6de024\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/81ca13be172a98702280d2932cf06eca94d65966bc7e8cc5e6f893096e6de024\n🔗 https://lab.stellar.org/r/testnet/contract/CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4\n✅ Deployed!\n",
   "status": 0
 }

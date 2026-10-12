@@ -11,11 +11,11 @@
     "ys-stellar-sponsor",
     "--",
     "--asset",
-    "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4",
     "--admin",
-    "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I"
+    "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW"
   ],
-  "stdout": "CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ\n",
-  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: b7a67c3e79bfeab8952b1ef89f12ce9d22ea599b46abf07f97d691b701c74246\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/b7a67c3e79bfeab8952b1ef89f12ce9d22ea599b46abf07f97d691b701c74246\nℹ️  Deploying contract using wasm hash e7be64db1f722d79b88b0ed5525636b11f17e86597190c4df9e4bb5aa0cc0766\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 76ca26b5364db58e0fa36659f8c4b7170d5c916f7589312b89aace161500c831\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/76ca26b5364db58e0fa36659f8c4b7170d5c916f7589312b89aace161500c831\n🔗 https://lab.stellar.org/r/testnet/contract/CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ\n✅ Deployed!\n",
+  "stdout": "CA26ORGYTS4PFXRNCL5M63WWL6CPGRYK6A57JHQPPF6BF44IMFB3Y5JJ\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: f43da9db5d2026791f00671521764696e839a4b2ab481fdfe9699a0516cf4adb\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/f43da9db5d2026791f00671521764696e839a4b2ab481fdfe9699a0516cf4adb\nℹ️  Deploying contract using wasm hash a0fd6625572d0569d30ab5a80ab715b9faa1302b91fb8b1c3b0cc2018d82155d\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 62c2a715fd1358d1b765f0ae4fb91373a74ea43bc939d73f76437df31cc070ed\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/62c2a715fd1358d1b765f0ae4fb91373a74ea43bc939d73f76437df31cc070ed\n🔗 https://lab.stellar.org/r/testnet/contract/CA26ORGYTS4PFXRNCL5M63WWL6CPGRYK6A57JHQPPF6BF44IMFB3Y5JJ\n✅ Deployed!\n",
   "status": 0
 }

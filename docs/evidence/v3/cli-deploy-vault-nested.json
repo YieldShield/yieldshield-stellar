@@ -11,11 +11,11 @@
     "ys-stellar-sponsor",
     "--",
     "--asset",
-    "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
+    "CCYNKJNHCPHOVGNQZYIFYH4S5YKSKE3S44Z5TQTZICHJ35YRFCPEEOXM",
     "--admin",
-    "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I"
+    "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW"
   ],
-  "stdout": "CCL5VEX7BSSWODCCHEMZG5DCC7U3OGCAVA3XTLVZ3OBTICEBN5R3HS2G\n",
-  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Skipping install because wasm already installed\nℹ️  Deploying contract using wasm hash 040e06d97501cb39b820662867d83478cf11993f92ce61b9af552184363e6d60\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 5abb469faf15ce91b57b93e155a5da1798f581fa8564f80aa3e626dd771c774c\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/5abb469faf15ce91b57b93e155a5da1798f581fa8564f80aa3e626dd771c774c\n🔗 https://lab.stellar.org/r/testnet/contract/CCL5VEX7BSSWODCCHEMZG5DCC7U3OGCAVA3XTLVZ3OBTICEBN5R3HS2G\n✅ Deployed!\n",
+  "stdout": "CDUA6ZRQ5B4WKFSPUHQZTQUW6LOQQ5CWTR4EAYLGKGND6GSA47GVGHDQ\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Skipping install because wasm already installed\nℹ️  Deploying contract using wasm hash a0fd6625572d0569d30ab5a80ab715b9faa1302b91fb8b1c3b0cc2018d82155d\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 117a2d5b5ef72399bcdc45b2694c7ab38fc33bab7d9f689477acf38bb4c2bb9b\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/117a2d5b5ef72399bcdc45b2694c7ab38fc33bab7d9f689477acf38bb4c2bb9b\n🔗 https://lab.stellar.org/r/testnet/contract/CDUA6ZRQ5B4WKFSPUHQZTQUW6LOQQ5CWTR4EAYLGKGND6GSA47GVGHDQ\n✅ Deployed!\n",
   "status": 0
 }

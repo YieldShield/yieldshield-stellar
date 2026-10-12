@@ -1,0 +1,21 @@
+{
+  "args": [
+    "contract",
+    "deploy",
+    "--wasm",
+    "target/wasm32v1-none/release/yieldshield_vault.wasm",
+    "--optimize=false",
+    "--network",
+    "testnet",
+    "--source-account",
+    "ys-stellar-sponsor",
+    "--",
+    "--asset",
+    "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "--admin",
+    "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I"
+  ],
+  "stdout": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 9238155359b77a9a46a0467b19bdbb3d56dd1d1037bdcc219c80e6fed1e606bd\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/9238155359b77a9a46a0467b19bdbb3d56dd1d1037bdcc219c80e6fed1e606bd\nℹ️  Deploying contract using wasm hash 040e06d97501cb39b820662867d83478cf11993f92ce61b9af552184363e6d60\nℹ️  Simulating transaction…\nℹ️  Signing transaction: ff0236f34908f41f48962b433eb96f219771933787a5e398a487ef3e9183c65f\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/ff0236f34908f41f48962b433eb96f219771933787a5e398a487ef3e9183c65f\n🔗 https://lab.stellar.org/r/testnet/contract/CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH\n✅ Deployed!\n",
+  "status": 0
+}

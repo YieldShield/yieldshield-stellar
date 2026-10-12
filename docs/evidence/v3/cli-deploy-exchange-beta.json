@@ -11,15 +11,15 @@
     "ys-stellar-sponsor",
     "--",
     "--backing",
-    "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4",
     "--vault",
-    "CBRXUTB7LJBF4FUMRVJK3MFHGTKEHNSKEWGD2JTQ6KW36RNHM5XQP6Z5",
+    "CAVL6VYIKDZH5NIQ5F535JJNJEGP6VSOCXJN77USOOUPQI6FCB64ZMRJ",
     "--operator",
-    "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW",
     "--fee_bps",
     "30"
   ],
-  "stdout": "CDYTSORYJ2SR66KFSP3GMLSHCF74YJDG2SLQTCMTHWTVCO2WS4B7KCIP\n",
-  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Skipping install because wasm already installed\nℹ️  Deploying contract using wasm hash 00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 6dde7833caf76b6bddb1abdd4d4955bcafcaf3a4af3606d98df4aa7e9db36e9b\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/6dde7833caf76b6bddb1abdd4d4955bcafcaf3a4af3606d98df4aa7e9db36e9b\n🔗 https://lab.stellar.org/r/testnet/contract/CDYTSORYJ2SR66KFSP3GMLSHCF74YJDG2SLQTCMTHWTVCO2WS4B7KCIP\n✅ Deployed!\n",
+  "stdout": "CCEGCYUEIKA2YO7XMIKEXJUWUEQDQ3AWBK6H35GQCG43OHRO53A4CWFT\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Skipping install because wasm already installed\nℹ️  Deploying contract using wasm hash 1f1fce71caeeaa38bae9834450049d24580495e54d9620e29049ca148f60b420\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 9e51f244e757b52b1ddb395e1f18ba9f59ff080cb3357aabb9b8a784e0b6952c\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/9e51f244e757b52b1ddb395e1f18ba9f59ff080cb3357aabb9b8a784e0b6952c\n🔗 https://lab.stellar.org/r/testnet/contract/CCEGCYUEIKA2YO7XMIKEXJUWUEQDQ3AWBK6H35GQCG43OHRO53A4CWFT\n✅ Deployed!\n",
   "status": 0
 }

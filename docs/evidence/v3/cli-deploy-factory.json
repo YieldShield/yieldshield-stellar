@@ -11,15 +11,15 @@
     "ys-stellar-sponsor",
     "--",
     "--admin",
-    "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW",
     "--backing",
-    "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "CCL3I7LLPPTQE6RKBN4NHKX77HSGHL7YULVTAX3IBFXOKPNNKR6ZSYZ4",
     "--wasm",
-    "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
+    "0c11c9b58bdc37b3e8c1720c52c622f00b28bed2d2a7ffea212bd025a84fbc87",
     "--vaults",
-    "[\"CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH\",\"CBRXUTB7LJBF4FUMRVJK3MFHGTKEHNSKEWGD2JTQ6KW36RNHM5XQP6Z5\",\"CCL5VEX7BSSWODCCHEMZG5DCC7U3OGCAVA3XTLVZ3OBTICEBN5R3HS2G\"]"
+    "[\"CCYNKJNHCPHOVGNQZYIFYH4S5YKSKE3S44Z5TQTZICHJ35YRFCPEEOXM\",\"CAVL6VYIKDZH5NIQ5F535JJNJEGP6VSOCXJN77USOOUPQI6FCB64ZMRJ\",\"CDUA6ZRQ5B4WKFSPUHQZTQUW6LOQQ5CWTR4EAYLGKGND6GSA47GVGHDQ\"]"
   ],
-  "stdout": "CA7DG5I2NN7DCDVEBBL4HXRYI32ATWGO6KU6UZT6YHKC4NNMC3R3NTJR\n",
-  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 86ac818b8c9dce4476551e7c2f6da4d2863ce16c1570c33d876d1537ccf14516\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/86ac818b8c9dce4476551e7c2f6da4d2863ce16c1570c33d876d1537ccf14516\nℹ️  Deploying contract using wasm hash df119c178ea9b7b93e54f8296228cd48518a4cc43637021ea794a95cb0482bb6\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 5c038792c771545413963c0e3544e0334bd39212333cefe7f1e1b6034dd42dc6\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/5c038792c771545413963c0e3544e0334bd39212333cefe7f1e1b6034dd42dc6\n🔗 https://lab.stellar.org/r/testnet/contract/CA7DG5I2NN7DCDVEBBL4HXRYI32ATWGO6KU6UZT6YHKC4NNMC3R3NTJR\n✅ Deployed!\n",
+  "stdout": "CBE2M56HQHQJQERR4VXATMXKISQJTNGKAYMJNG56WUTHL5CWKJTEO7QO\n",
+  "stderr": "ℹ️  Uploading contract WASM…\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 8fe98fb79b7f5f0070b19098aa99ac23b6abe55aa128c1ebda5eb4ec87f4292e\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/8fe98fb79b7f5f0070b19098aa99ac23b6abe55aa128c1ebda5eb4ec87f4292e\nℹ️  Deploying contract using wasm hash d801ca11d46975e73838162d656bf53e77a873bfa06012eec20e7f7e0d03aa52\nℹ️  Simulating transaction…\nℹ️  Signing transaction: 09ab5a4c84c4008f72c0d55233693f5d602e70adc152471fc65de705858483e6\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/09ab5a4c84c4008f72c0d55233693f5d602e70adc152471fc65de705858483e6\n🔗 https://lab.stellar.org/r/testnet/contract/CBE2M56HQHQJQERR4VXATMXKISQJTNGKAYMJNG56WUTHL5CWKJTEO7QO\n✅ Deployed!\n",
   "status": 0
 }

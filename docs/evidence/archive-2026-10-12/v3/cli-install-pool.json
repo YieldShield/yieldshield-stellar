@@ -1,0 +1,15 @@
+{
+  "args": [
+    "contract",
+    "install",
+    "--wasm",
+    "target/wasm32v1-none/release/yieldshield_pool_v3.wasm",
+    "--network",
+    "testnet",
+    "--source-account",
+    "ys-stellar-sponsor"
+  ],
+  "stdout": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba\n",
+  "stderr": "⚠️  `stellar contract install` is deprecated and will be removed in future versions of the CLI. Use `stellar contract upload` instead.\nℹ️  Simulating transaction…\nℹ️  Signing transaction: e78f225935e63173ee3f48a22fe40d6c892e5d9b44641813e06afb2e7bd038d5\n🌎 Sending transaction…\n✅ Transaction submitted successfully!\n🔗 https://stellar.expert/explorer/testnet/tx/e78f225935e63173ee3f48a22fe40d6c892e5d9b44641813e06afb2e7bd038d5\n",
+  "status": 0
+}
