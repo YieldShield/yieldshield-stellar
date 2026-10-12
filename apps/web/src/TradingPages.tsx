@@ -17,6 +17,7 @@ import {
   date,
   now,
   f,
+  requireBalance,
   Amount,
   Stats,
   Context,
@@ -79,6 +80,8 @@ export function Trade(c: Ctx & { initial: string }) {
           onClick={() =>
             c.review(async (a) => {
               const shares = parseAmount(n);
+              if (side === "sell")
+                requireBalance(c.wallet?.shares, shares, m!.symbol);
               const [q, inventory] = await Promise.all([
                 a.view(m!.exchange, `preview_${side}`, [a.amountSc(shares)]),
                 a.view(m!.exchange, "inventory"),
@@ -92,8 +95,16 @@ export function Trade(c: Ctx & { initial: string }) {
                 throw new Error(
                   "Exchange backing inventory is insufficient. Redeem directly from the vault instead.",
                 );
+              const balance = c.wallet?.backing;
+              if (side === "buy")
+                requireBalance(balance, amount, m!.backingSymbol);
+              // The signed maximum never exceeds what the wallet holds.
               const limit =
-                side === "buy" ? maximumPayment(amount) : minimumOutput(amount);
+                side === "buy"
+                  ? balance !== undefined && balance < maximumPayment(amount)
+                    ? balance
+                    : maximumPayment(amount)
+                  : minimumOutput(amount);
               const end = now() + 120;
               return {
                 title:
@@ -284,10 +295,13 @@ export function Assets(c: Ctx) {
             disabled={c.busy || !c.market}
             onClick={() =>
               c.review(async (a) => {
-                const amount = parseAmount(n),
-                  output = (await a.view(c.market!.vault, `preview_${mode}`, [
-                    a.amountSc(amount),
-                  ])) as bigint;
+                const amount = parseAmount(n);
+                if (mode === "deposit")
+                  requireBalance(c.wallet?.backing, amount, c.market!.backingSymbol);
+                else requireBalance(c.wallet?.shares, amount, c.market!.symbol);
+                const output = (await a.view(c.market!.vault, `preview_${mode}`, [
+                  a.amountSc(amount),
+                ])) as bigint;
                 const end = now() + 120;
                 return {
                   title:

@@ -1,4 +1,5 @@
 import {
+  Account,
   Asset,
   Contract,
   Horizon,
@@ -23,7 +24,7 @@ export const config = manifest as typeof manifest & {
   faucet: string;
 };
 import { UNIT } from "./amounts";
-import { isNotFound, restoreRequired } from "./errors";
+import { explainSimulationError, isNotFound, restoreRequired } from "./errors";
 export { UNIT, parseAmount, format, minimumOutput } from "./amounts";
 const server = new rpc.Server(config.rpcUrl);
 const horizon = new Horizon.Server(config.horizonUrl);
@@ -362,6 +363,31 @@ export async function restore(
     .build();
   return signAndSend(tx, address, true, onSubmitted);
 }
+/**
+ * Simulates the exact reviewed invocation as the connected wallet, so a
+ * review fails early with a short explanation instead of at signing time.
+ * Reports whether archived storage will have to be restored first.
+ */
+export async function preflight(
+  address: string,
+  id: string,
+  method: string,
+  args: xdr.ScVal[],
+) {
+  // Simulation does not check the sequence number.
+  const tx = new TransactionBuilder(new Account(address, "0"), {
+    fee: "100000",
+    networkPassphrase: Networks.TESTNET,
+  })
+    .addOperation(new Contract(id).call(method, ...args))
+    .setTimeout(120)
+    .build();
+  const simulation = await server.simulateTransaction(tx);
+  if (rpc.Api.isSimulationRestore(simulation)) return { restore: true };
+  if (!rpc.Api.isSimulationSuccess(simulation))
+    throw new Error(explainSimulationError(simulation.error, method));
+  return { restore: false };
+}
 export async function transact(
   address: string,
   id: string,
@@ -396,7 +422,7 @@ export async function transact(
       );
   }
   if (!rpc.Api.isSimulationSuccess(simulation))
-    throw new Error(simulation.error);
+    throw new Error(explainSimulationError(simulation.error, method));
   return signAndSend(
     rpc.assembleTransaction(tx, simulation).build(),
     address,

@@ -319,7 +319,20 @@ export function App() {
     setError("");
     setNotice("");
     try {
-      const q = await make(api);
+      let q = await make(api);
+      // Simulate the exact invocation now, so contract failures surface in
+      // the review rather than after the wallet signature.
+      if (!q.special) {
+        const check = await api.preflight(owner, q.contract, q.method, q.args);
+        if (check.restore)
+          q = {
+            ...q,
+            lines: [
+              ...q.lines,
+              ["Archived storage", "Restored first: one extra Freighter signature"],
+            ],
+          };
+      }
       if (
         key === version.current &&
         active.current.address === owner &&

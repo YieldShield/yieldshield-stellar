@@ -10,6 +10,7 @@ import {
   date,
   now,
   f,
+  requireBalance,
   Amount,
   Stats,
   Context,
@@ -52,10 +53,11 @@ export function Protect(c: Ctx & { initial: string }) {
           disabled={!m || c.busy}
           onClick={() =>
             c.review(async (a) => {
-              const shares = parseAmount(n),
-                claim = (await a.view(m!.vault, "preview_redeem", [
-                  a.amountSc(shares),
-                ])) as bigint;
+              const shares = parseAmount(n);
+              requireBalance(c.wallet?.shares, shares, m!.symbol);
+              const claim = (await a.view(m!.vault, "preview_redeem", [
+                a.amountSc(shares),
+              ])) as bigint;
               const d = await a.readMarket(m!);
               const reserve =
                 (claim * BigInt(d.state.terms.collateral_bps) + 9999n) / 10000n;
@@ -128,7 +130,8 @@ export function Provide(c: Ctx) {
       const amount = parseAmount(n),
         end = now() + 120;
       const base = { contract: m!.pool, deadline: end };
-      if (mode === "notice")
+      if (mode === "notice") {
+        requireBalance(c.wallet?.provider.shares, amount, "LP shares");
         return {
           ...base,
           title: "Request provider withdrawal",
@@ -143,7 +146,10 @@ export function Provide(c: Ctx) {
           method: "notice",
           args: [a.addressSc(c.address), a.amountSc(amount)],
         };
+      }
       const deposit = mode === "deposit";
+      if (deposit) requireBalance(c.wallet?.backing, amount, m!.backingSymbol);
+      else requireBalance(c.wallet?.provider.shares, amount, "LP shares");
       const fresh = await a.readMarket(m!);
       if (fresh.state.active)
         throw new Error(

@@ -32,6 +32,7 @@ const result = await build({
       export const readAccount=(...args)=>globalThis.testApi.readAccount(...args);
       export const view=(...args)=>globalThis.testApi.view(...args);
       export const transact=(...args)=>globalThis.testApi.transact(...args);
+      export const preflight=(...args)=>(globalThis.testApi.preflight||(async()=>({restore:false})))(...args);
       export const amountSc=x=>x, addressSc=x=>x, idSc=x=>x;
       export const deployment={markets:[]};
     ` }));

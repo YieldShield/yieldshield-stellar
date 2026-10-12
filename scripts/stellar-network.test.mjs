@@ -105,3 +105,24 @@ test("restore() renews a read's archived footprint with the connected wallet", a
   assert.match(r.hash, /^[0-9a-f]{64}$/);
   assert.deepEqual(net.sent.map((s) => [s.type, s.source]), [["restoreFootprint", user]]);
 });
+
+const hostError = `HostError: Error(Contract, #10)\n\nEvent log (newest first):\n   0: [Diagnostic Event] data:"escalating error to panic"\n   1: [Diagnostic Event] data:["balance is not sufficient to spend", 0, 1000000000]`;
+
+test("preflight simulates the reviewed call as the wallet and explains failures", async () => {
+  net.simulate = () => ({ error: hostError });
+  await assert.rejects(
+    api.preflight(user, pool, "deposit", []),
+    { message: "Your token balance is too low for this amount. (balance is not sufficient to spend)" },
+  );
+  assert.ok(net.log.includes(`simulate deposit source=${user}`));
+  assert.ok(!net.log.includes("rpc getLedgerEntries"), "no account lookup is needed to simulate");
+  net.simulate = () => ({ retval: nativeToScVal(1n, { type: "i128" }), restore: true });
+  assert.deepEqual(await api.preflight(user, pool, "deposit", []), { restore: true });
+});
+
+test("a failing invocation never reaches the wallet and reports a short reason", async () => {
+  net.accounts.add(user);
+  net.simulate = () => ({ error: hostError });
+  await assert.rejects(api.transact(user, pool, "deposit", []), /^Error: Your token balance is too low/);
+  assert.equal(globalThis.wallet.signed.length, 0);
+});

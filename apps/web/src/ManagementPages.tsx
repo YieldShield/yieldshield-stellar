@@ -10,6 +10,7 @@ import {
   date,
   now,
   f,
+  requireBalance,
   Amount,
   Stats,
   Context,
@@ -117,6 +118,7 @@ export function CreatePool(c: Ctx & { markets: Market[] }) {
                 duration: BigInt(duration),
                 notice_delay: BigInt(delay),
               };
+              requireBalance(c.wallet?.testusd, 10n * UNIT, "TESTUSD");
               if (
                 terms.collateral_bps < 10000 ||
                 terms.collateral_bps > 30000 ||

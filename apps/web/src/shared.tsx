@@ -29,6 +29,18 @@ export const now = () => Math.floor(Date.now() / 1000);
 export const f = (v: bigint | undefined) =>
   v === undefined ? "—" : format(v, 7);
 
+/** Rejects a review early when an already-read balance cannot cover it. */
+export function requireBalance(
+  have: bigint | undefined,
+  need: bigint,
+  unit: string,
+) {
+  if (have !== undefined && need > have)
+    throw new Error(
+      `This needs ${f(need)} ${unit}, but your wallet has ${f(have)} ${unit}.`,
+    );
+}
+
 export type Ctx = {
   api?: Api;
   address: string;

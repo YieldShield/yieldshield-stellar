@@ -15,7 +15,7 @@ globalThis.window = { addEventListener() {}, removeEventListener() {}, scrollTo(
 // Every network-facing function of ./v3 delegates to the current test's fake.
 const exported = [
   "markets", "connect", "readMarket", "readAccount", "view", "transact",
-  "trust", "fundWithFriendbot", "restore",
+  "trust", "fundWithFriendbot", "restore", "preflight",
 ];
 const temp = mkdtempSync(resolve("node_modules/.app-refresh-test-"));
 const result = await build({
@@ -55,6 +55,7 @@ async function start(overrides = {}) {
     markets: async () => [market], connect: async () => "wallet-A",
     readMarket: async () => data, readAccount: async () => wallet,
     view: async (_, method) => method === "inventory" ? data.inventory : 100n*U,
+    preflight: async () => ({ restore: false }),
     ...overrides,
   };
   let r;
@@ -116,4 +117,52 @@ test("archived pool storage offers a restore and reloads after it", async () => 
   assert.match(text(r), /restore-hash/);
   assert.doesNotMatch(text(r), /restore needed/);
   assert.match(text(r), /150%/);
+});
+
+test("review simulates the exact invocation and shows contract failures before signing", async () => {
+  const simulated = [];
+  const r = await start({
+    preflight: async (...args) => {
+      simulated.push(args);
+      throw new Error("Your token balance is too low for this amount. (balance is not sufficient to spend)");
+    },
+  });
+  await act(async () => findButton(r, "Review buy").props.onClick());
+  assert.equal(simulated.length, 1);
+  const [owner, contract, method, args] = simulated[0];
+  assert.deepEqual([owner, contract, method], ["wallet-A", "exchange", "buy"]);
+  assert.equal(args.length, 4, "the reviewed arguments, including limits and deadline, are simulated");
+  assert.match(text(r), /Your token balance is too low for this amount\. \(balance is not sufficient to spend\)/);
+  assert.doesNotMatch(text(r), /HostError/);
+  assert.equal(findButton(r, "Confirm in Freighter"), undefined);
+});
+
+test("a review that needs archived storage says so before signing", async () => {
+  const r = await start({ preflight: async () => ({ restore: true }) });
+  await act(async () => findButton(r, "Review buy").props.onClick());
+  assert.ok(findButton(r, "Confirm in Freighter"));
+  assert.match(text(r), /Restored first: one extra Freighter signature/);
+});
+
+test("known balances stop a review before any simulation", async () => {
+  let simulated = 0;
+  const r = await start({
+    readAccount: async () => ({ ...wallet, backing: 50n * U }),
+    preflight: async () => { simulated++; return { restore: false }; },
+  });
+  await act(async () => findButton(r, "Review buy").props.onClick());
+  assert.match(text(r), /This needs 100\.0000000 TESTUSD, but your wallet has 50\.0000000 TESTUSD/);
+  assert.equal(simulated, 0);
+  assert.equal(findButton(r, "Confirm in Freighter"), undefined);
+});
+
+test("a buy's signed maximum payment never exceeds the known wallet balance", async () => {
+  let reviewed;
+  const r = await start({
+    readAccount: async () => ({ ...wallet, backing: 1002n * U / 10n }),
+    preflight: async (_owner, _contract, _method, args) => { reviewed = args; return { restore: false }; },
+  });
+  await act(async () => findButton(r, "Review buy").props.onClick());
+  assert.equal(reviewed[2], 1002n * U / 10n, "maximum payment capped at 100.2 instead of 100.5");
+  assert.match(text(r), /Maximum payment.*100\.2000000/);
 });
