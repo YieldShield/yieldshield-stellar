@@ -16,6 +16,9 @@ export type Quote = {
 
 export const explorer = "https://stellar.expert/explorer/testnet";
 
+export const friendbot = (address: string) =>
+  `https://friendbot.stellar.org/?addr=${encodeURIComponent(address)}`;
+
 export const small = (s: string) => `${s.slice(0, 6)}…${s.slice(-5)}`;
 
 export const date = (v: bigint | number) =>

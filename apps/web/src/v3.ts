@@ -56,6 +56,7 @@ export type Wallet = {
   shares: bigint;
   backing: bigint;
   testusd: bigint;
+  funded: boolean;
   trusted: boolean;
   claimed: boolean;
   provider: Provider;

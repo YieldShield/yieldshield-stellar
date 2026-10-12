@@ -23,6 +23,7 @@ export const config = manifest as typeof manifest & {
   faucet: string;
 };
 import { UNIT } from "./amounts";
+import { isNotFound } from "./errors";
 export { UNIT, parseAmount, format, minimumOutput } from "./amounts";
 const server = new rpc.Server(config.rpcUrl);
 const horizon = new Horizon.Server(config.horizonUrl);
@@ -147,20 +148,47 @@ export async function readPool() {
 }
 export async function readFunding(address: string) {
   const [account, claimed] = await Promise.all([
-    horizon.loadAccount(address),
+    // A brand-new wallet has no account until Friendbot funds it; Horizon
+    // answers 404. That is an onboarding state, not a read failure.
+    horizon.loadAccount(address).catch((e: unknown) => {
+      if (isNotFound(e)) return null;
+      throw e;
+    }),
     view(config.faucet, "claimed", [addressSc(address)]),
   ]);
-  const backing = account.balances.find(
+  const backing = account?.balances.find(
     (b) =>
       "asset_code" in b &&
       b.asset_code === "TESTUSD" &&
       b.asset_issuer === config.issuer,
   );
   return {
+    funded: !!account,
     claimed: claimed as boolean,
     trusted: !!backing,
     backing: backing ? BigInt(backing.balance.replace(".", "")) : 0n,
   };
+}
+const FRIENDBOT = "https://friendbot.stellar.org";
+/** Funds a new Testnet account with valueless XLM from the official Friendbot. */
+export async function fundWithFriendbot(address: string) {
+  let response: Response;
+  try {
+    response = await fetch(`${FRIENDBOT}/?addr=${encodeURIComponent(address)}`, {
+      signal: AbortSignal.timeout(30000),
+    });
+  } catch {
+    throw new Error(
+      "Friendbot did not respond. Try again shortly, or open Friendbot in a new tab.",
+    );
+  }
+  if (response.ok) return;
+  const body = await response.text().catch(() => "");
+  // Funding twice is harmless: the account then already exists.
+  if (/already|op_already_exists/i.test(body)) return;
+  throw new Error(
+    "Friendbot could not fund this wallet right now. Try again shortly, or open Friendbot in a new tab.",
+  );
 }
 export async function readWallet(address: string) {
   const [base, shares] = await Promise.all([

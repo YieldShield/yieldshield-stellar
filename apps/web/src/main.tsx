@@ -3,6 +3,7 @@ import {
   type Quote,
   type Ctx,
   explorer,
+  friendbot,
   small,
   date,
   now,
@@ -29,6 +30,7 @@ import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import type { Data, Market, Wallet, State } from "./v3";
 import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
+import { message } from "./errors";
 import "./style.css";
 import "./routes.css";
 const Legacy = lazy(() => import("./Legacy"));
@@ -84,6 +86,7 @@ export function App() {
   const [wallet, setWallet] = useState<Wallet>();
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  const [readError, setReadError] = useState("");
   const [notice, setNotice] = useState("");
   const [hash, setHash] = useState("");
   const [quote, setQuote] = useState<Quote>();
@@ -167,7 +170,11 @@ export function App() {
     clear();
     setError("");
   }, [routeKey, address]);
-  async function refresh() {
+  // Market terms and wallet balances are read independently: a wallet read
+  // failure (or a brand-new unfunded wallet) must not hide public pool data.
+  // After a confirmed transaction (`strict`), any failed read clears both,
+  // because previously displayed balances are known to be outdated.
+  async function refresh(strict = false) {
     if (!api || !market) return;
     const requested = { address, pool: market.pool };
     const request = ++readVersion.current;
@@ -175,37 +182,43 @@ export function App() {
       request === readVersion.current &&
       active.current.pool === requested.pool &&
       active.current.address === requested.address;
-    try {
-      const [d, w] = await Promise.all([
-        api.readMarket(market),
-        address ? api.readAccount(market, address) : Promise.resolve(undefined),
-      ]);
-      if (!current()) return;
-      setData(d);
-      setWallet(w);
-    } catch (e) {
-      if (current()) {
-        setData(undefined);
-        setWallet(undefined);
-        clear();
-        throw e;
-      }
+    const [m, w] = await Promise.allSettled([
+      api.readMarket(market),
+      address ? api.readAccount(market, address) : Promise.resolve(undefined),
+    ]);
+    if (!current()) return;
+    if (strict && (m.status === "rejected" || w.status === "rejected")) {
+      setData(undefined);
+      setWallet(undefined);
+      clear();
+      throw m.status === "rejected" ? m.reason : (w as PromiseRejectedResult).reason;
     }
+    if (m.status === "fulfilled") setData(m.value);
+    else {
+      setData(undefined);
+      clear();
+    }
+    setWallet(w.status === "fulfilled" ? w.value : undefined);
+    if (m.status === "rejected")
+      throw new Error(`Pool data could not be read. ${message(m.reason)}`);
+    if (w.status === "rejected")
+      throw new Error(`Wallet balances could not be read. ${message(w.reason)}`);
   }
   useEffect(() => {
     setData(undefined);
     setWallet(undefined);
+    setReadError("");
     if (!api || !market) return;
     let live = true;
     const run = () =>
-      refresh().catch((e) => {
-        if (live) {
-          setData(undefined);
-          setWallet(undefined);
-          clear();
-          setError(String(e));
-        }
-      });
+      refresh().then(
+        () => {
+          if (live) setReadError("");
+        },
+        (e) => {
+          if (live) setReadError(message(e));
+        },
+      );
     void run();
     const timer = setInterval(run, 20000);
     return () => {
@@ -213,6 +226,24 @@ export function App() {
       clearInterval(timer);
     };
   }, [api, market?.pool, address]);
+  async function fund() {
+    if (!api || !address) return;
+    setBusy("Requesting test XLM from Friendbot…");
+    setError("");
+    setNotice("");
+    try {
+      await api.fundWithFriendbot(address);
+      setNotice("Wallet funded with valueless test XLM. Next, add the TESTUSD trustline.");
+      await refresh().then(
+        () => setReadError(""),
+        (e) => setReadError(message(e)),
+      );
+    } catch (e) {
+      setError(message(e));
+    } finally {
+      setBusy("");
+    }
+  }
   async function connect() {
     if (!api) return;
     setBusy("Connecting to Freighter…");
@@ -235,6 +266,12 @@ export function App() {
       : null;
     if (!api || !address) {
       setError("Connect Freighter to review this action.");
+      return;
+    }
+    if (wallet?.funded === false) {
+      setError(
+        "This wallet is not funded on Stellar Testnet yet. Fund it with test XLM from Friendbot, then review again.",
+      );
       return;
     }
     clear();
@@ -277,7 +314,8 @@ export function App() {
       setFollow(q.follow || "");
       setQuote(undefined);
       try {
-        await refresh();
+        await refresh(true);
+        setReadError("");
         if (q.method === "create") {
           setMarkets(await api.markets());
           setFollow(`/provide?pool=${r.value}`);
@@ -400,6 +438,26 @@ export function App() {
                   : "Continue to protection →"}
               </a>
             )}
+          </div>
+        )}
+        {readError && (
+          <div className="feedback error" role="status">
+            <p>{readError}</p>
+          </div>
+        )}
+        {address && wallet?.funded === false && (
+          <div className="feedback" role="status">
+            <p>
+              <strong>This wallet is not funded on Stellar Testnet yet.</strong>{" "}
+              Friendbot sends free, valueless test XLM for fees and reserves.
+              Pool data stays readable; transactions need a funded wallet.
+            </p>
+            <button className="secondary" disabled={!!busy} onClick={fund}>
+              Fund with Friendbot
+            </button>{" "}
+            <a href={friendbot(address)} target="_blank" rel="noreferrer">
+              Open Friendbot ↗
+            </a>
           </div>
         )}
         {quote && (

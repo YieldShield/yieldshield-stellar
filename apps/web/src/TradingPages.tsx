@@ -12,6 +12,7 @@ import {
   type Quote,
   type Ctx,
   explorer,
+  friendbot,
   small,
   date,
   now,
@@ -173,7 +174,7 @@ export function Assets(c: Ctx) {
           {c.address ? (
             <a
               className="button secondary"
-              href={`https://friendbot.stellar.org/?addr=${c.address}`}
+              href={friendbot(c.address)}
               target="_blank"
               rel="noreferrer"
             >
@@ -187,14 +188,22 @@ export function Assets(c: Ctx) {
             test units.
           </p>
           <dl>
+            <dt>Test XLM account</dt>
+            <dd>
+              {!c.wallet
+                ? "—"
+                : c.wallet.funded
+                  ? "Funded"
+                  : "Not funded yet — use Friendbot first"}
+            </dd>
             <dt>TESTUSD balance</dt>
             <dd>{f(c.wallet?.testusd)}</dd>
             <dt>Trustline</dt>
-            <dd>{c.wallet?.trusted ? "Ready" : "Not detected"}</dd>
+            <dd>{!c.wallet ? "—" : c.wallet.trusted ? "Ready" : "Not detected"}</dd>
           </dl>
           <div className="actions">
             <button
-              disabled={c.busy || !!c.wallet?.trusted}
+              disabled={c.busy || !!c.wallet?.trusted || c.wallet?.funded === false}
               onClick={() =>
                 c.review((a) => ({
                   title: "Create TESTUSD trustline",
