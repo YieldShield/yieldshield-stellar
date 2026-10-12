@@ -29,7 +29,9 @@ test("simulation failures become one short sentence with at most one diagnostic"
     "Your token balance is too low for this amount. (balance is not sufficient to spend)",
   );
   const exit = explainSimulationError(panic, "exit");
-  assert.equal(exit, "The contract rejected this action. The 60-second exit delay may not have passed, the pool may have matured, or the payout moved below your minimum.");
+  assert.equal(exit, "The contract rejected this action. The 60-second exit delay may not have passed, the pool may have matured, a partial exit may leave under the 0.01 minimum claim, or the payout moved below your minimum.");
+  assert.match(explainSimulationError(panic, "protect"), /0\.01 minimum/);
+  assert.match(explainSimulationError(panic, "create"), /limit on unmatured pools/);
   assert.doesNotMatch(exit, /HostError|Diagnostic|\n/);
   assert.match(explainSimulationError("HostError: Error(Contract, #13)", "claim"), /trustline is missing/);
   assert.match(explainSimulationError("HostError: Error(Auth, InvalidAction)", "exit"), /Authorization failed/);

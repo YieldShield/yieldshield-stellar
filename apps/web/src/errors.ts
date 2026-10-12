@@ -49,8 +49,8 @@ const TOKEN_ERRORS: Record<string, string> = {
 // The demo contracts reject with assertions, whose messages are not kept in
 // release Wasm, so failures are explained by what each action checks.
 const ACTION_CHECKS: Record<string, string> = {
-  protect: "Admissions may have closed, free backing may be too low, or the claim moved below your minimum.",
-  exit: "The 60-second exit delay may not have passed, the pool may have matured, or the payout moved below your minimum.",
+  protect: "Admissions may have closed, free backing may be too low, the fixed claim may be under the 0.01 minimum, or the claim moved below your minimum.",
+  exit: "The 60-second exit delay may not have passed, the pool may have matured, a partial exit may leave under the 0.01 minimum claim, or the payout moved below your minimum.",
   buy: "The price may have moved above your maximum payment, or exchange inventory changed.",
   sell: "Proceeds may have moved below your minimum, or exchange backing inventory changed.",
   deposit: "The amount may exceed your balance, or the output moved below your minimum.",
@@ -62,7 +62,7 @@ const ACTION_CHECKS: Record<string, string> = {
   claim: "This wallet may already have claimed, or the faucet is empty.",
   claim_bond: "The bond stays locked until pool maturity, or it was already refunded.",
   settle: "The position may not have matured yet, or it is already closed.",
-  create: "The vault may not be approved, the registry may be full, or your TESTUSD cannot cover the 10 TESTUSD bond.",
+  create: "The vault may not be approved, the factory's limit on unmatured pools (overall or per creator) may be reached, or your TESTUSD cannot cover the 10 TESTUSD bond.",
   transfer_position: "The position may be closed, or the recipient is invalid.",
   claim_backing: "There may be no credit to claim, or the destination lacks a trustline.",
   claim_rewards: "There may be no gain-fee receipts to claim.",
