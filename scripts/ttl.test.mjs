@@ -97,16 +97,20 @@ test("renewal targets cover every v3 and legacy instance plus their Wasm code", 
   ])
     assert.ok(ids.includes(id), `${id} is renewed`);
   assert.equal(new Set(ids).size, ids.length, "no duplicate instances");
+  // Contracts deployed from the same Wasm (e.g. legacy and v3 vaults from one
+  // build) share a single code entry.
   assert.deepEqual(
     codes.map((c) => c.hash).sort(),
     [
-      markets.factoryWasmHash,
-      markets.vaultWasmHash,
-      markets.marketWasmHash,
-      markets.poolWasmHash,
-      legacy.vaultWasmHash,
-      legacy.poolWasmHash,
-      legacy.faucetWasmHash,
+      ...new Set([
+        markets.factoryWasmHash,
+        markets.vaultWasmHash,
+        markets.marketWasmHash,
+        markets.poolWasmHash,
+        legacy.vaultWasmHash,
+        legacy.poolWasmHash,
+        legacy.faucetWasmHash,
+      ]),
     ].sort(),
   );
   assert.equal(
