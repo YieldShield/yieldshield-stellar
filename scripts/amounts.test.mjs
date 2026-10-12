@@ -20,6 +20,9 @@ import {
   format,
   minimumOutput,
   maximumPayment,
+  MIN_CLAIM,
+  exitClaimSlice,
+  exitLeavesDust,
 } from "../apps/web/src/amounts.ts";
 test("wallet amount parser preserves stroops and rejects lossy input", () => {
   assert.equal(parseAmount("1000.0000001"), 10000000001n);
@@ -52,4 +55,31 @@ test("maximum payment never permits more than0.5 percent excess including dust",
     assert.ok(max >= q);
   }
   assert.equal(maximumPayment(1n), 1n);
+});
+
+test("minimum claim and exit claim rounding mirror the pool contract", () => {
+  const source = readFileSync("contracts/pool-v3/src/lib.rs", "utf8");
+  const rust = source.match(/pub const MIN_CLAIM: i128 = ([\d_]+);/);
+  assert.ok(rust, "pool contract declares MIN_CLAIM");
+  assert.equal(BigInt(rust[1].replaceAll("_", "")), MIN_CLAIM);
+  assert.equal(format(MIN_CLAIM), "0.01");
+  // Cases shared with the pool's Rust tests.
+  assert.equal(exitClaimSlice(200_000n, 400_000n, 1n, false), 1n);
+  assert.equal(exitClaimSlice(200_000n, 400_000n, 1n, true), 0n);
+  assert.equal(exitClaimSlice(123_457n, 999n, 999n, false), 123_457n);
+  for (const backing of [true, false]) {
+    const both = 2n * MIN_CLAIM;
+    assert.equal(exitLeavesDust(both, both, MIN_CLAIM + 1n, backing), true);
+    assert.equal(exitLeavesDust(both, both, MIN_CLAIM, backing), false);
+    assert.equal(exitLeavesDust(both, both, both, backing), false);
+  }
+  assert.equal(exitLeavesDust(MIN_CLAIM, MIN_CLAIM, 1n, false), true);
+  for (let shares = 1n; shares <= 60n; shares++)
+    for (let closing = 1n; closing < shares; closing++) {
+      const claim = MIN_CLAIM + shares * 7n + 3n;
+      const receipt = claim - exitClaimSlice(claim, shares, closing, false);
+      const paid = exitClaimSlice(claim, shares, closing, true);
+      assert.ok(receipt * shares <= claim * (shares - closing));
+      assert.ok(paid * shares <= claim * closing);
+    }
 });

@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { Data, Market, Wallet, State } from "./v3";
-import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
+import {
+  format,
+  parseAmount,
+  minimumOutput,
+  UNIT,
+  MIN_CLAIM,
+  exitLeavesDust,
+} from "./amounts";
 import {
   type Api,
   type Quote,
@@ -239,6 +246,10 @@ function PositionDetails(c: Ctx & { id: string }) {
     c.review(async (a) => {
       const n = parseAmount(amount);
       if (!p || n > p.shares) throw new Error("Amount exceeds this position.");
+      if (exitLeavesDust(p.claim, p.shares, n, backing))
+        throw new Error(
+          `Leave at least ${format(MIN_CLAIM)} ${c.market!.backingSymbol} of fixed claim, or close the whole position.`,
+        );
       const output = (await a.view(c.market!.pool, "preview_exit", [
         a.idSc(p.id),
         a.amountSc(n),

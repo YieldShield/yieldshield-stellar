@@ -24,3 +24,29 @@ export function maximumPayment(quote: bigint) {
   if (quote < 0n) throw new Error("Negative quote");
   return (quote * 1005n) / 1000n;
 }
+
+// Pool rule mirrored from contracts/pool-v3 (MIN_CLAIM and `slice`): a
+// position must open with, and keep after a partial exit, at least 0.01
+// backing unit of fixed claim. scripts/amounts.test.mjs binds both copies.
+export const MIN_CLAIM = 100_000n;
+export function exitClaimSlice(
+  claim: bigint,
+  shares: bigint,
+  closing: bigint,
+  backing: boolean,
+) {
+  if (closing >= shares) return claim;
+  const scaled = claim * closing;
+  return backing ? scaled / shares : (scaled + shares - 1n) / shares;
+}
+export function exitLeavesDust(
+  claim: bigint,
+  shares: bigint,
+  closing: bigint,
+  backing: boolean,
+) {
+  return (
+    closing < shares &&
+    claim - exitClaimSlice(claim, shares, closing, backing) < MIN_CLAIM
+  );
+}

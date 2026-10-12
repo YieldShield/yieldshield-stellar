@@ -3,6 +3,10 @@ use soroban_sdk::{
     contract, contractclient, contractimpl, contracttype, symbol_short, token, Address, Env, Vec,
 };
 const SCALE: i128 = 1_000_000_000_000;
+/// Smallest fixed claim a position may open with or keep after a partial
+/// exit: 0.01 backing unit at seven decimals. Any open position pauses
+/// provider entry and cash withdrawal, so dust positions are rejected.
+pub const MIN_CLAIM: i128 = 100_000;
 #[contractclient(name = "VaultClient")]
 pub trait Vault {
     fn asset(e: Env) -> Address;
@@ -191,6 +195,7 @@ fn slice(p: &Position, shares: i128, backing: bool) -> (i128, i128) {
     } else {
         (scaled + p.shares - 1) / p.shares
     };
+    assert!(p.claim - claim >= MIN_CLAIM, "remaining claim below minimum");
     (claim, p.reserved.checked_mul(shares).unwrap() / p.shares)
 }
 fn outputs(
@@ -452,6 +457,7 @@ impl PoolV3 {
         assert!(e.ledger().timestamp() + 60 < s.end, "admissions closed");
         let claim = VaultClient::new(&e, &s.vault).preview_redeem(&shares);
         assert!(claim >= min_claim, "claim slippage");
+        assert!(claim >= MIN_CLAIM, "claim below minimum");
         let reserved = (claim.checked_mul(s.terms.collateral_bps as i128).unwrap() + 9999) / 10_000;
         assert!(
             s.total_lp > 0 && s.liquidity - s.reserved >= reserved,

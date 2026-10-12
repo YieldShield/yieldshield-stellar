@@ -147,14 +147,14 @@ fn late_provider_does_not_receive_creator_fee() {
 fn partial_rounding_keeps_remaining_floor_reserved() {
     let f = F::new();
     f.seed();
-    let id = f.p().protect(&f.h, &101, &1, &u64::MAX);
+    let id = f.p().protect(&f.h, &(MIN_CLAIM + 101), &1, &u64::MAX);
     f.time(1061);
-    for _ in 0..100 {
+    for _ in 0..101 {
         f.p().exit(&id, &1, &true, &0, &u64::MAX);
         let p = f.p().position(&id);
         assert!(p.reserved >= p.claim);
     }
-    f.p().exit(&id, &1, &true, &0, &u64::MAX);
+    f.p().exit(&id, &MIN_CLAIM, &true, &0, &u64::MAX);
     assert_eq!(f.p().state().reserved, 0);
 }
 #[test]
@@ -257,15 +257,15 @@ fn nested_vault_backing_is_native_receipt() {
 #[test]
 fn tiny_distributions_and_share_churn_conserve_receipts() {
     let f = F::new();
-    f.p().provide(&f.a, &997, &1, &u64::MAX);
-    f.p().provide(&f.b, &991, &1, &u64::MAX);
+    f.p().provide(&f.a, &300_997, &1, &u64::MAX);
+    f.p().provide(&f.b, &300_991, &1, &u64::MAX);
     let mut total_claimed = 0;
     let mut total_distributed = 0;
     for round in 0..4 {
-        let id = f.p().protect(&f.h, &31, &1, &u64::MAX);
+        let id = f.p().protect(&f.h, &(MIN_CLAIM + 31), &1, &u64::MAX);
         f.time(1061 + round * 100);
-        f.p().exit(&id, &31, &true, &0, &u64::MAX);
-        total_distributed += 31;
+        f.p().exit(&id, &(MIN_CLAIM + 31), &true, &0, &u64::MAX);
+        total_distributed += MIN_CLAIM + 31;
         for owner in [&f.a, &f.b] {
             let pending = f.p().provider(owner).inventory;
             if pending > 0 {
@@ -470,4 +470,41 @@ fn receipt_exits_never_leave_more_than_a_proportional_claim() {
     assert_eq!(f.p().position(&id).claim, claim - 3);
     // Backing exits still floor the paid slice in the providers' favour.
     assert_eq!(f.p().preview_exit(&id, &1, &true), 0);
+}
+// Any open position pauses provider entry and cash withdrawal until maturity,
+// so positions need a meaningful claim instead of a single raw unit.
+#[test]
+fn dust_positions_cannot_freeze_provider_cash() {
+    let f = F::new();
+    f.seed();
+    f.p().notice(&f.a, &(1000 * U));
+    assert!(f.p().try_protect(&f.h, &1, &1, &u64::MAX).is_err());
+    assert!(f.p().try_protect(&f.h, &(MIN_CLAIM - 1), &1, &u64::MAX).is_err());
+    f.time(1100);
+    assert_eq!(f.p().state().active, 0);
+    f.p().withdraw(&f.a, &(1000 * U), &0, &u64::MAX);
+    f.p().provide(&f.b, &U, &1, &u64::MAX);
+}
+#[test]
+fn partial_exits_cannot_leave_a_dust_claim() {
+    let f = F::new();
+    f.seed();
+    let id = f.p().protect(&f.h, &(2 * MIN_CLAIM), &1, &u64::MAX);
+    f.time(1061);
+    for backing in [true, false] {
+        assert!(f.p().try_preview_exit(&id, &(MIN_CLAIM + 1), &backing).is_err());
+        assert!(f.p().try_exit(&id, &(MIN_CLAIM + 1), &backing, &0, &u64::MAX).is_err());
+    }
+    f.p().exit(&id, &MIN_CLAIM, &true, &0, &u64::MAX);
+    assert_eq!(f.p().position(&id).claim, MIN_CLAIM);
+    assert!(f.p().try_exit(&id, &1, &false, &0, &u64::MAX).is_err());
+    f.p().exit(&id, &MIN_CLAIM, &false, &0, &u64::MAX);
+    assert_eq!(f.p().state().active, 0);
+}
+#[test]
+#[should_panic(expected = "claim below minimum")]
+fn minimum_claim_enforced() {
+    let f = F::new();
+    f.seed();
+    f.p().protect(&f.h, &(MIN_CLAIM - 1), &1, &u64::MAX);
 }

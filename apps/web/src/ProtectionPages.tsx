@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { Data, Market, Wallet, State } from "./v3";
-import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
+import { format, parseAmount, minimumOutput, UNIT, MIN_CLAIM } from "./amounts";
 import {
   type Api,
   type Quote,
@@ -70,6 +70,10 @@ export function Protect(c: Ctx & { initial: string }) {
               if (!claim)
                 throw new Error(
                   "This receipt has no positive redemption value.",
+                );
+              if (claim < MIN_CLAIM)
+                throw new Error(
+                  `Protection needs a fixed claim of at least ${format(MIN_CLAIM)} ${m!.backingSymbol}. Lock more receipts.`,
                 );
               const end = now() + 120;
               return {

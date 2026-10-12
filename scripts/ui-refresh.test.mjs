@@ -13,7 +13,7 @@ const temp = mkdtempSync(resolve("node_modules/.ui-refresh-test-"));
 const output = await build({
   stdin: {
     contents:
-      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx"; export {Provide} from "./apps/web/src/ProtectionPages.tsx"; export {Assets} from "./apps/web/src/TradingPages.tsx";',
+      'export {PositionPage,Portfolio} from "./apps/web/src/PortfolioPages.tsx"; export {Activity} from "./apps/web/src/ManagementPages.tsx"; export {Provide,Protect} from "./apps/web/src/ProtectionPages.tsx"; export {Assets} from "./apps/web/src/TradingPages.tsx";',
     resolveDir: resolve("."),
   },
   bundle: true,
@@ -24,7 +24,7 @@ const output = await build({
 });
 const modulePath = join(temp, "components.mjs");
 writeFileSync(modulePath, output.outputFiles[0].text);
-const { PositionPage, Portfolio, Activity, Provide, Assets } = await import(
+const { PositionPage, Portfolio, Activity, Provide, Protect, Assets } = await import(
   pathToFileURL(modulePath).href
 );
 after(() => {
@@ -382,4 +382,57 @@ test("activity distinguishes pending, empty, stale and changed-pool reads", asyn
   await act(async () => next.resolve([]));
   assert.match(text(r), /No events returned/);
   await unmount(r);
+});
+
+test("protection and partial exit reviews reject claims below the pool minimum", async () => {
+  const MIN_CLAIM = 100_000n;
+  const outcome = {};
+  const record = (api) => async (make) => {
+    try {
+      outcome.quote = await make(api);
+      outcome.error = undefined;
+    } catch (e) {
+      outcome.quote = undefined;
+      outcome.error = e;
+    }
+  };
+  let claim = MIN_CLAIM - 1n;
+  const protectApi = {
+    ...context().api,
+    view: async (_id, method) => (method === "preview_redeem" ? claim : position),
+    readMarket: async () => data,
+  };
+  const r = await mount(Protect, context({ api: protectApi, initial: "0.0099999", review: record(protectApi) }));
+  await act(async () => button(r, "Review protection →").props.onClick());
+  assert.match(outcome.error.message, /fixed claim of at least 0\.01 TESTUSD/);
+  claim = MIN_CLAIM;
+  await act(async () => button(r, "Review protection →").props.onClick());
+  assert.equal(outcome.quote.method, "protect");
+  await unmount(r);
+
+  const previews = [];
+  const exitApi = {
+    ...context().api,
+    view: async (_id, method, args) => {
+      if (method === "preview_exit") {
+        previews.push(args);
+        return args[1];
+      }
+      return position;
+    },
+  };
+  const p = await mount(PositionPage, context({ api: exitApi, id: "1", review: record(exitApi) }));
+  // Closing all but 0.0099999 of a 100-unit claim would leave dust.
+  await act(async () => amountInput(p).props.onChange({ target: { value: "99.9900001" } }));
+  for (const label of ["Review receipt exit", "Review backing exit"]) {
+    await act(async () => button(p, label).props.onClick());
+    assert.match(outcome.error.message, /Leave at least 0\.01 TESTUSD/);
+  }
+  assert.equal(previews.length, 0, "rejected before simulating the exit");
+  for (const value of ["99.99", "100"]) {
+    await act(async () => amountInput(p).props.onChange({ target: { value } }));
+    await act(async () => button(p, "Review backing exit").props.onClick());
+    assert.equal(outcome.quote.method, "exit");
+  }
+  await unmount(p);
 });
