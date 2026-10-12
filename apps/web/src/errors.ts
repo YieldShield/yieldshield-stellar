@@ -18,6 +18,20 @@ export const message = (e: unknown) =>
 export function restoreRequired(text: string, preamble: unknown) {
   return Object.assign(new Error(text), { restorePreamble: preamble });
 }
+/**
+ * A configured contract instance no longer exists: Stellar Testnet was most
+ * likely reset, and the demo has to be redeployed.
+ */
+export function testnetReset(id: string) {
+  return Object.assign(
+    new Error(
+      `Contract ${id.slice(0, 6)}…${id.slice(-5)} no longer exists on Stellar Testnet. The testnet may have reset; this demo must be redeployed before it can be used.`,
+    ),
+    { testnetReset: true },
+  );
+}
+export const isTestnetReset = (e: unknown) =>
+  !!e && typeof e === "object" && "testnetReset" in e;
 export const restorePreambleOf = (e: unknown): unknown =>
   e && typeof e === "object" && "restorePreamble" in e
     ? (e as { restorePreamble: unknown }).restorePreamble
@@ -53,6 +67,13 @@ const ACTION_CHECKS: Record<string, string> = {
   claim_backing: "There may be no credit to claim, or the destination lacks a trustline.",
   claim_rewards: "There may be no gain-fee receipts to claim.",
   claim_inventory: "There may be no acquired receipts to claim.",
+  preview_buy: "The amount may be outside the exchange's limits or inventory.",
+  preview_sell: "The amount may be outside the exchange's limits or inventory.",
+  preview_deposit: "The amount may be outside the vault's limits.",
+  preview_redeem: "The amount may exceed the vault's receipt supply.",
+  preview_exit: "The amount may exceed this position.",
+  preview_provide: "The amount may be outside the pool's limits.",
+  preview_withdraw: "The amount may exceed the pool's provider shares.",
 };
 const GENERIC = /escalating error|caught (panic|error)|VM call trapped|^\s*$/i;
 
@@ -82,7 +103,7 @@ export function explainSimulationError(raw: string, method = "") {
   else if (type === "Budget")
     sentence = "The action exceeds the network's resource limits.";
   else if (type === "WasmVm" || type === "Contract")
-    sentence = `The contract rejected this action. ${ACTION_CHECKS[method] || "A limit, deadline or balance check failed."}`;
+    sentence = `The contract rejected this ${method.startsWith("preview_") ? "request" : "action"}. ${ACTION_CHECKS[method] || "A limit, deadline or balance check failed."}`;
   else sentence = "The network could not simulate this action. Try again shortly.";
   const detail = firstDiagnostic(raw);
   return detail ? `${sentence} (${detail})` : sentence;

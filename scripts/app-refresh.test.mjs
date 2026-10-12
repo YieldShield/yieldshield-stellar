@@ -166,3 +166,14 @@ test("a buy's signed maximum payment never exceeds the known wallet balance", as
   assert.equal(reviewed[2], 1002n * U / 10n, "maximum payment capped at 100.2 instead of 100.5");
   assert.match(text(r), /Maximum payment.*100\.2000000/);
 });
+
+test("a reset testnet is reported as a reset, not as a connection problem", async () => {
+  globalThis.testApi = {
+    markets: async () => { throw Object.assign(new Error("Contract CA7DG5…3NTJR no longer exists on Stellar Testnet. The testnet may have reset; this demo must be redeployed before it can be used."), { testnetReset: true }); },
+  };
+  let r;
+  await act(async () => { r = create(React.createElement(App)); });
+  mounted.push(r);
+  assert.match(text(r), /The testnet may have reset; this demo must be redeployed/);
+  assert.doesNotMatch(text(r), /Check your connection/);
+});

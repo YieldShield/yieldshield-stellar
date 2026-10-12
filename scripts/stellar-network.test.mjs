@@ -145,3 +145,18 @@ test("reads simulate from the SDK null account without any account lookup", asyn
   assert.deepEqual(net.log, ["rpc simulateTransaction", "simulate nav source=GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF"]);
   assert.ok(!net.accounts.has(config.sponsor), "the sponsor account is not needed");
 });
+
+test("a read of a contract that no longer exists reports a testnet reset", async () => {
+  net.contracts = new Set();
+  net.simulate = () => ({ error: "HostError: Error(Storage, MissingValue)\n 0: [Diagnostic Event] data:[\"trying to get non-existing value for contract instance\"]" });
+  const failure = await api.view(pool, "state").catch((e) => e);
+  assert.match(failure.message, /no longer exists on Stellar Testnet\. The testnet may have reset/);
+  assert.equal(failure.testnetReset, true);
+});
+
+test("other read failures of an existing contract are explained, not called a reset", async () => {
+  net.simulate = () => ({ error: "HostError: Error(WasmVm, InvalidAction)" });
+  const failure = await api.view(pool, "preview_buy").catch((e) => e);
+  assert.equal(failure.message, "Unable to read preview_buy. The contract rejected this request. The amount may be outside the exchange's limits or inventory.");
+  assert.equal(failure.testnetReset, undefined);
+});

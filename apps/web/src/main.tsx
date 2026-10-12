@@ -30,7 +30,7 @@ import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import type { Data, Market, Wallet, State } from "./v3";
 import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
-import { message, restorePreambleOf } from "./errors";
+import { isTestnetReset, message, restorePreambleOf } from "./errors";
 import "./style.css";
 import "./routes.css";
 const Legacy = lazy(() => import("./Legacy"));
@@ -78,7 +78,7 @@ export function App() {
   const [api, setApi] = useState<Api>();
   const [markets, setMarkets] = useState<Market[]>([]);
   const [registryLoading, setRegistryLoading] = useState(true);
-  const [registryError, setRegistryError] = useState(false);
+  const [registryError, setRegistryError] = useState("");
   const [registryAttempt, setRegistryAttempt] = useState(0);
   const [unlisted, setUnlisted] = useState({ pool: "", checking: false });
   const [address, setAddress] = useState("");
@@ -128,7 +128,7 @@ export function App() {
   useEffect(() => {
     let live = true;
     setRegistryLoading(true);
-    setRegistryError(false);
+    setRegistryError("");
     import("./v3")
       .then((module) => {
         if (live) setApi(module);
@@ -139,7 +139,14 @@ export function App() {
       })
       .catch((e) => {
         if (!live) return;
-        setRegistryError(true);
+        // A reset testnet is reported as such, not as a connection problem.
+        setRegistryError(
+          isTestnetReset(e)
+            ? message(e)
+            : restorePreambleOf(e)
+              ? "The market registry is archived. Restore it above to load the markets."
+              : "We couldn’t load the market registry. Check your connection and try again.",
+        );
         if (restorePreambleOf(e)) readFailed(e);
       })
       .finally(() => { if (live) setRegistryLoading(false); });
@@ -605,9 +612,7 @@ export function App() {
               <p>Loading verified markets from Stellar Testnet…</p>
             ) : (
               <>
-                <p>{registryError
-                  ? "We couldn’t load the market registry. Check your connection and try again."
-                  : "No markets are currently registered on Stellar Testnet."}</p>
+                <p>{registryError || "No markets are currently registered on Stellar Testnet."}</p>
                 <button className="quiet" onClick={() => setRegistryAttempt((attempt) => attempt + 1)}>
                   Retry market loading
                 </button>

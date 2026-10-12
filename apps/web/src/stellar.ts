@@ -24,7 +24,12 @@ export const config = manifest as typeof manifest & {
   faucet: string;
 };
 import { UNIT } from "./amounts";
-import { explainSimulationError, isNotFound, restoreRequired } from "./errors";
+import {
+  explainSimulationError,
+  isNotFound,
+  restoreRequired,
+  testnetReset,
+} from "./errors";
 import { pollUntil } from "./polling";
 export { UNIT, parseAmount, format, minimumOutput } from "./amounts";
 const server = new rpc.Server(config.rpcUrl);
@@ -124,11 +129,23 @@ export async function view(id: string, method: string, args: xdr.ScVal[] = []) {
       `Unable to read ${method}: contract storage is archived – restore needed.`,
       result.restorePreamble,
     );
-  if (!rpc.Api.isSimulationSuccess(result) || !result.result)
+  if (rpc.Api.isSimulationError(result)) {
+    if (await contractMissing(id)) throw testnetReset(id);
     throw new Error(
-      `Unable to read ${method}. The testnet may have reset or contract storage may need restoration.`,
+      `Unable to read ${method}. ${explainSimulationError(result.error, method)}`,
     );
+  }
+  if (!result.result) throw new Error(`Unable to read ${method}.`);
   return scValToNative(result.result.retval);
+}
+/** True only when the RPC answers that the contract instance does not exist. */
+async function contractMissing(id: string) {
+  try {
+    const r = await server.getLedgerEntries(new Contract(id).getFootprint());
+    return r.entries.length === 0;
+  } catch {
+    return false; // Unknown: report the read error instead.
+  }
 }
 export async function readPool() {
   const [state, nav, assets, supply] = await Promise.all([
