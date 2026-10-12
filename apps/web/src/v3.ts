@@ -238,13 +238,21 @@ export async function events(pool: string) {
   const server = new (await import("@stellar/stellar-sdk")).rpc.Server(
     api.config.rpcUrl,
   );
-  const ledger = await server.getLatestLedger();
-  const r = await server.getEvents({
-    startLedger: Math.max(1, ledger.sequence - 17280),
-    filters: eventFilters(pool),
-    limit: 50,
-  });
-  return r.events.map((e) => ({
+  // getEvents returns matches oldest first. Start no earlier than the RPC's
+  // retained history, page forward with the cursor (at most 10 pages), keep
+  // the newest 50 and show them newest first.
+  const health = await server.getHealth().catch(() => undefined);
+  const latest = health?.latestLedger ?? (await server.getLatestLedger()).sequence;
+  const startLedger = Math.max(1, health?.oldestLedger ?? 1, latest - 17280);
+  const filters = eventFilters(pool);
+  const limit = 100;
+  let page = await server.getEvents({ startLedger, filters, limit });
+  let newest = page.events.slice(-50);
+  for (let pages = 1; pages < 10 && page.cursor && page.events.length === limit; pages++) {
+    page = await server.getEvents({ cursor: page.cursor, filters, limit });
+    newest = [...newest, ...page.events].slice(-50);
+  }
+  return newest.reverse().map((e) => ({
     id: e.id,
     hash: e.txHash,
     ledger: e.ledger,

@@ -113,6 +113,7 @@ export function fakeNetwork() {
     feeStats: () => [200, { last_ledger_base_fee: "100", fee_charged: { p90: "100", p95: "100", p99: "100" }, max_fee: { p90: "100", p95: "100" } }],
     events: () => ({ events: [], cursor: "" }),
     attempts: new Map(),
+    oldestLedger: LATEST - 120_960,
   };
   const down = (key) => {
     if (!net.unavailable[key]) return false;
@@ -127,7 +128,7 @@ export function fakeNetwork() {
       case "getNetwork":
         return ok({ passphrase: Networks.TESTNET, protocolVersion: 23 });
       case "getHealth":
-        return ok({ status: "healthy", latestLedger: LATEST, oldestLedger: LATEST - 120_960, ledgerRetentionWindow: 120_960 });
+        return ok({ status: "healthy", latestLedger: LATEST, oldestLedger: net.oldestLedger, ledgerRetentionWindow: LATEST - net.oldestLedger });
       case "getLedgerEntries": {
         const entries = params.keys.flatMap((k) => {
           const key = xdr.LedgerKey.fromXDR(k, "base64");

@@ -410,8 +410,9 @@ function ActivityFeed(c: Ctx) {
     <section className="panel">
       <h2>Recent selected-pool events</h2>
       <p>
-        Up to 50 events from the most recent 17,280 ledgers. This bounded RPC
-        feed is not a full historical index.
+        The latest 50 events from the most recent 17,280 ledgers (about one
+        day), newest first. This bounded RPC feed is not a full historical
+        index.
       </p>
       {loading && (
         <p role="status">
