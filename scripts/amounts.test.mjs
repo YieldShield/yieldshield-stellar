@@ -83,3 +83,18 @@ test("minimum claim and exit claim rounding mirror the pool contract", () => {
       assert.ok(paid * shares <= claim * closing);
     }
 });
+
+import { normalizeAmountInput } from "../apps/web/src/amounts.ts";
+test("amounts accept surrounding whitespace and a single decimal comma", () => {
+  assert.equal(parseAmount(" 12.5\t"), 125_000_000n);
+  assert.equal(parseAmount("12,5"), 125_000_000n);
+  assert.equal(parseAmount(" 0,125 "), 1_250_000n);
+  assert.equal(parseAmount("1000,0000001"), 10_000_000_001n);
+  assert.equal(parseAmount("12,50"), 125_000_000n);
+  for (const value of ["1,000", "12,500", "1,000.5", "1,2,3", "1 000", ",5", "5,"])
+    assert.throws(() => parseAmount(value), value);
+  assert.throws(() => parseAmount("1,000"), /ambiguous/);
+  assert.equal(normalizeAmountInput(" 12,5 "), "12.5");
+  assert.equal(normalizeAmountInput("1,000"), "1,000", "ambiguous input is left for the user to fix");
+  assert.equal(normalizeAmountInput("1.5"), "1.5");
+});

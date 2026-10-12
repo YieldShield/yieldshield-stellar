@@ -1,5 +1,21 @@
 export const UNIT = 10_000_000n;
-export function parseAmount(input: string) {
+/**
+ * Canonical form of a typed amount: surrounding whitespace removed and a
+ * single comma accepted as the decimal mark when there is no dot ("12,5").
+ * "1,000"-style input is left unchanged because it reads as a thousands
+ * separator in some locales and as a decimal mark in others.
+ */
+export function normalizeAmountInput(raw: string) {
+  const input = raw.trim();
+  if (input.includes(".") || input.split(",").length !== 2) return input;
+  return /^[1-9]\d{0,2},\d{3}$/.test(input) ? input : input.replace(",", ".");
+}
+export function parseAmount(raw: string) {
+  const input = normalizeAmountInput(raw);
+  if (/^[1-9]\d{0,2},\d{3}$/.test(input))
+    throw new Error(
+      `“${input}” is ambiguous. Use a dot for decimals (for example 1.5) and no thousands separator.`,
+    );
   if (!/^\d{1,7}(\.\d{1,7})?$/.test(input))
     throw new Error("Use a positive amount with at most seven decimal places.");
   const [whole, fraction = ""] = input.split(".");

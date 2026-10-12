@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useId } from "react";
 import type { Data, Market, Wallet, State } from "./v3";
-import { format, parseAmount, minimumOutput, UNIT } from "./amounts";
+import {
+  format,
+  normalizeAmountInput,
+  parseAmount,
+  minimumOutput,
+  UNIT,
+} from "./amounts";
 export type Api = typeof import("./v3");
 
 export type Quote = {
@@ -76,6 +82,11 @@ export function Amount({
           spellCheck={false}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          // Show how the amount is read: "12,5 " becomes "12.5".
+          onBlur={() => {
+            const normal = normalizeAmountInput(value);
+            if (normal !== value) onChange(normal);
+          }}
           aria-label={label}
           aria-describedby={unitId}
         />
