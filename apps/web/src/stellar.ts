@@ -103,23 +103,13 @@ async function checkNetwork() {
       "Switch Freighter to Stellar Testnet. Real-fund networks are disabled.",
     );
 }
-let readSource:
-  Promise<Awaited<ReturnType<typeof server.getAccount>>> | undefined;
-let readSourceAt = 0;
-function simulationSource() {
-  if (!readSource || Date.now() - readSourceAt > 15000) {
-    readSourceAt = Date.now();
-    readSource = server.getAccount(config.sponsor).catch((e) => {
-      readSource = undefined;
-      throw e;
-    });
-  }
-  return readSource;
-}
+// Read-only simulations need no real source account. Like the SDK contract
+// client, use a fixed placeholder so reads never depend on looking up (or on
+// the existence of) any account.
+const NULL_ACCOUNT = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF";
 export async function view(id: string, method: string, args: xdr.ScVal[] = []) {
   if (!id) throw new Error("Deployment is not configured.");
-  const source = await simulationSource();
-  const tx = new TransactionBuilder(source, {
+  const tx = new TransactionBuilder(new Account(NULL_ACCOUNT, "0"), {
     fee: "100",
     networkPassphrase: Networks.TESTNET,
   })

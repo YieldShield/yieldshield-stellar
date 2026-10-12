@@ -44,7 +44,6 @@ after(() => {
 let net, user;
 beforeEach(() => {
   net = fakeNetwork();
-  net.accounts.add(config.sponsor);
   net.simulate = ({ method }) => ({
     retval: method === "claimed" ? nativeToScVal(false) : nativeToScVal(1n, { type: "i128" }),
   });
@@ -139,4 +138,10 @@ test("a failed confirmation request is retried instead of ending the wait", asyn
   const r = await api.transact(user, pool, "deposit", []);
   assert.match(r.hash, /^[0-9a-f]{64}$/);
   assert.equal(net.log.filter((l) => l === "rpc getTransaction").length, 4);
+});
+
+test("reads simulate from the SDK null account without any account lookup", async () => {
+  assert.equal(await api.view(pool, "nav"), 1n);
+  assert.deepEqual(net.log, ["rpc simulateTransaction", "simulate nav source=GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF"]);
+  assert.ok(!net.accounts.has(config.sponsor), "the sponsor account is not needed");
 });
