@@ -1,104 +1,220 @@
 {
-  "at": "2026-10-11T18:41:29.237Z",
+  "at": "2026-10-12T18:15:13.029Z",
+  "ttlPolicy": {
+    "renewBelow": 700000,
+    "minRemaining": 241920
+  },
   "records": [
     {
       "kind": "factory",
       "id": "CA7DG5I2NN7DCDVEBBL4HXRYI32ATWGO6KU6UZT6YHKC4NNMC3R3NTJR",
       "hash": "df119c178ea9b7b93e54f8296228cd48518a4cc43637021ea794a95cb0482bb6",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144082
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144082,
+      "remaining": 983018,
+      "renewalDue": false
     },
     {
       "kind": "vault-alpha",
       "id": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
       "hash": "040e06d97501cb39b820662867d83478cf11993f92ce61b9af552184363e6d60",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144083
-    },
-    {
-      "kind": "market-alpha",
-      "id": "CDY76RFSHFECPPA3RX3C7UMSPED5DMUMKIV7NWAO3DKGYHTNDLHXSTGJ",
-      "hash": "00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144084
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144083,
+      "remaining": 983019,
+      "renewalDue": false
     },
     {
       "kind": "vault-beta",
       "id": "CBRXUTB7LJBF4FUMRVJK3MFHGTKEHNSKEWGD2JTQ6KW36RNHM5XQP6Z5",
       "hash": "040e06d97501cb39b820662867d83478cf11993f92ce61b9af552184363e6d60",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144085
-    },
-    {
-      "kind": "market-beta",
-      "id": "CDYTSORYJ2SR66KFSP3GMLSHCF74YJDG2SLQTCMTHWTVCO2WS4B7KCIP",
-      "hash": "00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144087
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144085,
+      "remaining": 983021,
+      "renewalDue": false
     },
     {
       "kind": "vault-nested",
       "id": "CCL5VEX7BSSWODCCHEMZG5DCC7U3OGCAVA3XTLVZ3OBTICEBN5R3HS2G",
       "hash": "040e06d97501cb39b820662867d83478cf11993f92ce61b9af552184363e6d60",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144089
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144089,
+      "remaining": 983025,
+      "renewalDue": false
+    },
+    {
+      "kind": "market-alpha",
+      "id": "CDY76RFSHFECPPA3RX3C7UMSPED5DMUMKIV7NWAO3DKGYHTNDLHXSTGJ",
+      "hash": "00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144084,
+      "remaining": 983020,
+      "renewalDue": false
+    },
+    {
+      "kind": "market-beta",
+      "id": "CDYTSORYJ2SR66KFSP3GMLSHCF74YJDG2SLQTCMTHWTVCO2WS4B7KCIP",
+      "hash": "00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144087,
+      "remaining": 983023,
+      "renewalDue": false
     },
     {
       "kind": "market-nested",
       "id": "CDDO6OR23FF6RHY3DCJGMROXB54MZZTBNKKEBUXX4NF4QTEBS5TVLEVX",
       "hash": "00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144090
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144090,
+      "remaining": 983026,
+      "renewalDue": false
     },
     {
       "kind": "pool-CA5FTBND",
       "id": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
       "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144091
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144091,
+      "remaining": 983027,
+      "renewalDue": false
     },
     {
       "kind": "pool-CBYMAMOU",
       "id": "CBYMAMOUGZPE5HZPF34ACSVYWZQHRYB2DKYKREIDOVJUHWXU2HINFW5Q",
       "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144092
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144092,
+      "remaining": 983028,
+      "renewalDue": false
     },
     {
       "kind": "pool-CBMSRT2G",
       "id": "CBMSRT2GQJ6RMF2HOVXUHPYAFNJMUJ3G43DVEEMCQ6ICGCW2Q7VOL2HC",
       "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144093
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144093,
+      "remaining": 983029,
+      "renewalDue": false
     },
     {
       "kind": "pool-CAMJLANK",
       "id": "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF",
       "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144094
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144094,
+      "remaining": 983030,
+      "renewalDue": false
+    },
+    {
+      "kind": "pool-CBGCOVLN",
+      "id": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144543,
+      "remaining": 983479,
+      "renewalDue": false
+    },
+    {
+      "kind": "pool-CALXNPV3",
+      "id": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+      "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144556,
+      "remaining": 983492,
+      "renewalDue": false
+    },
+    {
+      "kind": "legacy-vault",
+      "id": "CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ",
+      "hash": "e7be64db1f722d79b88b0ed5525636b11f17e86597190c4df9e4bb5aa0cc0766",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143563,
+      "remaining": 982499,
+      "renewalDue": false
+    },
+    {
+      "kind": "legacy-pool",
+      "id": "CBTKPRFTGLW6TGTX2MU2QMOJKXX6DZQMVMEEVZTND2NJPQE7NIGZC7GT",
+      "hash": "2a4b86a425abe08b6c9640e7b8ab2d72de1950e9c748413f748d031d7be51862",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143565,
+      "remaining": 982501,
+      "renewalDue": false
+    },
+    {
+      "kind": "faucet",
+      "id": "CDC4SYVLZS2TD5NC27YMMG2C4ZCQRRL3SUODPUCCT2MOSHDUI7EAJCYY",
+      "hash": "38e75b3e7d9ccac2d82ab140e6b512c258ba79978bf58f4999dfb11a93afcfdc",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143567,
+      "remaining": 982503,
+      "renewalDue": false
+    },
+    {
+      "kind": "testusd-sac",
+      "id": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+      "hash": "stellar_asset",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143569,
+      "remaining": 982505,
+      "renewalDue": false
     }
   ],
   "codes": [
     {
+      "kind": "code-df119c178ea9",
       "hash": "df119c178ea9b7b93e54f8296228cd48518a4cc43637021ea794a95cb0482bb6",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144095
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144095,
+      "remaining": 983031,
+      "renewalDue": false
     },
     {
+      "kind": "code-040e06d97501",
       "hash": "040e06d97501cb39b820662867d83478cf11993f92ce61b9af552184363e6d60",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144096
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144096,
+      "remaining": 983032,
+      "renewalDue": false
     },
     {
+      "kind": "code-00101cdce039",
       "hash": "00101cdce039469230f79b5d78002dfabc60e0b145d3da5bcebc40e73cd0f12b",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144097
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144097,
+      "remaining": 983033,
+      "renewalDue": false
     },
     {
+      "kind": "code-bfe71de9c594",
       "hash": "bfe71de9c594c3ec97031c0743db39b3b8bea792b5bdeecf33b8b000fd3e09ba",
-      "latestLedger": 5144098,
-      "liveUntilLedger": 6144098
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6144098,
+      "remaining": 983034,
+      "renewalDue": false
+    },
+    {
+      "kind": "code-e7be64db1f72",
+      "hash": "e7be64db1f722d79b88b0ed5525636b11f17e86597190c4df9e4bb5aa0cc0766",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143564,
+      "remaining": 982500,
+      "renewalDue": false
+    },
+    {
+      "kind": "code-2a4b86a425ab",
+      "hash": "2a4b86a425abe08b6c9640e7b8ab2d72de1950e9c748413f748d031d7be51862",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143566,
+      "remaining": 982502,
+      "renewalDue": false
+    },
+    {
+      "kind": "code-38e75b3e7d9c",
+      "hash": "38e75b3e7d9ccac2d82ab140e6b512c258ba79978bf58f4999dfb11a93afcfdc",
+      "latestLedger": 5161064,
+      "liveUntilLedger": 6143568,
+      "remaining": 982504,
+      "renewalDue": false
     }
   ],
   "registry": {
@@ -109,7 +225,9 @@
       "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
       "CBYMAMOUGZPE5HZPF34ACSVYWZQHRYB2DKYKREIDOVJUHWXU2HINFW5Q",
       "CBMSRT2GQJ6RMF2HOVXUHPYAFNJMUJ3G43DVEEMCQ6ICGCW2Q7VOL2HC",
-      "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF"
+      "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF",
+      "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX"
     ],
     "vaults": [
       "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
@@ -151,6 +269,14 @@
       "31": 186
     }
   },
+  "registered": [
+    "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "CBYMAMOUGZPE5HZPF34ACSVYWZQHRYB2DKYKREIDOVJUHWXU2HINFW5Q",
+    "CBMSRT2GQJ6RMF2HOVXUHPYAFNJMUJ3G43DVEEMCQ6ICGCW2Q7VOL2HC",
+    "CAMJLANK4LOSOYAHVRBW5I75NZAD3RQC2KM5LQRTPV4UZZYRBYZ2HBSF",
+    "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+    "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX"
+  ],
   "pools": [
     {
       "id": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
@@ -261,7 +387,7 @@
         "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
         "protocol_rewards": "0",
         "reserved": "0",
-        "reward_balance": "2727273",
+        "reward_balance": "1",
         "reward_index": "545454500",
         "terms": {
           "collateral_bps": 15000,
@@ -274,12 +400,92 @@
         "vault": "CBRXUTB7LJBF4FUMRVJK3MFHGTKEHNSKEWGD2JTQ6KW36RNHM5XQP6Z5"
       },
       "cash": "7125000000",
-      "receipts": "302727273"
+      "receipts": "300000001"
+    },
+    {
+      "id": "CBGCOVLNM3BHMYOQJJYMFNXCOWYRD4SDRPVZYZBEDEYOHVG7MLNRN6C5",
+      "state": {
+        "active": 0,
+        "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+        "creator": "GDNVCW2F5GM4A22IP4WCRILCW4KRXFJH2UUBDFYFFLCLXIBJFWSUYEKT",
+        "creator_rewards": "0",
+        "credit_total": "0",
+        "end": "1791832702",
+        "inventory_balance": "0",
+        "inventory_index": "80000000000",
+        "liquidity": "736000000",
+        "next_id": "2",
+        "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+        "protocol_rewards": "0",
+        "reserved": "0",
+        "reward_balance": "0",
+        "reward_index": "0",
+        "terms": {
+          "collateral_bps": 15000,
+          "creator_fee_bps": 100,
+          "duration": "86400",
+          "junior_fee_bps": 1000,
+          "notice_delay": "60"
+        },
+        "total_lp": "800000000",
+        "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+      },
+      "cash": "736000000",
+      "receipts": "0"
+    },
+    {
+      "id": "CALXNPV3A3W7LLTWFNI7BWP3VVNHV2GMC4SH7QWSYLZM7RLJLL6JOXXX",
+      "state": {
+        "active": 0,
+        "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+        "creator": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+        "creator_rewards": "0",
+        "credit_total": "0",
+        "end": "1791746667",
+        "inventory_balance": "20000000",
+        "inventory_index": "40000000000",
+        "liquidity": "480000000",
+        "next_id": "2",
+        "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+        "protocol_rewards": "0",
+        "reserved": "0",
+        "reward_balance": "0",
+        "reward_index": "0",
+        "terms": {
+          "collateral_bps": 15000,
+          "creator_fee_bps": 100,
+          "duration": "300",
+          "junior_fee_bps": 1000,
+          "notice_delay": "30"
+        },
+        "total_lp": "500000000",
+        "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+      },
+      "cash": "480000000",
+      "receipts": "20000000"
     }
   ],
-  "legacy": {
-    "pool": "CBTKPRFTGLW6TGTX2MU2QMOJKXX6DZQMVMEEVZTND2NJPQE7NIGZC7GT",
-    "vault": "CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ",
-    "unchanged": true
-  }
+  "featured": [
+    {
+      "key": "alpha",
+      "pool": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "active": 0,
+      "end": "1794335582",
+      "providerEntryOpen": true
+    },
+    {
+      "key": "beta",
+      "pool": "CBYMAMOUGZPE5HZPF34ACSVYWZQHRYB2DKYKREIDOVJUHWXU2HINFW5Q",
+      "active": 0,
+      "end": "1794335602",
+      "providerEntryOpen": true
+    },
+    {
+      "key": "nested",
+      "pool": "CBMSRT2GQJ6RMF2HOVXUHPYAFNJMUJ3G43DVEEMCQ6ICGCW2Q7VOL2HC",
+      "active": 0,
+      "end": "1794335622",
+      "providerEntryOpen": true
+    }
+  ]
 }

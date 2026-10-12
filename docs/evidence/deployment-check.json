@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-11T17:57:14.775Z",
+  "verifiedAt": "2026-10-12T18:14:57.807Z",
   "network": "Stellar Testnet",
   "records": [
     {
@@ -8,7 +8,7 @@
       "executable": {
         "wasm": "2a4b86a425abe08b6c9640e7b8ab2d72de1950e9c748413f748d031d7be51862"
       },
-      "latestLedger": 5143569,
+      "latestLedger": 5161062,
       "liveUntilLedger": 6143565
     },
     {
@@ -17,7 +17,7 @@
       "executable": {
         "wasm": "e7be64db1f722d79b88b0ed5525636b11f17e86597190c4df9e4bb5aa0cc0766"
       },
-      "latestLedger": 5143569,
+      "latestLedger": 5161062,
       "liveUntilLedger": 6143563
     },
     {
@@ -26,14 +26,14 @@
       "executable": {
         "wasm": "38e75b3e7d9ccac2d82ab140e6b512c258ba79978bf58f4999dfb11a93afcfdc"
       },
-      "latestLedger": 5143569,
+      "latestLedger": 5161062,
       "liveUntilLedger": 6143567
     },
     {
       "name": "backing",
       "id": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
       "executable": "stellar_asset",
-      "latestLedger": 5143569,
+      "latestLedger": 5161062,
       "liveUntilLedger": 6143569
     }
   ],
