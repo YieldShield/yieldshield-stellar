@@ -59,3 +59,18 @@ Test-wallet setup, its receipt-hash recorder correction and evidence are separat
 The final application source and production deployment are recorded in [HOSTING.md](HOSTING.md). Earlier native deployment and lifecycle evidence remains in [the V3 evidence directory](evidence/v3/).
 
 Grant applications remain held for user review. This is functional verification, not a security audit.
+
+## Fresh-user rerun, 12 October 2026
+
+A new disposable wallet (`GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML`) used the same localhost-only test-wallet harness against the deployed contracts on the featured Reserve Alpha market. The app's **Fund with Friendbot** button created the account (Friendbot transaction `b5ecbc967a2c0e0da76b19e13a90ee8dcdb918e964c438b9411b75da016a41fa`). Then **13 browser-signed transactions** confirmed SUCCESS on public Testnet:
+
+| Step | Result |
+|---|---|
+| TESTUSD trustline, faucet claim | 1,000 TESTUSD; repeated claim disabled |
+| Vault deposit, redemption | 300 TESTUSD → 300 ysALPHA; 20 ysALPHA → 20 TESTUSD |
+| Provider deposit, notice, cancel | 200 TESTUSD → 200 LP shares; notice requested and cancelled |
+| Protect | 100 ysALPHA → position #1 |
+| After the 60-second delay | Partial receipt exit of 40 ysALPHA, then backing exit of the remaining 60 for 60 TESTUSD; position closed |
+| Provider claims and withdrawal | Acquired-receipt claim of 1.1764705 ysALPHA (this provider's share of the 60 surrendered receipts); notice for all shares; withdrawal after the 30-second notice paid 198.8235294 TESTUSD |
+
+Final balances reconcile to 778.8235294 TESTUSD and 221.1764705 ysALPHA. Reserve Alpha, Beta and Nested have no open liabilities and still accept providers. Gain-fee rewards stayed at zero because vault NAV did not change, so reward claims were not exercised. Maturity settlement, ownership transfer and the real Freighter extension were not exercised in this run either. Evidence: [signatures](evidence/e2e-2026-10-12/local-wallet.json), [UI log](evidence/e2e-2026-10-12/driver-log.json), [independent ledger readback](evidence/e2e-2026-10-12/readback.json), and [protection](evidence/e2e-2026-10-12/protection-confirmed.png) and [withdrawal](evidence/e2e-2026-10-12/provider-withdraw-confirmed.png) screenshots.

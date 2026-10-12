@@ -1,0 +1,225 @@
+{
+  "checkedAt": "2026-10-12T18:39:27.593Z",
+  "network": "Stellar Testnet",
+  "freshWallet": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+  "friendbotFunding": {
+    "operation": "22167494445772801",
+    "transaction": "b5ecbc967a2c0e0da76b19e13a90ee8dcdb918e964c438b9411b75da016a41fa",
+    "funder": "GAIH3ULLFQ4DGSECF2AR555KZ4KNDGEKN4AFI4SU2M7B43MGK3QJZNSR",
+    "startingBalance": "10000.0000000"
+  },
+  "browserSignedTransactions": 13,
+  "receipts": [
+    {
+      "at": "2026-10-12T18:34:37.430Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "",
+      "method": "changeTrust",
+      "hash": "8ca919a7a6df92678d3ca0d4e4fad7fa4c2598664b016ffab4a09ab7345f2746",
+      "status": "SUCCESS",
+      "ledger": 5161299,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-12T18:34:45.736Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CDC4SYVLZS2TD5NC27YMMG2C4ZCQRRL3SUODPUCCT2MOSHDUI7EAJCYY",
+      "method": "claim",
+      "hash": "9278034ec73240f2527db845f419c1f72d55201adc3f57b62a79fab7a62a2ef5",
+      "status": "SUCCESS",
+      "ledger": 5161300,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-12T18:34:51.578Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
+      "method": "deposit",
+      "hash": "c8988da50924b8a01a87418020c0cd6bfb7395244a52d8278bb7e2689200ff9f",
+      "status": "SUCCESS",
+      "ledger": 5161302,
+      "returnValue": "3000000000"
+    },
+    {
+      "at": "2026-10-12T18:34:59.979Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH",
+      "method": "redeem",
+      "hash": "8550289a8a2ad6b0fbaf3e8c59dea36bf88e11053ae27ab6e72f9fc1f0941481",
+      "status": "SUCCESS",
+      "ledger": 5161303,
+      "returnValue": "200000000"
+    },
+    {
+      "at": "2026-10-12T18:35:07.247Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "provide",
+      "hash": "df345839e6c979edaa9301b05560f6d7bc3f44755af61fbc37bbdb0a31a24cc3",
+      "status": "SUCCESS",
+      "ledger": 5161305,
+      "returnValue": "2000000000"
+    },
+    {
+      "at": "2026-10-12T18:35:16.179Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "notice",
+      "hash": "9ae9130cffcfdcf37ec7b62424baee5fe7dd102407a9d703eec602d448fa2dc8",
+      "status": "SUCCESS",
+      "ledger": 5161307,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-12T18:35:26.444Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "cancel_notice",
+      "hash": "86972a62111b94d70b38ce60c413438fee6f03510aa2af946d2e077b0439d24f",
+      "status": "SUCCESS",
+      "ledger": 5161309,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-12T18:35:35.726Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "protect",
+      "hash": "a93b5ebb92bca39e05cda5579051137444452063a030d5b6eed0562f21faf1c7",
+      "status": "SUCCESS",
+      "ledger": 5161310,
+      "returnValue": "1"
+    },
+    {
+      "at": "2026-10-12T18:36:55.688Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "exit",
+      "hash": "0f3ffb9a7376053066d7cb5d4c1095cdb3ee5d514858438021dd0184079ca000",
+      "status": "SUCCESS",
+      "ledger": 5161326,
+      "returnValue": "400000000"
+    },
+    {
+      "at": "2026-10-12T18:37:02.257Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "exit",
+      "hash": "ab7cf69daefaf27f652e37eb2eb6fb61d98ffc312e8c2e438a7bab0a106b9296",
+      "status": "SUCCESS",
+      "ledger": 5161328,
+      "returnValue": "600000000"
+    },
+    {
+      "at": "2026-10-12T18:37:09.801Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "claim_inventory",
+      "hash": "657cf198e08b0317d17b56cc5fed709c73353e66d8036b00676b446692b6d14c",
+      "status": "SUCCESS",
+      "ledger": 5161329,
+      "returnValue": "11764705"
+    },
+    {
+      "at": "2026-10-12T18:37:15.720Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "notice",
+      "hash": "57a622d9ece691262152c86171a7d5ee64a91b0f6baf1dd63a76fee4d9d309fe",
+      "status": "SUCCESS",
+      "ledger": 5161330,
+      "returnValue": null
+    },
+    {
+      "at": "2026-10-12T18:37:59.758Z",
+      "source": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+      "contract": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "method": "withdraw",
+      "hash": "5d9b0817bb319c8793b57a2d2172293c89b126f502a5739c7d11ebdd3fd154d9",
+      "status": "SUCCESS",
+      "ledger": 5161339,
+      "returnValue": "1988235294"
+    }
+  ],
+  "market": {
+    "key": "alpha",
+    "pool": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+    "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+  },
+  "positionId": "1",
+  "position": {
+    "claim": "0",
+    "closed": true,
+    "opened": "1791830137",
+    "owner": "GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXTML",
+    "reserved": "0",
+    "shares": "0"
+  },
+  "provider": {
+    "debt": "0",
+    "inventory": "0",
+    "inventory_debt": "0",
+    "notice_at": "1791830267",
+    "notice_shares": "0",
+    "rewards": "0",
+    "shares": "0"
+  },
+  "alphaState": {
+    "active": 0,
+    "backing": "CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D",
+    "creator": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "creator_rewards": "0",
+    "credit_total": "0",
+    "end": "1794335582",
+    "inventory_balance": "588235295",
+    "inventory_index": "5882352941",
+    "liquidity": "99411764706",
+    "next_id": "2",
+    "protocol": "GCHX4WWGJB2TDIK6VQQ2ZMKE2WNIWONEZ6ARW3ZDEV53OG3RGM4FYB3I",
+    "protocol_rewards": "0",
+    "reserved": "0",
+    "reward_balance": "0",
+    "reward_index": "0",
+    "terms": {
+      "collateral_bps": 15000,
+      "creator_fee_bps": 100,
+      "duration": "2592000",
+      "junior_fee_bps": 1000,
+      "notice_delay": "30"
+    },
+    "total_lp": "100000000000",
+    "vault": "CACOV4LGNNJFNHWROFL2YW6FLYSCWILU2B7AVZGZWALZGJX7EHUMPOGH"
+  },
+  "finalBalances": {
+    "TESTUSD": "778.8235294",
+    "ysALPHAUnits": "2211764705"
+  },
+  "featured": [
+    {
+      "key": "alpha",
+      "pool": "CA5FTBNDTT6NF53PFY3FWD43Z2XHA4K6CAGCGSYGHTXSHO5MZIS5TKHT",
+      "active": 0,
+      "providerEntryOpen": true
+    },
+    {
+      "key": "beta",
+      "pool": "CBYMAMOUGZPE5HZPF34ACSVYWZQHRYB2DKYKREIDOVJUHWXU2HINFW5Q",
+      "active": 0,
+      "providerEntryOpen": true
+    },
+    {
+      "key": "nested",
+      "pool": "CBMSRT2GQJ6RMF2HOVXUHPYAFNJMUJ3G43DVEEMCQ6ICGCW2Q7VOL2HC",
+      "active": 0,
+      "providerEntryOpen": true
+    }
+  ],
+  "assertions": [
+    "Every browser-signed transaction independently confirmed SUCCESS on public Testnet RPC",
+    "Every hash the UI reported as confirmed matches one of those receipts",
+    "The fresh account was created by Friendbot through the app's funding button",
+    "The protected position is closed with zero shares after a partial receipt exit and a backing exit of the remainder",
+    "All provider shares were withdrawn after notice; Alpha has no open holder positions",
+    "All featured pools have no active liabilities after the run"
+  ]
+}
