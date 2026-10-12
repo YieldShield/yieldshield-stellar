@@ -103,6 +103,10 @@ export function App() {
   const previousPath = useRef(path);
   useEffect(() => {
     document.title = `${path === "/" ? "Reserve Lab" : path === "/legacy" ? "Legacy market" : title(path)} | YieldShield Stellar`;
+    // index.html names the home page as canonical; follow the current route.
+    document
+      .querySelector?.('link[rel="canonical"]')
+      ?.setAttribute("href", `https://stellar.yieldshield.ai${path}`);
     if (previousPath.current !== path) {
       mainRef.current?.focus({ preventScroll: true });
       window.scrollTo({ top: 0 });

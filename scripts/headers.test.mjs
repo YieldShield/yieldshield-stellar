@@ -36,6 +36,21 @@ test("hashed assets are immutable and the SPA rewrite is unchanged", () => {
   const rewrite = new RegExp(`^${vercel.rewrites[0].source}$`);
   assert.equal(vercel.rewrites[0].destination, "/index.html");
   for (const path of ["/", "/protect", "/markets/CA5F", "/legacy"]) assert.ok(rewrite.test(path), path);
-  for (const path of ["/assets/index.js", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png"])
+  for (const path of ["/assets/index.js", "/favicon.ico", "/favicon.svg", "/apple-touch-icon.png", "/og.png"])
     assert.ok(!rewrite.test(path), path);
+});
+
+test("social previews and the canonical link point to the published site and image", () => {
+  const html = readFileSync("index.html", "utf8");
+  const meta = (attr, name) => html.match(new RegExp(`${attr}="${name}"\\s+content="([^"]+)"`))?.[1];
+  assert.match(html, /<link rel="canonical" href="https:\/\/stellar\.yieldshield\.ai\/" \/>/);
+  for (const [attr, name] of [["property", "og:image"], ["name", "twitter:image"]])
+    assert.equal(meta(attr, name), "https://stellar.yieldshield.ai/og.png", name);
+  assert.equal(meta("name", "twitter:card"), "summary_large_image");
+  assert.ok(meta("property", "og:title") && meta("property", "og:description"));
+  const png = readFileSync("public/og.png");
+  assert.equal(png.toString("ascii", 1, 4), "PNG");
+  assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1280, 640]);
+  assert.equal(meta("property", "og:image:width"), "1280");
+  assert.equal(meta("property", "og:image:height"), "640");
 });
