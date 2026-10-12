@@ -27,11 +27,11 @@ npm ci --ignore-scripts
 npm test
 npm run build
 npm run dev
-cargo test --workspace
 stellar contract build
+cargo test --workspace
 ```
 
-The web build emits `dist` and requires no server or private environment variables. The current public issuer and contract IDs are in [config/testnet.json](config/testnet.json). [Operations](docs/OPERATIONS.md) explains wallet onboarding, testnet deployment, storage lifetime and evidence scripts. Do not copy signer files into a deployment.
+Factory tests deploy the built pool Wasm, so run `stellar contract build` before `cargo test --workspace` on a clean checkout and after changing pool-v3; `sh scripts/check-native.sh` does both. The web build emits `dist` and requires no server or private environment variables. The current public issuer and contract IDs are in [config/testnet.json](config/testnet.json). [Operations](docs/OPERATIONS.md) explains wallet onboarding, testnet deployment, storage lifetime and evidence scripts. Do not copy signer files into a deployment.
 
 ## Research and grant scope
 

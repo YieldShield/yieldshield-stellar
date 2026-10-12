@@ -252,6 +252,7 @@ mod test {
         t.mint(&other, &1_000_000_000);
         let vault = e.register(DemoVault, (&backing, &admin));
         let nested = e.register(DemoVault, (&vault, &admin));
+        // Built by `stellar contract build`; run it before `cargo test`.
         let wasm = e.deployer().upload_contract_wasm(
             &include_bytes!("../../../target/wasm32v1-none/release/yieldshield_pool_v3.wasm")[..],
         );
