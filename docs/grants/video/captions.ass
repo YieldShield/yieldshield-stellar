@@ -1,0 +1,35 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+WrapStyle: 2
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,26,&H00F8F8F4,&H00F8F8F4,&H00222F1C,&H00222F1C,0,0,0,0,100,100,0,0,1,0,0,2,44,44,22,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:05.44,Default,,0,0,0,,YieldShield on Stellar makes vault risk easier to inspect: which assets are exposed,
+Dialogue: 0,0:00:05.52,0:00:10.48,Default,,0,0,0,,what backing is reserved, and who absorbs a loss. This is our native Soroban
+Dialogue: 0,0:00:10.56,0:00:15.44,Default,,0,0,0,,prototype. The live interface shows separately funded markets, their asset pairs,
+Dialogue: 0,0:00:15.56,0:00:20.48,Default,,0,0,0,,collateral requirements, gain-sharing fees, and maturity dates. Every asset shown
+Dialogue: 0,0:00:20.60,0:00:25.68,Default,,0,0,0,,here is a valueless test asset. A holder acquires vault receipts, then chooses
+Dialogue: 0,0:00:25.76,0:00:30.32,Default,,0,0,0,,protection. The pool reserves a fixed amount of backing for that position. Before
+Dialogue: 0,0:00:30.36,0:00:35.12,Default,,0,0,0,,maturity, the holder can reclaim receipts under the gain-sharing terms, or surrender
+Dialogue: 0,0:00:35.20,0:00:40.40,Default,,0,0,0,,them for the reserved backing. Partial exits are supported. At maturity, remaining
+Dialogue: 0,0:00:40.60,0:00:44.24,Default,,0,0,0,,receipts are surrendered for backing, and their remaining upside is forfeited.
+Dialogue: 0,0:00:44.64,0:00:49.28,Default,,0,0,0,,Providers supply the first-loss capital. They can receive surrendered receipts and a
+Dialogue: 0,0:00:49.36,0:00:54.48,Default,,0,0,0,,share of gains. Their capital can lose value. Deposits and withdrawals pause while
+Dialogue: 0,0:00:54.56,0:00:59.44,Default,,0,0,0,,holders remain protected, and withdrawals require notice. Acquired receipts and fee
+Dialogue: 0,0:00:59.52,0:01:04.28,Default,,0,0,0,,rewards have separate claims. The trading and funding pages connect these steps.
+Dialogue: 0,0:01:04.48,0:01:09.36,Default,,0,0,0,,Receipt Reserve, for example, uses Alpha receipts as backing. The interface guides
+Dialogue: 0,0:01:09.44,0:01:13.84,Default,,0,0,0,,users to the corresponding vault and returns them to their original pool and amount.
+Dialogue: 0,0:01:14.32,0:01:18.88,Default,,0,0,0,,YieldShield is built by David Hawig, founder and managing director, and Santiago
+Dialogue: 0,0:01:18.96,0:01:24.24,Default,,0,0,0,,Balaguer, cofounder and product lead. David previously led ecosystem work at Web3
+Dialogue: 0,0:01:24.32,0:01:29.36,Default,,0,0,0,,Foundation. Santiago brings fifteen years of product experience, including five in
+Dialogue: 0,0:01:29.44,0:01:34.24,Default,,0,0,0,,crypto. Our next phase focuses on verified asset integrations, conservative
+Dialogue: 0,0:01:34.32,0:01:39.68,Default,,0,0,0,,valuation, monitoring, and independent review before any real-asset release. The
+Dialogue: 0,0:01:39.92,0:01:44.72,Default,,0,0,0,,prototype is substantially AI-assisted and unaudited. This walkthrough demonstrates
+Dialogue: 0,0:01:44.80,0:01:49.52,Default,,0,0,0,,the interface; it is not a claim of adoption or investment performance. Explore the
+Dialogue: 0,0:01:49.60,0:01:53.12,Default,,0,0,0,,current prototype at stellar dot yieldshield dot A I.

@@ -1,0 +1,91 @@
+1
+00:00:00,000 --> 00:00:05,440
+YieldShield on Stellar makes vault risk easier to inspect: which assets are exposed,
+
+2
+00:00:05,520 --> 00:00:10,480
+what backing is reserved, and who absorbs a loss. This is our native Soroban
+
+3
+00:00:10,560 --> 00:00:15,440
+prototype. The live interface shows separately funded markets, their asset pairs,
+
+4
+00:00:15,560 --> 00:00:20,480
+collateral requirements, gain-sharing fees, and maturity dates. Every asset shown
+
+5
+00:00:20,600 --> 00:00:25,680
+here is a valueless test asset. A holder acquires vault receipts, then chooses
+
+6
+00:00:25,760 --> 00:00:30,320
+protection. The pool reserves a fixed amount of backing for that position. Before
+
+7
+00:00:30,360 --> 00:00:35,120
+maturity, the holder can reclaim receipts under the gain-sharing terms, or surrender
+
+8
+00:00:35,200 --> 00:00:40,400
+them for the reserved backing. Partial exits are supported. At maturity, remaining
+
+9
+00:00:40,600 --> 00:00:44,240
+receipts are surrendered for backing, and their remaining upside is forfeited.
+
+10
+00:00:44,640 --> 00:00:49,280
+Providers supply the first-loss capital. They can receive surrendered receipts and a
+
+11
+00:00:49,360 --> 00:00:54,480
+share of gains. Their capital can lose value. Deposits and withdrawals pause while
+
+12
+00:00:54,560 --> 00:00:59,440
+holders remain protected, and withdrawals require notice. Acquired receipts and fee
+
+13
+00:00:59,520 --> 00:01:04,280
+rewards have separate claims. The trading and funding pages connect these steps.
+
+14
+00:01:04,480 --> 00:01:09,360
+Receipt Reserve, for example, uses Alpha receipts as backing. The interface guides
+
+15
+00:01:09,440 --> 00:01:13,840
+users to the corresponding vault and returns them to their original pool and amount.
+
+16
+00:01:14,320 --> 00:01:18,880
+YieldShield is built by David Hawig, founder and managing director, and Santiago
+
+17
+00:01:18,960 --> 00:01:24,240
+Balaguer, cofounder and product lead. David previously led ecosystem work at Web3
+
+18
+00:01:24,320 --> 00:01:29,360
+Foundation. Santiago brings fifteen years of product experience, including five in
+
+19
+00:01:29,440 --> 00:01:34,240
+crypto. Our next phase focuses on verified asset integrations, conservative
+
+20
+00:01:34,320 --> 00:01:39,680
+valuation, monitoring, and independent review before any real-asset release. The
+
+21
+00:01:39,920 --> 00:01:44,720
+prototype is substantially AI-assisted and unaudited. This walkthrough demonstrates
+
+22
+00:01:44,800 --> 00:01:49,520
+the interface; it is not a claim of adoption or investment performance. Explore the
+
+23
+00:01:49,600 --> 00:01:53,120
+current prototype at stellar dot yieldshield dot A I.
