@@ -29,11 +29,16 @@ const output = await build({
 const modulePath = join(temp, "stellar.mjs");
 writeFileSync(modulePath, output.outputFiles[0].text);
 const originalFetch = globalThis.fetch;
+// Run the app's polling delays 100x faster; long timeouts stay as they are.
+const originalSetTimeout = globalThis.setTimeout;
+globalThis.setTimeout = (fn, ms = 0, ...args) =>
+  originalSetTimeout(fn, ms >= 10_000 ? ms : Math.ceil(ms / 100), ...args);
 const api = await import(pathToFileURL(modulePath).href);
 const config = JSON.parse(readFileSync("config/testnet.json", "utf8"));
 after(() => {
   rmSync(temp, { recursive: true, force: true });
   globalThis.fetch = originalFetch;
+  globalThis.setTimeout = originalSetTimeout;
   delete globalThis.wallet;
 });
 let net, user;
@@ -125,4 +130,13 @@ test("a failing invocation never reaches the wallet and reports a short reason",
   net.simulate = () => ({ error: hostError });
   await assert.rejects(api.transact(user, pool, "deposit", []), /^Error: Your token balance is too low/);
   assert.equal(globalThis.wallet.signed.length, 0);
+});
+
+test("a failed confirmation request is retried instead of ending the wait", async () => {
+  net.accounts.add(user);
+  net.unavailable.getTransaction = 2;
+  net.transaction = (_hash, attempt) => (attempt < 2 ? "NOT_FOUND" : "SUCCESS");
+  const r = await api.transact(user, pool, "deposit", []);
+  assert.match(r.hash, /^[0-9a-f]{64}$/);
+  assert.equal(net.log.filter((l) => l === "rpc getTransaction").length, 4);
 });

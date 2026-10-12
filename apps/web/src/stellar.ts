@@ -25,6 +25,7 @@ export const config = manifest as typeof manifest & {
 };
 import { UNIT } from "./amounts";
 import { explainSimulationError, isNotFound, restoreRequired } from "./errors";
+import { pollUntil } from "./polling";
 export { UNIT, parseAmount, format, minimumOutput } from "./amounts";
 const server = new rpc.Server(config.rpcUrl);
 const horizon = new Horizon.Server(config.horizonUrl);
@@ -316,26 +317,33 @@ async function signAndSend(
     throw new Error(
       `The testnet rejected this transaction: ${knownHash}. No success is assumed.`,
     );
-  for (let i = 0; i < 40; i++) {
-    await new Promise((r) => setTimeout(r, 1500));
-    let confirmation: Awaited<ReturnType<typeof server.getTransaction>>;
-    try {
-      confirmation = await server.getTransaction(result.hash);
-    } catch {
-      throw new Error(
-        `Confirmation unavailable: ${knownHash}. The transaction may have completed; check the explorer before trying again.`,
-      );
-    }
-    if (confirmation.status === "SUCCESS")
-      return {
-        hash: result.hash,
-        value: confirmation.returnValue
-          ? scValToNative(confirmation.returnValue)
-          : null,
-      };
-    if (confirmation.status === "FAILED")
-      throw new Error(`Transaction failed on chain: ${result.hash}`);
-  }
+  // Keep asking until shortly after the transaction's time bounds expire:
+  // after that it can no longer be included. A failed status request is an
+  // RPC blip, not an outcome, so it is retried with backoff.
+  const maxTime =
+    "timeBounds" in submitted ? Number(submitted.timeBounds?.maxTime || 0) : 0;
+  const deadline = Math.min(
+    Date.now() + 180_000,
+    Math.max(Date.now() + 30_000, maxTime * 1000 + 15_000),
+  );
+  const { value: confirmation, error } = await pollUntil(
+    () => server.getTransaction(result.hash),
+    (c) => c.status !== "NOT_FOUND",
+    { deadline },
+  );
+  if (confirmation?.status === "SUCCESS")
+    return {
+      hash: result.hash,
+      value: confirmation.returnValue
+        ? scValToNative(confirmation.returnValue)
+        : null,
+    };
+  if (confirmation?.status === "FAILED")
+    throw new Error(`Transaction failed on chain: ${result.hash}`);
+  if (error)
+    throw new Error(
+      `Confirmation unavailable: ${knownHash}. The transaction may have completed; check the explorer before trying again.`,
+    );
   throw new Error(
     `Still pending: ${result.hash}. Check the explorer before trying again.`,
   );
