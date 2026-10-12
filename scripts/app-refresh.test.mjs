@@ -229,3 +229,26 @@ test("focus moves to the transaction result once the review is consumed", async 
   assert.equal(feedback.length, 1, "the feedback region is focusable");
   assert.match(text(r), /confirmed on Stellar Testnet/);
 });
+
+test("an archived registry keeps its restore action after a wallet connects", async () => {
+  const restores = [];
+  let archived = true;
+  globalThis.testApi = {
+    markets: async () => {
+      if (archived) throw Object.assign(new Error("Unable to read state: contract storage is archived – restore needed."), { restorePreamble: { registry: true } });
+      return [market];
+    },
+    connect: async () => "wallet-A",
+    readMarket: async () => data, readAccount: async () => wallet,
+    restore: async (address, preamble) => { restores.push([address, preamble]); archived = false; return { hash: "restore-hash" }; },
+  };
+  let r;
+  await act(async () => { r = create(React.createElement(App)); });
+  mounted.push(r);
+  assert.match(text(r), /market registry is archived/);
+  await act(async () => findButton(r, "Connect Freighter").props.onClick());
+  await act(async () => findButton(r, "Restore archived storage").props.onClick());
+  assert.deepEqual(restores, [["wallet-A", { registry: true }]]);
+  assert.match(text(r), /150%/, "markets load after the restore");
+  assert.doesNotMatch(text(r), /restore needed|registry is archived/);
+});

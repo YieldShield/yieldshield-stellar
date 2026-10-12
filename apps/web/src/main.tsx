@@ -259,8 +259,10 @@ export function App() {
     setData(undefined);
     setWallet(undefined);
     setLastGoodAt(undefined);
-    readOk();
+    // Without a market there is no pool read to reset; an archived registry
+    // must keep its restore action when a wallet connects.
     if (!api || !market) return;
+    readOk();
     let live = true;
     const run = () =>
       refresh().then(
