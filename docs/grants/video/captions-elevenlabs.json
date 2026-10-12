@@ -1,0 +1,117 @@
+[
+  {
+    "text": "YieldShield on Stellar makes vault risk easier to inspect: which assets are exposed,",
+    "start": 0,
+    "end": 5.439993282936381
+  },
+  {
+    "text": "what backing is reserved, and who absorbs a loss.\n\nThis is our native Soroban",
+    "start": 5.519991802905414,
+    "end": 10.479985427387403
+  },
+  {
+    "text": "prototype. The live interface shows separately funded markets, their asset pairs,",
+    "start": 10.55999248599663,
+    "end": 15.439987590509586
+  },
+  {
+    "text": "collateral requirements, gain-sharing fees, and maturity dates. Every asset shown",
+    "start": 15.559964023862653,
+    "end": 20.479962657680222
+  },
+  {
+    "text": "here is a valueless test asset.\n\nA holder acquires vault receipts, then chooses",
+    "start": 20.599981784234256,
+    "end": 25.67997745798989
+  },
+  {
+    "text": "protection. The pool reserves a fixed amount of backing for that position. Before",
+    "start": 25.759967439318732,
+    "end": 30.319959925315363
+  },
+  {
+    "text": "maturity, the holder can reclaim receipts under the gain-sharing terms, or surrender",
+    "start": 30.35998907054055,
+    "end": 35.11998212577987
+  },
+  {
+    "text": "them for the reserved backing. Partial exits are supported. At maturity, remaining",
+    "start": 35.19994649118812,
+    "end": 40.399944214217406
+  },
+  {
+    "text": "receipts are surrendered for backing, and their remaining upside is forfeited.",
+    "start": 40.59995332210028,
+    "end": 44.239950020492735
+  },
+  {
+    "text": "Providers supply the first-loss capital. They can receive surrendered receipts and a",
+    "start": 44.639925543057515,
+    "end": 49.27992508766337
+  },
+  {
+    "text": "share of gains. Their capital can lose value. Deposits and withdrawals pause while",
+    "start": 49.36000045539414,
+    "end": 54.479999658454396
+  },
+  {
+    "text": "holders remain protected, and withdrawals require notice. Acquired receipts and fee",
+    "start": 54.55994694658226,
+    "end": 59.43994205109522
+  },
+  {
+    "text": "rewards have separate claims.\n\nThe trading and funding pages connect these steps.",
+    "start": 59.51995764834464,
+    "end": 64.27995070358395
+  },
+  {
+    "text": "Receipt Reserve, for example, uses Alpha receipts as backing. The interface guides",
+    "start": 64.47996835010701,
+    "end": 69.35996345461997
+  },
+  {
+    "text": "users to the corresponding vault and returns them to their original pool and amount.",
+    "start": 69.43997905186939,
+    "end": 73.83997449792795
+  },
+  {
+    "text": "YieldShield is built by David Hawig, founder and managing director, and Santiago",
+    "start": 74.31989730862061,
+    "end": 78.87988979461724
+  },
+  {
+    "text": "Balaguer, cofounder and product lead. David previously led ecosystem work at Web3",
+    "start": 78.95996516234801,
+    "end": 84.23996140534632
+  },
+  {
+    "text": "Foundation. Santiago brings fifteen years of product experience, including five in",
+    "start": 84.3199257707546,
+    "end": 89.3599179152056
+  },
+  {
+    "text": "crypto.\n\nOur next phase focuses on verified asset integrations, conservative",
+    "start": 89.43969443052963,
+    "end": 94.23969101507353
+  },
+  {
+    "text": "valuation, monitoring, and independent review before any real-asset release. The",
+    "start": 94.3195273008789,
+    "end": 99.67952206384625
+  },
+  {
+    "text": "prototype is substantially AI-assisted and unaudited. This walkthrough demonstrates",
+    "start": 99.92002140352476,
+    "end": 104.72001798806868
+  },
+  {
+    "text": "the interface; it is not a claim of adoption or investment performance.\n\nExplore the",
+    "start": 104.79985427387403,
+    "end": 109.51985233844891
+  },
+  {
+    "text": "current prototype at stellar dot yieldshield dot A I.",
+    "start": 109.6002777904276,
+    "end": 113.12027243954643
+  }
+]
