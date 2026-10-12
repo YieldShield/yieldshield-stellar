@@ -112,6 +112,19 @@ export function App() {
   useEffect(() => {
     if (quote) reviewRef.current?.focus();
   }, [quote]);
+  // After an action ends, the control that started it (Confirm, Fund,
+  // Restore) is usually gone; move focus to the result instead of <body>.
+  const feedbackRef = useRef<HTMLDivElement>(null);
+  const focusFeedback = useRef(false);
+  useEffect(() => {
+    if (!focusFeedback.current) return;
+    focusFeedback.current = false;
+    feedbackRef.current?.focus();
+  });
+  function finish() {
+    focusFeedback.current = true;
+    setBusy("");
+  }
   const selected = path.startsWith("/markets/")
     ? path.split("/")[2]
     : url.searchParams.get("pool");
@@ -273,7 +286,7 @@ export function App() {
     } catch (e) {
       setError(message(e));
     } finally {
-      setBusy("");
+      finish();
     }
   }
   async function restoreArchived() {
@@ -292,7 +305,7 @@ export function App() {
     } catch (e) {
       setError(message(e));
     } finally {
-      setBusy("");
+      finish();
     }
   }
   async function connect() {
@@ -403,13 +416,14 @@ export function App() {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
-      setBusy("");
+      finish();
     }
     function submitted(transactionHash: string) {
       // Once broadcast can occur, this review must never authorize a second
       // transaction, including when RPC confirmation is unavailable.
       setHash(transactionHash);
       clear();
+      focusFeedback.current = true;
     }
   }
   const ctx: Ctx = {
@@ -493,7 +507,12 @@ export function App() {
           </div>
         )}
         {(error || notice || busy || hash) && (
-          <div className={`feedback ${error ? "error" : ""}`} role="status">
+          <div
+            className={`feedback ${error ? "error" : ""}`}
+            role="status"
+            ref={feedbackRef}
+            tabIndex={-1}
+          >
             {busy && <p>{busy}</p>}
             {error && <p role="alert">{error}</p>}
             {notice && <p>{notice}</p>}

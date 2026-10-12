@@ -569,7 +569,8 @@
 .v3 main:focus {
   outline: none;
 }
-.v3 .review:focus {
+.v3 .review:focus,
+.v3 .feedback:focus {
   outline: 3px solid #547441;
   outline-offset: 3px;
 }

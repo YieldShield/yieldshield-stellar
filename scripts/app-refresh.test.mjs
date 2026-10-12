@@ -58,7 +58,7 @@ const data = { state: { end: 9999999999n, liquidity: 1000n*U, reserved: 0n, tota
 const wallet = { shares: 10n*U, backing: 100n*U, testusd: 100n*U, funded: true, trusted: true, claimed: true, provider: {}, positions: [] };
 const text = r => JSON.stringify(r.toJSON());
 const findButton = (r, label) => r.root.findAllByType("button").find(b => [b.props.children].flat().join("").includes(label));
-async function start(overrides = {}) {
+async function start(overrides = {}, options = {}) {
   globalThis.testApi = {
     markets: async () => [market], connect: async () => "wallet-A",
     readMarket: async () => data, readAccount: async () => wallet,
@@ -67,7 +67,7 @@ async function start(overrides = {}) {
     ...overrides,
   };
   let r;
-  await act(async () => { r = create(React.createElement(App)); });
+  await act(async () => { r = create(React.createElement(App), options); });
   mounted.push(r);
   await act(async () => findButton(r, "Connect Freighter").props.onClick());
   return r;
@@ -206,4 +206,26 @@ test("a failed background refresh keeps the last values marked stale and the ope
   failing = false;
   await act(async () => intervals.at(-1)());
   assert.doesNotMatch(text(r), /Stale:|could not be read/);
+});
+
+test("focus moves to the transaction result once the review is consumed", async () => {
+  const focused = [];
+  const createNodeMock = (element) => ({
+    focus: () => focused.push(String(element.props.className || element.type)),
+  });
+  const r = await start({
+    transact: async (_owner, _contract, _method, _args, submitted) => {
+      submitted("hash-1");
+      focused.push("-- broadcast");
+      return { hash: "hash-1", value: null };
+    },
+  }, { createNodeMock });
+  await act(async () => findButton(r, "Review buy").props.onClick());
+  assert.equal(focused.at(-1), "review", "the review receives focus when it opens");
+  await act(async () => findButton(r, "Confirm in Freighter").props.onClick());
+  assert.equal(findButton(r, "Confirm in Freighter"), undefined);
+  assert.match(focused.at(-1), /^feedback/, "focus lands on the result, not <body>");
+  const feedback = r.root.findAll((n) => n.props.role === "status" && n.props.tabIndex === -1);
+  assert.equal(feedback.length, 1, "the feedback region is focusable");
+  assert.match(text(r), /confirmed on Stellar Testnet/);
 });
