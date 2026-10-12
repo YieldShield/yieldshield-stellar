@@ -30,7 +30,7 @@ import {
   restoreRequired,
   testnetReset,
 } from "./errors";
-import { pollUntil } from "./polling";
+import { pollUntil, retryOnce } from "./polling";
 export { UNIT, parseAmount, format, minimumOutput } from "./amounts";
 const server = new rpc.Server(config.rpcUrl);
 const horizon = new Horizon.Server(config.horizonUrl);
@@ -121,7 +121,9 @@ export async function view(id: string, method: string, args: xdr.ScVal[] = []) {
     .addOperation(new Contract(id).call(method, ...args))
     .setTimeout(120)
     .build();
-  const result = await server.simulateTransaction(tx);
+  // Simulation failures arrive as responses; a thrown error is a transport
+  // blip, so one of the dozen reads behind a page gets one more attempt.
+  const result = await retryOnce(() => server.simulateTransaction(tx));
   // A restore preamble means the value was simulated as if archived entries
   // were live; using it would hide that every write will fail until restored.
   if (rpc.Api.isSimulationRestore(result))
@@ -166,7 +168,9 @@ export async function readFunding(address: string) {
   const [account, claimed] = await Promise.all([
     // A brand-new wallet has no account until Friendbot funds it; Horizon
     // answers 404. That is an onboarding state, not a read failure.
-    horizon.loadAccount(address).catch((e: unknown) => {
+    retryOnce(() => horizon.loadAccount(address), {
+      retryable: (e) => !isNotFound(e),
+    }).catch((e: unknown) => {
       if (isNotFound(e)) return null;
       throw e;
     }),

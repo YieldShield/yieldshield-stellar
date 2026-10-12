@@ -12,6 +12,13 @@ globalThis.location = { href: "http://localhost/trade", origin: "http://localhos
 globalThis.HTMLElement = class {};
 globalThis.document = { addEventListener() {}, removeEventListener() {} };
 globalThis.window = { addEventListener() {}, removeEventListener() {}, scrollTo() {} };
+// Capture the App's 20-second refresh so tests can run it on demand.
+const intervals = [];
+const realSetInterval = globalThis.setInterval;
+globalThis.setInterval = (fn, ms, ...args) => {
+  intervals.push(fn);
+  return realSetInterval(fn, ms, ...args);
+};
 // Every network-facing function of ./v3 delegates to the current test's fake.
 const exported = [
   "markets", "connect", "readMarket", "readAccount", "view", "transact",
@@ -41,6 +48,7 @@ const path = join(temp, "app.mjs");
 writeFileSync(path, result.outputFiles[0].text);
 const { App } = await import(pathToFileURL(path).href);
 after(() => {
+  globalThis.setInterval = realSetInterval;
   rmSync(temp, { recursive: true, force: true });
   for (const key of ["IS_REACT_ACT_ENVIRONMENT", "location", "HTMLElement", "document", "window", "testApi"]) delete globalThis[key];
 });
@@ -176,4 +184,26 @@ test("a reset testnet is reported as a reset, not as a connection problem", asyn
   mounted.push(r);
   assert.match(text(r), /The testnet may have reset; this demo must be redeployed/);
   assert.doesNotMatch(text(r), /Check your connection/);
+});
+
+test("a failed background refresh keeps the last values marked stale and the open review", async () => {
+  let failing = false;
+  const r = await start({
+    readMarket: async () => {
+      if (failing) throw new Error("socket hang up");
+      return { ...data, readAt: Date.now() };
+    },
+  });
+  await act(async () => findButton(r, "Review buy").props.onClick());
+  assert.ok(findButton(r, "Confirm in Freighter"));
+  failing = true;
+  await act(async () => intervals.at(-1)());
+  assert.match(text(r), /Pool data could not be read\. socket hang up/);
+  assert.match(text(r), /Stale: showing the last values read successfully at/);
+  assert.match(text(r), /150%/, "last good pool terms stay visible");
+  assert.match(text(r), /100\.0000000/, "last good wallet balances stay visible");
+  assert.ok(findButton(r, "Confirm in Freighter"), "the open review survives a failed background read");
+  failing = false;
+  await act(async () => intervals.at(-1)());
+  assert.doesNotMatch(text(r), /Stale:|could not be read/);
 });

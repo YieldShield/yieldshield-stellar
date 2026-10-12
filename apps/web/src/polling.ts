@@ -42,3 +42,24 @@ export async function pollUntil<T>(
     if (now() >= deadline) return { value, error, timedOut: true };
   }
 }
+
+/**
+ * Runs `fn`; when it throws a retryable error (an RPC or Horizon blip), waits
+ * briefly and runs it exactly once more.
+ */
+export async function retryOnce<T>(
+  fn: () => Promise<T>,
+  {
+    retryable = () => true,
+    delay = 600,
+    sleep = realSleep,
+  }: { retryable?: (e: unknown) => boolean; delay?: number } & Clock = {},
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (e) {
+    if (!retryable(e)) throw e;
+    await sleep(delay);
+    return fn();
+  }
+}

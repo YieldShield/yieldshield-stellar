@@ -87,6 +87,7 @@ export function App() {
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [readError, setReadError] = useState("");
+  const [lastGoodAt, setLastGoodAt] = useState<number>();
   const [archived, setArchived] = useState<{ text: string; preamble: unknown }>();
   const [notice, setNotice] = useState("");
   const [hash, setHash] = useState("");
@@ -184,6 +185,7 @@ export function App() {
   }, [routeKey, address]);
   // Market terms and wallet balances are read independently: a wallet read
   // failure (or a brand-new unfunded wallet) must not hide public pool data.
+  // view() already retried each failed request once.
   // After a confirmed transaction (`strict`), any failed read clears both,
   // because previously displayed balances are known to be outdated.
   async function refresh(strict = false) {
@@ -205,12 +207,16 @@ export function App() {
       clear();
       throw m.status === "rejected" ? m.reason : (w as PromiseRejectedResult).reason;
     }
+    // A failed background read keeps the last good values, marked stale, and
+    // leaves an open review alone: reviews re-read and simulate before
+    // signing. Only a vanished deployment clears what is shown.
     if (m.status === "fulfilled") setData(m.value);
-    else {
+    else if (isTestnetReset(m.reason)) {
       setData(undefined);
       clear();
     }
-    setWallet(w.status === "fulfilled" ? w.value : undefined);
+    if (w.status === "fulfilled") setWallet(w.value);
+    if (m.status === "fulfilled" && w.status === "fulfilled") setLastGoodAt(Date.now());
     // Archived storage keeps its own error so the restore action can use it.
     if (m.status === "rejected")
       throw restorePreambleOf(m.reason)
@@ -235,6 +241,7 @@ export function App() {
   useEffect(() => {
     setData(undefined);
     setWallet(undefined);
+    setLastGoodAt(undefined);
     readOk();
     if (!api || !market) return;
     let live = true;
@@ -511,6 +518,13 @@ export function App() {
         {readError && (
           <div className="feedback error" role="status">
             <p>{readError}</p>
+            {lastGoodAt && (data || wallet) && (
+              <p>
+                Stale: showing the last values read successfully at{" "}
+                {new Date(lastGoodAt).toLocaleTimeString()}. Reviews re-read
+                current values before signing.
+              </p>
+            )}
           </div>
         )}
         {archived && (

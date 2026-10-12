@@ -60,8 +60,11 @@ test("a wallet Friendbot has not funded yet reads as unfunded instead of failing
   assert.deepEqual(await api.readFunding(user), { funded: true, claimed: false, trusted: true, backing: 125_000_000n });
 });
 
-test("Horizon outages are still reported as read failures", async () => {
+test("a Horizon blip is retried once; a persistent outage is still a read failure", async () => {
+  net.accounts.add(user);
   net.unavailable.horizon = 1;
+  assert.equal((await api.readFunding(user)).funded, true);
+  net.unavailable.horizon = 2;
   await assert.rejects(api.readFunding(user));
 });
 
@@ -159,4 +162,12 @@ test("other read failures of an existing contract are explained, not called a re
   const failure = await api.view(pool, "preview_buy").catch((e) => e);
   assert.equal(failure.message, "Unable to read preview_buy. The contract rejected this request. The amount may be outside the exchange's limits or inventory.");
   assert.equal(failure.testnetReset, undefined);
+});
+
+test("one failed read request is retried once before the read fails", async () => {
+  net.unavailable.simulateTransaction = 1;
+  assert.equal(await api.view(pool, "nav"), 1n);
+  assert.equal(net.log.filter((l) => l === "rpc simulateTransaction").length, 2);
+  net.unavailable.simulateTransaction = 2;
+  await assert.rejects(api.view(pool, "nav"));
 });

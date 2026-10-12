@@ -38,3 +38,17 @@ test("a pending transaction is reported as still pending, not failed", async () 
   const r = await pollUntil(async () => "NOT_FOUND", (s) => s !== "NOT_FOUND", { deadline: 5_000, now: c.now, sleep: c.sleep });
   assert.deepEqual(r, { value: "NOT_FOUND", error: undefined, timedOut: true });
 });
+
+import { retryOnce } from "../apps/web/src/polling.ts";
+test("retryOnce retries a retryable failure exactly once", async () => {
+  const c = clock();
+  let calls = 0;
+  assert.equal(await retryOnce(async () => { if (calls++ === 0) throw new Error("blip"); return "ok"; }, { sleep: c.sleep }), "ok");
+  assert.deepEqual(c.waits, [600]);
+  calls = 0;
+  await assert.rejects(retryOnce(async () => { calls++; throw new Error("down"); }, { sleep: c.sleep }), /down/);
+  assert.equal(calls, 2);
+  calls = 0;
+  await assert.rejects(retryOnce(async () => { calls++; throw new Error("404"); }, { sleep: c.sleep, retryable: () => false }), /404/);
+  assert.equal(calls, 1);
+});
