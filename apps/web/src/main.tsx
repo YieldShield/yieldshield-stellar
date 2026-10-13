@@ -407,6 +407,8 @@ export function App() {
       setNotice(`${q.title} confirmed on Stellar Testnet.`);
       setFollow(q.follow || "");
       setQuote(undefined);
+      // Actions stay locked until balances refresh; say so instead of the signing prompt.
+      setBusy("Updating balances…");
       try {
         await refresh(true);
         readOk();
@@ -428,6 +430,7 @@ export function App() {
       // Once broadcast can occur, this review must never authorize a second
       // transaction, including when RPC confirmation is unavailable.
       setHash(transactionHash);
+      setBusy("Waiting for Stellar Testnet to confirm…");
       clear();
       focusFeedback.current = true;
     }
