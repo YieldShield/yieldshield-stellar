@@ -1,4 +1,6 @@
-# Native contract safety boundaries
+# Legacy pool safety boundaries
+
+These notes cover the original single-sponsor vault and pool (`contracts/vault`, `contracts/pool`), which the website still serves at `/legacy`. The public markets use the multi-provider pool and factory described in [pool-v3/README.md](pool-v3/README.md), and the funded exchange in [market/README.md](market/README.md).
 
 This is a funded, valueless TESTUSD demonstrator. The vault administrator can simulate loss by removing test assets. There is one reserve sponsor, no production underwriting, no audit claim, and no XLM investment product.
 
