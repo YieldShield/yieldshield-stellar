@@ -27,7 +27,9 @@ private repository paths are denied by Vite. Stop the server when done.
 harmless temporary fixture in `.secrets` for both this harness and the ordinary
 dev-server configuration. It never requests a real identity file.
 
-`docs/evidence/e2e/local-wallet.json` stores only public source addresses,
+`docs/evidence/e2e/local-wallet.json` (or the file given with
+`--evidence docs/evidence/<run>/local-wallet.json`, which keeps each run's log
+separate) stores only public source addresses,
 contract methods, timestamps and transaction hashes. A signature is not proof
 of success: the final readback evidence must independently check each hash.
 Never save private keys, seed phrases or signed transaction XDR as evidence.

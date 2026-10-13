@@ -19,7 +19,11 @@ const contracts = new Map([
   ...catalog.markets.flatMap(m => [[m.vault, ["deposit", "redeem"]], [m.exchange, ["buy", "sell"]]]),
 ]);
 const poolMethods = ["provide", "notice", "cancel_notice", "withdraw", "claim_rewards", "claim_inventory", "protect", "exit", "transfer_position", "settle", "claim_backing", "claim_creator", "claim_protocol"];
-const evidence = "docs/evidence/e2e/local-wallet.json";
+// --evidence <path> keeps each run's signature log separate; the default is the 11 October run's file.
+const evidenceAt = process.argv.indexOf("--evidence");
+const evidence = evidenceAt > 0 ? process.argv[evidenceAt + 1] : "docs/evidence/e2e/local-wallet.json";
+if (!/^docs\/evidence\/[\w./-]+\.json$/.test(evidence ?? "") || evidence.includes(".."))
+  throw Error("--evidence must name a .json file under docs/evidence/");
 const log = readJson(evidence, { startedAt: new Date().toISOString(), adapter: "localhost-only disposable signer; real Freighter extension is not exercised", signatures: [] });
 const client = fs.readFileSync("scripts/e2e-wallet-client.js", "utf8").replace("__CONFIG__", JSON.stringify({ token, accounts, passphrase: Networks.TESTNET }));
 const server = await createServer({
