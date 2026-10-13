@@ -1,18 +1,21 @@
 # Public website release
 
-Published on 12 October 2026.
+Published on 13 October 2026.
 
 - Public website: https://stellar.yieldshield.ai
 - Private source repository: https://github.com/YieldShield/yieldshield-stellar
 - Branch: `codex/stellar-scf46`
-- Published application commit: `8575e18b4b829e703ebd12a15cd5b7eb5f57c7c1` (fresh Testnet stack)
+- Published application commit: `05f94122fce32315f0ba25eb1a121cad0e874860`
 - Vercel project: `yieldshield-stellar` (`prj_3q75ugtINazrFgxJZ9hZVu9kJN9r`)
 - Vercel team: `team_B1gmlyua4FRgXZSs0859SCoQ`
-- Deployment: `dpl_CXWwbQcudSy6KtZ8S2vzg64J6Lcr`, `READY` with the expected commit and custom-domain alias, built by Vercel from the pushed GitHub commit. Preview `dpl_DLgihB5tV9nfqz45hkHYXbS6pE9d` of the same commit was checked first. Its security headers were unchanged, and its `v3` and `testnet` chunks contained only the fresh stack's issuer, asset contract, faucet, factory and featured pools.
-- Immutable deployment: https://yieldshield-stellar-9wizgm9xe-noc2-6281s-projects.vercel.app
-- Previous release: `7a2eee78cbbec69520d0859240c90bcc525eb7ac`, deployment `dpl_DRXuGzKEtBRHwvXLAMQMQwtHaLUu` (original stack). Earlier: `0767fe5fe4bbb0b7f71747718e556b1bcf1d4e5c`, deployment `dpl_2hJhfXyLEaZvgRq6s9PbpkSfacan`.
+- Deployment: `dpl_CcJHzQvVPTWWUi94HK8mPJC9MsSi`, `READY` with the expected commit and custom-domain alias, built by Vercel from the pushed GitHub commit. Preview `dpl_BnHQqUYbqE3m7ikDGaxWMQapYPgm` of the same commit was checked first. It served entry bundle `/assets/index-DMsJrkcc.js`, the bundle a local build of that commit produced, which contains the new status messages, and its security headers were unchanged.
+- Immutable deployment: https://yieldshield-stellar-asxck5mb5-noc2-6281s-projects.vercel.app
+- Previous release: `8575e18b4b829e703ebd12a15cd5b7eb5f57c7c1`, deployment `dpl_CXWwbQcudSy6KtZ8S2vzg64J6Lcr` (fresh stack, 12 October 2026).
+- Earlier releases: `7a2eee78cbbec69520d0859240c90bcc525eb7ac`, deployment `dpl_DRXuGzKEtBRHwvXLAMQMQwtHaLUu` (original stack). Earlier: `0767fe5fe4bbb0b7f71747718e556b1bcf1d4e5c`, deployment `dpl_2hJhfXyLEaZvgRq6s9PbpkSfacan`.
 
-The current release changes no application code. It points the website at a completely fresh Testnet stack, deployed on 12 October 2026 with new disposable keys: TESTUSD issuer `GBSIZTW6UJ2DYDNYDIXHMR4ROHQEPGWK6Y2CJW3E3KEPPQMDVLNJI7AS`, factory `CBE2M56HQHQJQERR4VXATMXKISQJTNGKAYMJNG56WUTHL5CWKJTEO7QO`, and featured pools Alpha `CD2XFXLG…3EQTE`, Beta `CDKP2F3P…3JZ7M` and Nested `CD6G5G5C…AOLSF`, maturing on 11 November 2026. The stack runs the fixed pool-v3 and factory code, and wallets need a new TESTUSD trustline. In Chromium, https://stellar.yieldshield.ai served entry bundle `/assets/index-Ct51RhXc.js`. `/protect` listed exactly the three new pools and read Reserve Alpha live: 10,000 TESTUSD free backing, ending 11/11/2026 7:07:02 PM UTC. There were no console errors, and the 390px view had no horizontal overflow. Checks: 82 JavaScript tests, 67 native contract tests, the production build, and the `verify-v3-deployment.mjs --extend` and `check-deployment.mjs` readbacks. The original stack is archived in `evidence/archive-2026-10-12` and stays on Testnet without renewal.
+The current release fixes the transaction status box. After signing, it now shows "Waiting for Stellar Testnet to confirm…" and then "Updating balances…" instead of keeping the signing prompt next to the confirmation (`a211704`). It also includes three test-tooling fixes that do not affect the website (`603b9fb`, `b614552`, `05f9412`). In Chromium, https://stellar.yieldshield.ai served `/assets/index-DMsJrkcc.js` and read the three fresh-stack pools without console errors or 390px overflow. The 13 October fresh-stack E2E ([E2E_REPORT.md](E2E_REPORT.md#fresh-stack-run-13-october-2026)) recorded no stale signing prompt across 19 browser-signed transactions.
+
+The 12 October release changed no application code. It pointed the website at a completely fresh Testnet stack, deployed on 12 October 2026 with new disposable keys: TESTUSD issuer `GBSIZTW6UJ2DYDNYDIXHMR4ROHQEPGWK6Y2CJW3E3KEPPQMDVLNJI7AS`, factory `CBE2M56HQHQJQERR4VXATMXKISQJTNGKAYMJNG56WUTHL5CWKJTEO7QO`, and featured pools Alpha `CD2XFXLG…3EQTE`, Beta `CDKP2F3P…3JZ7M` and Nested `CD6G5G5C…AOLSF`, maturing on 11 November 2026. The stack runs the fixed pool-v3 and factory code, and wallets need a new TESTUSD trustline. In Chromium, https://stellar.yieldshield.ai served entry bundle `/assets/index-Ct51RhXc.js`. `/protect` listed exactly the three new pools and read Reserve Alpha live: 10,000 TESTUSD free backing, ending 11/11/2026 7:07:02 PM UTC. There were no console errors, and the 390px view had no horizontal overflow. Checks: 82 JavaScript tests, 67 native contract tests, the production build, and the `verify-v3-deployment.mjs --extend` and `check-deployment.mjs` readbacks. The original stack is archived in `evidence/archive-2026-10-12` and stays on Testnet without renewal.
 
 The paragraphs below describe the previous release.
 
