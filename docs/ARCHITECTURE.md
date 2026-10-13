@@ -27,10 +27,6 @@ Stellar classic assets are identified by code AND issuer. Wallets need an approp
 | Tokenized Treasury/RWA assets       | Deferred: issuer permissions, transfer restrictions and redemption timelines must be supported; a USD label is not a redeemability proof.                                                                                                      |
 | YieldShield governance/reward token | Not needed for this grant or proof. No token launch.                                                                                                                                                                                           |
 
-## SCF proposal boundary
-
-Recommend SCF Open Track interest screening first. Suggested future request: $60,000 over 12 weeks, subject to team capacity confirmation and program review. Today’s prototype is prior work, not a reimbursement request. Proposed future deliverables: $20k native reserve accounting and security hardening; $20k verified USDC and strategy valuation adapters plus failure tests; $20k accessible wallet/pilot tooling, open-source integration documentation and a capped mainnet release conditional on separately funded security prerequisites. If those prerequisites are unavailable, a substitute deliverable requires SCF approval. Independent audits belong to the separate Audit Bank rather than this budget. No legal, marketing, giveaway or speculative-token budget is included. All code and documents are AI-assisted and need human review before real assets. Source publication is planned following owner review; initial repository is private.
-
 ## Grant policy correction
 
 The first research commit considered protected XLM exposure. Before implementation, official SCF rules §3 revealed restrictions on causing/incentivizing XLM short selling as well as XLM-yield promotion. The active design therefore uses non-XLM strategy risk and XLM solely for network costs. This is a documented scope correction, not an active legacy deployment.

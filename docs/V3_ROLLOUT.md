@@ -8,7 +8,7 @@ The first market implementation remains accessible at `/legacy`. Its manifest, c
 
 The native design intentionally differs from EVM interfaces: provider ownership is address-bound; pools use a fixed expiry; LP cash entry/exit pauses while holder liabilities remain; receipt principal and fee receipts have separate claims; maturity creates a pull credit. The exchange is funded operator inventory with exact vault NAV quotes and0.3% spread, not an AMM or external asset price. TESTUSD is not Circle USDC. No real lending, RWA, XLM-yield or price-oracle integration is claimed.
 
-All code and documentation were AI-assisted and reviewed through native tests, independent agent source review, actual disposable-account testnet transactions and browser verification. No production funds were used. Grant application files remain unchanged for user review. Root task owns website publication.
+All code and documentation were AI-assisted and reviewed through native tests, independent agent source review, actual disposable-account testnet transactions and browser verification. No production funds were used.
 
 ## Fixed pool and factory release
 

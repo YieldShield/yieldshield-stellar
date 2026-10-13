@@ -4,6 +4,5 @@
 .env.*
 node_modules
 target
-docs/grants
 test-results
 playwright-report

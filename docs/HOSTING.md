@@ -29,7 +29,7 @@ The current release simplifies navigation to five primary text links plus More, 
 
 Post-deployment browser verification loaded `/protect` with production bundle `/assets/index-ph49ncFr.js`, SVG/ICO/touch-icon links and no local test-wallet controls. The native registry returned six pools and current contract terms. Desktop content width equalled its viewport; at 390px phone size the content stayed within 375px without horizontal overflow. The public nested Provide → Funding → Provide journey retained Receipt Reserve and the exact 12.3456789 amount, with explicit guidance for acquiring its ysALPHA backing. Evidence: [desktop](evidence/ui-simplification/published-desktop.jpg), [phone](evidence/ui-simplification/published-mobile.jpg).
 
-The production website is a static build. It contains public testnet identities and no signing keys or server credentials. Deployment exclusions keep `.secrets`, `.env*`, private grant records, build caches and dependencies out of the upload. Existing deployment protection was retained; the custom production domain is publicly accessible.
+The production website is a static build. It contains public testnet identities and no signing keys or server credentials. Deployment exclusions keep `.secrets`, `.env*`, build caches and dependencies out of the upload. Existing deployment protection was retained; the custom production domain is publicly accessible.
 
 The public `/protect` page successfully read the native registry and displayed Reserve Alpha with 10,000 TESTUSD free backing, no reserved backing, 150% collateral and its fixed November 10 maturity. Three separately funded featured markets are available: ysALPHA/TESTUSD, ysBETA/TESTUSD and ysNEST/ysALPHA. Three community test pools also appear, including the earlier expired lifecycle pool and the new browser-created and short-maturity fixtures. All featured pools remain open to provider entry. Test liquidity is deliberately seeded and valueless, not financial traction. Native identities are in `config/markets.json`; the previous pool remains accessible at `/legacy` using `config/testnet.json`.
 
@@ -39,4 +39,4 @@ Historical protocol verification from the preceding feature release remains in [
 
 The implemented workflows and intentional differences from other chains are listed in [FEATURE_PARITY.md](FEATURE_PARITY.md). Earlier release evidence remains in [RELEASE.md](RELEASE.md) and Git history.
 
-Application-source changes need a new website deployment. Later documentation and evidence commits do not change the published application. Grant submissions have their own status records under `docs/grants/` and are excluded from hosting uploads.
+Application-source changes need a new website deployment. Later documentation and evidence commits do not change the published application.

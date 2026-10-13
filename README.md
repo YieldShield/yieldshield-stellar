@@ -33,7 +33,7 @@ cargo test --workspace
 
 Factory tests deploy the built pool Wasm, so run `stellar contract build` before `cargo test --workspace` on a clean checkout and after changing pool-v3; `sh scripts/check-native.sh` does both. The web build emits `dist` and requires no server or private environment variables. The current public issuer and contract IDs are in [config/testnet.json](config/testnet.json). [Operations](docs/OPERATIONS.md) explains wallet onboarding, testnet deployment, storage lifetime and evidence scripts. Do not copy signer files into a deployment.
 
-## Research and grant scope
+## Research and evidence
 
 - [Architecture and policy decisions](docs/ARCHITECTURE.md)
 - [Token integration: verified USDC issuers and future Blend wrapper](docs/TOKEN_INTEGRATION.md)
@@ -42,6 +42,6 @@ Factory tests deploy the built pool Wasm, so run `stellar contract build` before
 - [Build ledger](docs/BUILD_LEDGER.md)
 - [Testnet lifecycle evidence (original stack, archived)](docs/evidence/archive-2026-10-12/lifecycle.json)
 
-SCF #46 interest screening and any later application concern **future work**: hardened reserve accounting, verified USDC/strategy adapters and pilot tooling. Today's proof is not a reimbursement request. Independent audit funding belongs to the separate Audit Bank. A public source release and license need owner review; the initial repository is private. No partnership, award, audited status, mainnet readiness or customer traction is claimed.
+No partnership, award, audited status, mainnet readiness or customer traction is claimed.
 
 This project is a new native implementation informed by YieldShield's earlier EVM product behavior. It does not copy Solidity, signers, private environment files or vendor source. All code and documentation are AI-assisted and need human review before handling real assets.

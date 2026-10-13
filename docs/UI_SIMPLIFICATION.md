@@ -14,7 +14,7 @@ Reviewed 11 October 2026. Scope: the Stellar application, preserving its editori
 
 The production app showed seven primary header destinations and horizontally scrolling phone navigation. Desktop page word counts were 240 for Protect, 258 for Trade and 347 for Provide. These measure `document.body.innerText` split on whitespace across the whole rendered page, including navigation, numerals, labels and footer, without a connected wallet and with Reserve Alpha selected. They are a density comparison, not a claim about user testing. [Baseline data](evidence/ui-simplification/baseline.json).
 
-The existing contract and transaction verification remains documented in [E2E_REPORT.md](E2E_REPORT.md). Grant submissions remain held for user review.
+The existing contract and transaction verification remains documented in [E2E_REPORT.md](E2E_REPORT.md).
 
 ## Implementation and checks
 

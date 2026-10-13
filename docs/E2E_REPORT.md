@@ -58,7 +58,7 @@ Test-wallet setup, its receipt-hash recorder correction and evidence are separat
 
 The final application source and production deployment are recorded in [HOSTING.md](HOSTING.md). Earlier native deployment and lifecycle evidence remains in [the V3 evidence directory](evidence/v3/).
 
-Grant applications remain held for user review. This is functional verification, not a security audit.
+This is functional verification, not a security audit.
 
 ## Fresh-user rerun, 12 October 2026
 

@@ -26,4 +26,4 @@ Published application: `8ed44f6bc2dab4815acd3de438186c80d3761b7b` at https://ste
 - Public SVG, ICO and touch-icon requests each returned HTTP 200 with their correct image media type, not the application HTML. The public page declares all three assets. The final public browser console had no recorded errors.
 - [Published desktop](evidence/ui-protect-desktop.jpg) and [published mobile](evidence/ui-protect-mobile.jpg) screenshots show the updated protection route.
 
-The changes do not modify contracts or execute wallet transactions. Real Freighter browser-extension signing remains outside this UI verification; prior native lifecycle evidence is recorded separately in HOSTING.md. Both grant applications remain held for user review.
+The changes do not modify contracts or execute wallet transactions. Real Freighter browser-extension signing remains outside this UI verification; prior native lifecycle evidence is recorded separately in HOSTING.md.
