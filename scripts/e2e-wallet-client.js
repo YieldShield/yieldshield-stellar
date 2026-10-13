@@ -1,10 +1,17 @@
 const config = __CONFIG__;
-let selected = config.accounts[0], rejectNext = false, wrongNetwork = false;
+// The chosen wallet survives page loads in this tab; Tester is the default.
+const stored = (() => { try { return Number(sessionStorage.getItem("e2e-wallet")) || 0; } catch { return 0; } })();
+const choice = config.accounts[stored] ? stored : 0;
+let selected = config.accounts[choice], rejectNext = false, wrongNetwork = false;
 window.addEventListener("DOMContentLoaded", () => {
   const panel = document.createElement("aside");
   panel.style.cssText = "position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#142b27;color:white;padding:8px;display:flex;gap:16px;align-items:center;font:13px monospace";
   panel.innerHTML = '<strong>LOCAL TEST WALLET · disposable Testnet only</strong><label>Test wallet <select aria-label="E2E wallet"><option value="0">Tester</option><option value="1">Sponsor</option><option value="2">Fresh E2E wallet</option></select></label><button type="button">Reject next signature</button><label><input type="checkbox" aria-label="Report wrong network"> Report wrong network</label><span role="status" id="e2e-status">Ready</span>';
-  panel.querySelector("select").addEventListener("change", e => { selected = config.accounts[Number(e.target.value)]; });
+  panel.querySelector("select").value = String(choice);
+  panel.querySelector("select").addEventListener("change", e => {
+    selected = config.accounts[Number(e.target.value)];
+    try { sessionStorage.setItem("e2e-wallet", e.target.value); } catch {}
+  });
   panel.querySelector("button").addEventListener("click", () => { rejectNext = true; panel.querySelector("#e2e-status").textContent = "Next signature will be rejected"; });
   panel.querySelector("input").addEventListener("change", e => { wrongNetwork = e.target.checked; });
   document.body.append(panel);
