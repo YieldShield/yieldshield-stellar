@@ -1,0 +1,164 @@
+{
+  "adapter": "Playwright Chromium driving the app served by scripts/e2e-wallet.mjs --local-test-signing; disposable Testnet identities; real Freighter extension not exercised",
+  "market": {
+    "key": "alpha",
+    "pool": "CD2XFXLGNZDNOBMJFGQTQ7QITADUTQSNXRDNUBU5P5F4IGZA2FX3EQTE",
+    "vault": "CCYNKJNHCPHOVGNQZYIFYH4S5YKSKE3S44Z5TQTZICHJ35YRFCPEEOXM",
+    "exchange": "CAAGQEPURTU77DRAJZR3QV4IIMHELI4WISGN6T6TCPMQBICTSZ6JBLXL"
+  },
+  "wallets": {
+    "fresh": "GDRGYSDSD5J6IP2ZNVBM3FDTZOGDSB2DN4TQBNHIO5IRS57Q5KLSJZKV",
+    "tester": "GDGUYSKHR7FZBQ3MO5463H4XKQVOYMT4U3IL67XDSXOZFG6AJZNGHVAQ"
+  },
+  "log": [
+    {
+      "action": "Fund with Friendbot (app button)",
+      "wallet": "GDRGYS"
+    },
+    {
+      "action": "Create TESTUSD trustline",
+      "wallet": "GDRGYS",
+      "hash": "a23c4d98c962d5f29a02b2e1ffd0c742f85cb0bac7509e1d475e43e08875c2cf",
+      "seconds": 8,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Claim test tokens",
+      "wallet": "GDRGYS",
+      "hash": "25f4657d51feba6fea2c30a27adeb1c8dab3afcbf2acbdee1d34e2cb0c1f1df7",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Deposit into native vault",
+      "wallet": "GDRGYS",
+      "hash": "e13cad085063897e72cf696c5c4024817634fe5809ed88fd6c74c55aaa780421",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Redeem funded receipts",
+      "wallet": "GDRGYS",
+      "hash": "244d7fe45fbc361c39e5cb0f15fe308d6ce1aba604c6c05e3c42663215437713",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Buy funded receipts",
+      "wallet": "GDRGYS",
+      "hash": "ec9430210dff1c26fbe2b328de098100829e5a901f0a8bbb32f8fef0b4768fad",
+      "seconds": 9,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Sell funded receipts",
+      "wallet": "GDRGYS",
+      "hash": "c63daa505e9e38d0ec5bfe0ab83dd5a25cb6fc8908988a9bcec1e7f7dc07b300",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Provide backing capital",
+      "wallet": "GDRGYS",
+      "hash": "b6db909f4b951163bc6e30aa86806032729e7f06c877c12a3691339aece85952",
+      "seconds": 8,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Request provider withdrawal",
+      "wallet": "GDRGYS",
+      "hash": "6880c8f3d8cca18124bd7142af823dbbbc2cc4c5063533a8e209bade06ad8955",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Cancel withdrawal notice",
+      "wallet": "GDRGYS",
+      "hash": "642b9cb3dd1bb1bb374ea9714903423f20cede2ccb0bedb1444b2d6a6b541136",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Open protected position",
+      "wallet": "GDRGYS",
+      "hash": "f85211aa11c4e7ae34407f366e2d45198e46861a5d9484ccea771bb1e9ce19ab",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Open protected position",
+      "wallet": "GDRGYS",
+      "hash": "c8f7a0d4511380f5057835293e055671eb1d9188ab0babdd803fa8a92b8d5fb1",
+      "seconds": 3,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Transfer protected position",
+      "wallet": "GDRGYS",
+      "hash": "fde555d1c121c64e97000a6b22b417922f8e6ec610b918e3b341e72087b53234",
+      "seconds": 9,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Exit to vault receipts",
+      "wallet": "GDRGYS",
+      "hash": "da00219fbfa03ea31d4805a90ae18aca58bb82f331241f0eb33d574881c499e0",
+      "seconds": 10,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Exit to fixed backing",
+      "wallet": "GDRGYS",
+      "hash": "16d170a7d78d13cf147ebf6015b34f4dd48af12aec34170877dc04bd6c229cc1",
+      "seconds": 3,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Exit to fixed backing",
+      "wallet": "GDGUYS",
+      "hash": "26a27c361e979b648139bb63e4b36ce978e832821a59c7f0dcb3c2c7db670f46",
+      "seconds": 4,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Claim acquired receipts",
+      "wallet": "GDRGYS",
+      "hash": "6b3c98afd714660342a6b83d7d24e2a8222ac75baae0425a17c6f08f2bace011",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Claim gain-fee receipts",
+      "wallet": "GDRGYS",
+      "hash": "7bedf2c3bab16c673c37fb1ba2676e8aaa354c166dc8207447475d6774346233",
+      "seconds": 5,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Request provider withdrawal",
+      "wallet": "GDRGYS",
+      "hash": "947fd93337665c7485cecedec1fcb275ef317c376e220ee6a5881f7f9cf59623",
+      "seconds": 10,
+      "staleSigningPrompt": false
+    },
+    {
+      "action": "Withdraw provider backing",
+      "wallet": "GDRGYS",
+      "hash": "5529d53c9a0c37d1a77dfe39a431d70888bf45a6e60f00b054e394bbdd54dae5",
+      "seconds": 8,
+      "staleSigningPrompt": false
+    }
+  ],
+  "fixtures": [
+    {
+      "action": "sponsor donates 10,000 TESTUSD to the Alpha vault (native setup, not browser-signed)",
+      "source": "GB4O4G45NXLJIHUMTBCJR4BOO6VXNX2AS4B3MYIDVIAEQKOCRENNCFVW",
+      "contract": "CCYNKJNHCPHOVGNQZYIFYH4S5YKSKE3S44Z5TQTZICHJ35YRFCPEEOXM",
+      "method": "donate",
+      "hash": "89d8e13c0ef2f165f77dd5f7077be275b420e74966d525c9dfe0267083ada2f7",
+      "ledger": 5169722,
+      "navBefore": "10000000",
+      "navAfter": "10997207"
+    }
+  ]
+}

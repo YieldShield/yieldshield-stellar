@@ -74,3 +74,20 @@ A new disposable wallet (`GD6HCGQU6SNFPOFQ5IBP4IP6DEGKKOD5J2KMV2XFLNTW3SUULASUXT
 | Provider claims and withdrawal | Acquired-receipt claim of 1.1764705 ysALPHA (this provider's share of the 60 surrendered receipts); notice for all shares; withdrawal after the 30-second notice paid 198.8235294 TESTUSD |
 
 Final balances reconcile to 778.8235294 TESTUSD and 221.1764705 ysALPHA. Reserve Alpha, Beta and Nested have no open liabilities and still accept providers. Gain-fee rewards stayed at zero because vault NAV did not change, so reward claims were not exercised. Maturity settlement, ownership transfer and the real Freighter extension were not exercised in this run either. Evidence: [signatures](evidence/e2e-2026-10-12/local-wallet.json), [UI log](evidence/e2e-2026-10-12/driver-log.json), [independent ledger readback](evidence/e2e-2026-10-12/readback.json), and [protection](evidence/e2e-2026-10-12/protection-confirmed.png) and [withdrawal](evidence/e2e-2026-10-12/provider-withdraw-confirmed.png) screenshots.
+
+## Fresh-stack run, 13 October 2026
+
+A brand-new wallet (`GDRGYSDSD5J6IP2ZNVBM3FDTZOGDSB2DN4TQBNHIO5IRS57Q5KLSJZKV`) tested the fresh stack of 12 October 2026 on Reserve Alpha. It used the same localhost-only harness, with each full page load keeping the chosen test wallet. The app's **Fund with Friendbot** button created the account (`4dfb349f…2e9c55`). **19 browser-signed transactions** then confirmed SUCCESS on public Testnet, and none showed the stale signing prompt fixed in `a211704`:
+
+| Step | Result |
+|---|---|
+| New TESTUSD trustline, faucet claim | 1,000 TESTUSD from the new issuer |
+| Vault deposit, redemption | 300 TESTUSD → 300 ysALPHA; 20 ysALPHA → 20 TESTUSD |
+| Exchange buy and sell | 10 ysALPHA bought for 10.03 TESTUSD; 5 ysALPHA sold for 4.985 TESTUSD (0.3% spread) |
+| Provider deposit, notice, cancel | 200 TESTUSD → 200 LP shares; notice requested and cancelled |
+| Protect and transfer | Positions #1 (100 ysALPHA) and #2 (20 ysALPHA); #2 transferred to a second wallet (`GDGUYSKH…HVAQ`) |
+| Gain | One native setup transaction, not browser-signed: the sponsor donated 10,000 TESTUSD to the Alpha vault, raising NAV from 1.0000000 to 1.0997207 (`89d8e13c…ada2f7`) |
+| Exits after the 60-second delay | #1: partial receipt exit of 40 paid 39.5647444 ysALPHA after gain fees, then a backing exit of 60 paid 60 TESTUSD. #2: the second wallet's backing exit paid 20 TESTUSD |
+| Provider claims and withdrawal | Acquired receipts 1.5686274 ysALPHA (this provider's share of 80 surrendered receipts); **gain-fee rewards 0.007112 ysALPHA**; withdrawal after the 30-second notice paid 198.4313725 TESTUSD |
+
+Final balances: 773.3863725 TESTUSD and 206.1404838 ysALPHA. Both positions are closed, and all three featured pools have no open liabilities and accept providers. Not exercised: maturity settlement (pools mature on 11 November 2026) and the real Freighter extension. Evidence: [signatures](evidence/e2e-2026-10-13/local-wallet.json), [UI log with the fixture](evidence/e2e-2026-10-13/driver-log.json), [independent ledger readback](evidence/e2e-2026-10-13/readback.json), and [protection](evidence/e2e-2026-10-13/protection-confirmed.png) and [withdrawal](evidence/e2e-2026-10-13/provider-withdraw-confirmed.png) screenshots.
