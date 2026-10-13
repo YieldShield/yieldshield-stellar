@@ -2,9 +2,11 @@
 
 Verified lifecycle: 2026-10-11T17:56:25.051Z. This release uses only valueless test assets.
 
-## Active deployment
+## Deployment at this release
 
-- Web target: https://stellar.yieldshield.ai (hosting verification recorded by the release owner).
+This release ran on the original stack, which was archived on 12 October 2026 and replaced by a fresh stack with new keys. Current identities are in [config/testnet.json](../config/testnet.json) and [config/markets.json](../config/markets.json); the original manifests and evidence are in [evidence/archive-2026-10-12](evidence/archive-2026-10-12/).
+
+- Web target: https://stellar.yieldshield.ai (hosting verification recorded in [HOSTING.md](HOSTING.md)).
 - TESTUSD issuer: [GBT2CT2NUF5X7W447ELA2PIHFQZ5VRJWJBP523JVXYCRCZFKJI3J5JIH](https://stellar.expert/explorer/testnet/account/GBT2CT2NUF5X7W447ELA2PIHFQZ5VRJWJBP523JVXYCRCZFKJI3J5JIH).
 - backing: [CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D](https://stellar.expert/explorer/testnet/contract/CCVCEDIJL5FDPI6MJQG4DS55P5CF66IKJMFT7FDXMYAPVOW5I6ZWIL6D).
 - vault: [CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ](https://stellar.expert/explorer/testnet/contract/CCGDPBGQIOVYUQCMGF6LWAZDQEVXA6YGDKQBIBPNQTB44UH3RKZ6W5IQ).

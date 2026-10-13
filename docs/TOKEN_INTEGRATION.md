@@ -28,7 +28,7 @@ For a bounded lending wrapper, the proposed integration uses the pool's uncollat
 
 Required adapter semantics include pool/reserve identity, USDC identity, current bRate/accounting value, available withdrawal liquidity, pool status, outstanding deficits and observed redemption amounts. Accrued bRate is not a guarantee of realizable NAV. On insufficient liquidity or inconsistent valuation the adapter must fail closed for new coverage; existing exit behavior needs a deliberately designed, audited resolution policy. Do not promise instant redemptions or cover unlimited strategy losses.
 
-No Blend calls or third-party deposits are active in this release. Selecting an actual pool, threat-modeling its administrative and liquidation controls, and implementing a tested wrapper are future grant milestones.
+No Blend calls or third-party deposits are active in this release. Selecting an actual pool, threat-modeling its administrative and liquidation controls, and implementing a tested wrapper are future milestones.
 
 ## RWA assets and economics
 

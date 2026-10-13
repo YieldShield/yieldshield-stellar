@@ -12,7 +12,7 @@ All code and documentation were AI-assisted and reviewed through native tests, i
 
 ## Fixed pool and factory release
 
-The first V3 factory and featured pools (created 11 October 2026, maturing 10 November 2026) cannot be upgraded or migrated. Rebuilt contracts change these rules ([pool and factory reference](../contracts/pool-v3/README.md)):
+The first V3 factory and featured pools (created 11 October 2026, maturing 10 November 2026) cannot be upgraded or migrated. On 12 October 2026 they were archived with the rest of the original stack, and a completely fresh stack now runs the rebuilt contracts; see [OPERATIONS.md](OPERATIONS.md). Rebuilt contracts change these rules ([pool and factory reference](../contracts/pool-v3/README.md)):
 
 - Provider fee and receipt claims accrue from per-provider index snapshots, so their sum never exceeds the pool's balance and every claim stays payable.
 - A position opens with, and a partial exit leaves, at least 0.01 backing unit of fixed claim. Partial receipt exits remove a rounded-up claim share.

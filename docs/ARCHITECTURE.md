@@ -25,7 +25,7 @@ Stellar classic assets are identified by code AND issuer. Wallets need an approp
 | Circle-issued USDC SAC              | Next integration candidate after verified-issuer research is followed by trustline/authorization tests and strategy/liquidity analysis. Do not create a fake USDC issuer.                                                                      |
 | Blend lending positions             | Research milestone only. bTokens are nontransferable internal accounting, not SEP-41 depositable assets. Any future wrapper must own a pool-specific lending position and validate withdrawal liquidity; bRate is not proof of realizable NAV. |
 | Tokenized Treasury/RWA assets       | Deferred: issuer permissions, transfer restrictions and redemption timelines must be supported; a USD label is not a redeemability proof.                                                                                                      |
-| YieldShield governance/reward token | Not needed for this grant or proof. No token launch.                                                                                                                                                                                           |
+| YieldShield governance/reward token | Not needed for this proof. No token launch.                                                                                                                                                                                           |
 
 ## Grant policy correction
 
