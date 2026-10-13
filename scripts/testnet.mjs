@@ -20,7 +20,8 @@ export const server = new rpc.Server(RPC);
 export const horizon = new Horizon.Server(
   "https://horizon-testnet.stellar.org",
 );
-const cli = process.env.STELLAR_CLI || "/tmp/yieldshield-stellar-tools/stellar";
+// The `stellar` CLI on PATH; STELLAR_CLI may point to another installed binary.
+const cli = process.env.STELLAR_CLI || "stellar";
 const cfg = ".secrets/stellar";
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export const stringify = (obj) =>

@@ -4,7 +4,7 @@ This application has no server or custodial wallet. Frontend deployments publish
 
 ## Rebuild and verify
 
-Use Node 24+ and a Rust 1.99 toolchain with `wasm32v1-none`, Stellar CLI 28.1.0 and pinned SDK 28.0.0. The toolchain used for this build lives in `/tmp/yieldshield-stellar-tools`; it does not change the user's shell profile.
+Use Node 24+ and a Rust 1.99 toolchain with `wasm32v1-none`, Stellar CLI 28.1.0 and pinned SDK 28.0.0. Install them with `rustup toolchain install 1.99.0 --target wasm32v1-none` and `cargo +1.99.0 install --locked stellar-cli --version 28.1.0 --no-default-features`. Scripts run the `stellar` binary on `PATH`; set `STELLAR_CLI` to use another one.
 
 ```
 npm ci --ignore-scripts
@@ -14,7 +14,7 @@ stellar contract build
 cargo test --workspace
 ```
 
-On the isolated macOS toolchain used here, set `DYLD_LIBRARY_PATH=/private/tmp/yieldshield-stellar-tools/rustup/toolchains/stable-aarch64-apple-darwin/lib` if the Wasm linker cannot find `libLLVM.dylib`. This is a local toolchain issue, not a web runtime dependency.
+On macOS, if the Wasm linker cannot find `libLLVM.dylib` in a toolchain installed outside the default rustup location, add that toolchain's `lib` directory to `DYLD_LIBRARY_PATH`. This is a local toolchain issue, not a web runtime dependency.
 
 Factory tests deploy the built pool Wasm, so run `stellar contract build` (or `sh scripts/check-native.sh`) before `cargo test --workspace` on a clean checkout and after every pool-v3 change. The SDK requires CLI build metadata/spec processing, so a bare `cargo build --target wasm32v1-none` is not equivalent. Web output is `dist`; preview with `npm run dev`. The Vite development server is loopback-only.
 
