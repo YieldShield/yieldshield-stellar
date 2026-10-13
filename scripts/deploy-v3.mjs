@@ -192,7 +192,7 @@ if (!m.poolWasmHash) {
       const out = cliRun(
         [
           "contract",
-          "install",
+          "upload",
           "--wasm",
           poolWasm,
           "--network",
