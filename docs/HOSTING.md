@@ -3,7 +3,7 @@
 Published on 13 October 2026.
 
 - Public website: https://stellar.yieldshield.ai
-- Private source repository: https://github.com/YieldShield/yieldshield-stellar
+- Public MIT source repository: https://github.com/YieldShield/yieldshield-stellar
 - Branch: `codex/stellar-scf46`
 - Published application commit: `05f94122fce32315f0ba25eb1a121cad0e874860`
 - Vercel project: `yieldshield-stellar` (`prj_3q75ugtINazrFgxJZ9hZVu9kJN9r`)

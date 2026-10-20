@@ -1,10 +1,10 @@
 # Token integration decisions
 
-Verified 11 October 2026. The active testnet application uses TESTUSD and its funded ysvUSD receipt only. The research catalog is not an activation list.
+Initial research: 11 October 2026; current-release scope corrected 20 October 2026. The active Testnet application uses TESTUSD, funded ysALPHA/ysBETA receipts and the nested ysNEST receipt backed by ysALPHA. The original ysvUSD vault remains on `/legacy`. The research catalog is not an activation list.
 
 ## Why this version is native to Stellar
 
-`TESTUSD` is a classic issued asset with a Stellar Asset Contract. Wallets explicitly trust its named issuer. The new vault produces transferable Soroban receipts; the protection pool takes those receipts and reserves a separate TESTUSD balance for each recorded payout. XLM pays transaction fees and account reserves only. The release does not launch a protocol token or offer XLM interest/directional-XLM protection.
+`TESTUSD` is a classic issued asset with a Stellar Asset Contract. Wallets explicitly trust its named issuer. The vaults produce transferable Soroban receipts; each protection pool takes its named receipt and reserves a separate balance of the vault's backing asset for each recorded claim. Alpha and Beta use TESTUSD; the nested pool uses ysALPHA, so its fixed claim is not a dollar claim. XLM pays transaction fees and account reserves only. The release does not launch a protocol token or offer XLM interest/directional-XLM protection.
 
 This provides an honest, reproducible accounting fixture without misrepresenting a third-party stablecoin, adding an unverified investment strategy, or implying that a receipt's ticker establishes redemption value.
 
@@ -28,7 +28,7 @@ For a bounded lending wrapper, the proposed integration uses the pool's uncollat
 
 Required adapter semantics include pool/reserve identity, USDC identity, current bRate/accounting value, available withdrawal liquidity, pool status, outstanding deficits and observed redemption amounts. Accrued bRate is not a guarantee of realizable NAV. On insufficient liquidity or inconsistent valuation the adapter must fail closed for new coverage; existing exit behavior needs a deliberately designed, audited resolution policy. Do not promise instant redemptions or cover unlimited strategy losses.
 
-No Blend calls or third-party deposits are active in this release. Selecting an actual pool, threat-modeling its administrative and liquidation controls, and implementing a tested wrapper are future milestones.
+No Blend calls or third-party deposits are active in this release. Before submitting a build-ready grant proposal, select and verify the exact pool/reserve, specify administrative and loss-recognition risks and define the wrapper's admission and redemption behavior. Implementing and testing that defined integration is future development. A liquid-USDC vault is a different scope and must not silently satisfy a promised lending-wrapper milestone.
 
 ## RWA assets and economics
 
