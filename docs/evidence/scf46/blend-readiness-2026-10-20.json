@@ -1,0 +1,335 @@
+{
+  "at": "2026-10-20T10:46:07.908Z",
+  "mode": "Public read-only RPC; no signatures, keys, writes or deposits",
+  "sources": [
+    "https://github.com/blend-capital/blend-utils/blob/main/mainnet.contracts.json",
+    "https://github.com/blend-capital/blend-utils/blob/main/testnet.contracts.json",
+    "https://developers.circle.com/stablecoins/usdc-contract-addresses",
+    "https://docs.blend.capital/mainnet-deployments"
+  ],
+  "pools": [
+    {
+      "key": "blend-mainnet-fixed-v2.1",
+      "url": "https://mainnet.sorobanrpc.com",
+      "passphrase": "Public Global Stellar Network ; September 2015",
+      "pool": "CBAKAZUEJBAFA2DCGBRS2WKJT3FNIMJBHTFL76AY7XMAVEINQNNIQWAO",
+      "asset": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+      "network": {
+        "passphrase": "Public Global Stellar Network ; September 2015",
+        "protocolVersion": 29
+      },
+      "config": {
+        "ledger": 65041476,
+        "value": {
+          "bstop_rate": 2000000,
+          "max_positions": 6,
+          "min_collateral": "50000000",
+          "oracle": "CCVTVW2CVA7JLH4ROQGP3CU4T3EXVCK66AZGSM4MUQPXAI4QHCZPOATS",
+          "status": 1
+        }
+      },
+      "admin": {
+        "ledger": 65041476,
+        "value": "CDGQFAOSQXRZEEVAXL4CIWNJZJINYOHYRGFRUCWSNIMW2LBOVLUC3CPK"
+      },
+      "reserves": {
+        "ledger": 65041476,
+        "value": [
+          "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
+          "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+          "CDTKPWPLOURQA2SGTKTUQOWRCBZEORB4BWBOMJ3D3ZTQQSGE5F6JBQLV"
+        ]
+      },
+      "reserve": {
+        "ledger": 65041476,
+        "value": {
+          "asset": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+          "config": {
+            "c_factor": 9500000,
+            "decimals": 7,
+            "enabled": true,
+            "index": 1,
+            "l_factor": 9500000,
+            "max_util": 9000000,
+            "r_base": 300000,
+            "r_one": 400000,
+            "r_three": 50000000,
+            "r_two": 1200000,
+            "reactivity": 20,
+            "supply_cap": "10000000000000000",
+            "util": 8000000
+          },
+          "data": {
+            "b_rate": "1000451481094",
+            "b_supply": "2047604380416",
+            "backstop_credit": "99013407",
+            "d_rate": "1001168303280",
+            "d_supply": "1071162275410",
+            "ir_mod": "2421014",
+            "last_time": "1792493163"
+          },
+          "scalar": "10000000"
+        }
+      },
+      "entries": [
+        {
+          "key": "AAAABgAAAAFAoGaESEBQaGIwYy1ZSZ7K1DEhPMq/+Bj92AqRDYNaiAAAABQAAAAB",
+          "liveUntilLedger": 66772491,
+          "executable": {
+            "wasm": "a41fc53d6753b6c04eb15b021c55052366a4c8e0e21bc72700f461264ec1350e"
+          }
+        },
+        {
+          "key": "AAAABgAAAAGt785ZruUpaPdgYdSUwlJbdWWfpClqZfSZ7ynlZHfklgAAABQAAAAB",
+          "liveUntilLedger": 67326585,
+          "executable": "stellar_asset"
+        }
+      ],
+      "reserveIndex": 1
+    },
+    {
+      "key": "blend-mainnet-fixed-v2",
+      "url": "https://mainnet.sorobanrpc.com",
+      "passphrase": "Public Global Stellar Network ; September 2015",
+      "pool": "CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD",
+      "asset": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+      "network": {
+        "passphrase": "Public Global Stellar Network ; September 2015",
+        "protocolVersion": 29
+      },
+      "config": {
+        "ledger": 65041476,
+        "value": {
+          "bstop_rate": 2000000,
+          "max_positions": 6,
+          "min_collateral": "50000000",
+          "oracle": "CCVTVW2CVA7JLH4ROQGP3CU4T3EXVCK66AZGSM4MUQPXAI4QHCZPOATS",
+          "status": 3
+        }
+      },
+      "admin": {
+        "ledger": 65041476,
+        "value": "GAX2VVWVHU5YQY5J3NJBXKHI3FFKZN54BE6GRJCWSIKSBZTQWJJNJMPC"
+      },
+      "reserves": {
+        "ledger": 65041476,
+        "value": [
+          "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
+          "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+          "CDTKPWPLOURQA2SGTKTUQOWRCBZEORB4BWBOMJ3D3ZTQQSGE5F6JBQLV"
+        ]
+      },
+      "reserve": {
+        "ledger": 65041476,
+        "value": {
+          "asset": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+          "config": {
+            "c_factor": 9500000,
+            "decimals": 7,
+            "enabled": true,
+            "index": 1,
+            "l_factor": 9500000,
+            "max_util": 9000000,
+            "r_base": 300000,
+            "r_one": 400000,
+            "r_three": 50000000,
+            "r_two": 1200000,
+            "reactivity": 20,
+            "supply_cap": "10000000000000000",
+            "util": 8000000
+          },
+          "data": {
+            "b_rate": "1154193424873",
+            "b_supply": "469434648527810",
+            "backstop_credit": "1208906084055",
+            "d_rate": "1246482679046",
+            "d_supply": "314941229192441",
+            "ir_mod": "15078652",
+            "last_time": "1792493163"
+          },
+          "scalar": "10000000"
+        }
+      },
+      "entries": [
+        {
+          "key": "AAAABgAAAAESnMjMYzbx/bvcwPOYNDTDzbhf2eqFaXo3gtMY2HSlgAAAABQAAAAB",
+          "liveUntilLedger": 65576606,
+          "executable": {
+            "wasm": "a41fc53d6753b6c04eb15b021c55052366a4c8e0e21bc72700f461264ec1350e"
+          }
+        },
+        {
+          "key": "AAAABgAAAAGt785ZruUpaPdgYdSUwlJbdWWfpClqZfSZ7ynlZHfklgAAABQAAAAB",
+          "liveUntilLedger": 67326585,
+          "executable": "stellar_asset"
+        }
+      ],
+      "reserveIndex": 1
+    },
+    {
+      "key": "blend-mainnet-yieldblox-v2",
+      "url": "https://mainnet.sorobanrpc.com",
+      "passphrase": "Public Global Stellar Network ; September 2015",
+      "pool": "CCCCIQSDILITHMM7PBSLVDT5MISSY7R26MNZXCX4H7J5JQ5FPIYOGYFS",
+      "asset": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+      "network": {
+        "passphrase": "Public Global Stellar Network ; September 2015",
+        "protocolVersion": 29
+      },
+      "config": {
+        "ledger": 65041476,
+        "value": {
+          "bstop_rate": 0,
+          "max_positions": 6,
+          "min_collateral": "50000000",
+          "oracle": "CD74A3C54EKUVEGUC6WNTUPOTHB624WFKXN3IYTFJGX3EHXDXHCYMXXR",
+          "status": 3
+        }
+      },
+      "admin": {
+        "ledger": 65041476,
+        "value": "CANSYFVMIP7JVYEZQ463Y2I2VLEVNLDJJ4QNZTDBGLOOGKURPTW4A6FQ"
+      },
+      "reserves": {
+        "ledger": 65041476,
+        "value": [
+          "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA",
+          "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+          "CDTKPWPLOURQA2SGTKTUQOWRCBZEORB4BWBOMJ3D3ZTQQSGE5F6JBQLV",
+          "CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK",
+          "CB226ZOEYXTBPD3QEGABTJYSKZVBP2PASEISLG3SBMTN5CE4QZUVZ3CE",
+          "CBLV4ATSIWU67CFSQU2NVRKINQIKUZ2ODSZBUJTJ43VJVRSBTZYOPNUR",
+          "CAL6ER2TI6CTRAY6BFXWNWA7WTYXUXTQCHUBCIBU5O6KM3HJFG6Z6VXV",
+          "CCCRWH6Q3FNP3I2I57BDLM5AFAT7O6OF6GKQOC6SSJNDAVRZ57SPHGU2"
+        ]
+      },
+      "reserve": {
+        "ledger": 65041476,
+        "value": {
+          "asset": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
+          "config": {
+            "c_factor": 9500000,
+            "decimals": 7,
+            "enabled": true,
+            "index": 1,
+            "l_factor": 9500000,
+            "max_util": 9500000,
+            "r_base": 300000,
+            "r_one": 400000,
+            "r_three": 50000000,
+            "r_two": 1200000,
+            "reactivity": 20,
+            "supply_cap": "2000000000000000",
+            "util": 8000000
+          },
+          "data": {
+            "b_rate": "982927400033",
+            "b_supply": "428110730600",
+            "backstop_credit": "498413186",
+            "d_rate": "1217713483234",
+            "d_supply": "282093740877",
+            "ir_mod": "10252925",
+            "last_time": "1792493163"
+          },
+          "scalar": "10000000"
+        }
+      },
+      "entries": [
+        {
+          "key": "AAAABgAAAAGEJEJDQtEzsZ94ZLqOfWIlLH468xubivw/09TDpXow4wAAABQAAAAB",
+          "liveUntilLedger": 65563838,
+          "executable": {
+            "wasm": "a41fc53d6753b6c04eb15b021c55052366a4c8e0e21bc72700f461264ec1350e"
+          }
+        },
+        {
+          "key": "AAAABgAAAAGt785ZruUpaPdgYdSUwlJbdWWfpClqZfSZ7ynlZHfklgAAABQAAAAB",
+          "liveUntilLedger": 67326585,
+          "executable": "stellar_asset"
+        }
+      ],
+      "reserveIndex": 1
+    },
+    {
+      "key": "blend-testnet-v2",
+      "url": "https://soroban-testnet.stellar.org",
+      "passphrase": "Test SDF Network ; September 2015",
+      "pool": "CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF",
+      "asset": "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU",
+      "network": {
+        "friendbotUrl": "https://friendbot.stellar.org/",
+        "passphrase": "Test SDF Network ; September 2015",
+        "protocolVersion": 29
+      },
+      "config": {
+        "ledger": 5293916,
+        "value": {
+          "bstop_rate": 1000000,
+          "max_positions": 8,
+          "min_collateral": "0",
+          "oracle": "CAZOKR2Y5E2OSWSIBRVZMJ47RUTQPIGVWSAQ2UISGAVC46XKPGDG5PKI",
+          "status": 0
+        }
+      },
+      "admin": {
+        "ledger": 5293917,
+        "value": "GATALTGTWIOT6BUDBCZM3Q4OQ4BO2COLOAZ7IYSKPLC2PMSOPPGF5V56"
+      },
+      "reserves": {
+        "ledger": 5293916,
+        "value": [
+          "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+          "CAZAQB3D7KSLSNOSQKYD2V4JP5V2Y3B4RDJZRLBFCCIXDCTE3WHSY3UE",
+          "CAP5AMC2OHNVREO66DFIN6DHJMPOBAJ2KCDDIMFBR7WWJH5RZBFM3UEI",
+          "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU"
+        ]
+      },
+      "reserve": {
+        "ledger": 5293916,
+        "value": {
+          "asset": "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU",
+          "config": {
+            "c_factor": 9500000,
+            "decimals": 7,
+            "enabled": true,
+            "index": 3,
+            "l_factor": 9500000,
+            "max_util": 9500000,
+            "r_base": 5000,
+            "r_one": 300000,
+            "r_three": 10000000,
+            "r_two": 1000000,
+            "reactivity": 20,
+            "supply_cap": "170141183460469231731687303715884105727",
+            "util": 7000000
+          },
+          "data": {
+            "b_rate": "1058412694224",
+            "b_supply": "1304793243425",
+            "backstop_credit": "1729128146",
+            "d_rate": "1072933505595",
+            "d_supply": "1012346635634",
+            "ir_mod": "7380381",
+            "last_time": "1792493167"
+          },
+          "scalar": "10000000"
+        }
+      },
+      "entries": [
+        {
+          "key": "AAAABgAAAAGIGo8M3rDcCq2N4KGUr0SSkVe9+IeSIiEhONFXijvhzgAAABQAAAAB",
+          "liveUntilLedger": 8179486,
+          "executable": {
+            "wasm": "a41fc53d6753b6c04eb15b021c55052366a4c8e0e21bc72700f461264ec1350e"
+          }
+        },
+        {
+          "key": "AAAABgAAAAEgItVuCrpkUW9uYmBNKWIyvoZP/fuE1YYT50I8rOArKAAAABQAAAAB",
+          "liveUntilLedger": 8179486,
+          "executable": "stellar_asset"
+        }
+      ],
+      "reserveIndex": 3
+    }
+  ]
+}
